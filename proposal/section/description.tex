@@ -1,5 +1,11 @@
 \section*{Project Description}
 
-Automated landing for quadcopters is a problem that has yet to be solved. 
+A major barrier to the usage of hobbyist scale unmanned aerial systems (UAS) is that only part of their flight is autonomous. Specifically, open source off the shelf (OTS) autopilots primarily offer automated control only while the aircraft is in the air. This stands as a considerable barrier to entry for potential users of the technology who have little to no experience with flying radio controlled aircraft.
+
+While several papers have been published that solve the automated landing problem, there is little code available in the public domain that can be employed on these low cost OTS autopilots. Proprietary solutions do offer this functionality but cost several thousands of dollars and require a deep level of technical expertise to integrate into UAS. 
+
+Through the project for CS287, we intend to implement state-of-the-art algorithms that permit automated landing using OTS hardware produced by robotics startup, 3D Robotics \footnote{\url{http://www.3drobotics.com}}. To constrain the problem significantly, we will focus on multicopter UAS. 3D Robotics produces a line of embedded computers that run an open source autopilot software called ArduCopter \footnote{There are variants called ArduPilot and ArduRover too, for fixed wing and ground robots respectively.}. We will accomplish this by supplementing the 3D Robotics hardware with an additional commodity embedded computer and a webcam. Our work will be open sourced under the CRAPL license\footnote{\url{http://matt.might.net/articles/crapl/}}.
+
+Approaches that have been considered in the past include:
 
 % \cite{ref}
