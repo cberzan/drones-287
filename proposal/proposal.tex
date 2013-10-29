@@ -1,28 +1,18 @@
 
-\documentclass[10pt]{article} % use larger type; default would be 10pt
+\documentclass[10pt, twocolumn]{scrartcl} % use larger type; default would be 10pt
 
 \usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
 \usepackage{fullpage}
 \usepackage{graphicx} % support the \includegraphics command and options
-
-
-%%% PACKAGES
-\usepackage{booktabs} % for much better looking tables
-\usepackage{array} % for better arrays (eg matrices) in maths
-\usepackage{paralist} % very flexible & customisable lists (eg. enumerate/itemize, etc.)
-\usepackage{verbatim} % adds environment for commenting out blocks of text & for better verbatim
-\usepackage{subfig} % make it possible to include more than one captioned figure/table in a single float
+\usepackage[style=numeric-comp]{biblatex} % [style=nature] use biber command to regenerate references
 
 \pagestyle{plain} 
 
 \usepackage{hyperref}
-\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
-\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
-\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
-\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+\addbibresource{bib/proposal.bib}
 
-
-\title{CS287: Final Project Abstract}
+\title{Precise Automated Landing For Multicopter UAS}
+\subtitle{CS287: Final Project Abstract}
 \author{Constantin Berzan, Sunil Shah}
 \date{} 
 
@@ -33,7 +23,8 @@
 
 \input{section/goals}
 
-\bibliography{bib/proposal}
+\nocite{*}
+\printbibliography
 
 \end{document}
 

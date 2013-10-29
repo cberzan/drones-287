@@ -1,5 +1,3 @@
-\section*{Project Description}
-
 A major barrier to the usage of hobbyist scale unmanned aerial systems (UAS) is that only part of their operation is autonomous. Currently available open source (and low cost) autopilots offer  automated control that handles operation of the system from takeoff to landing using a variety of sensors - primarily including GPS, inertial measurement and barometric pressure. 
 
 The process of charging UAS, however, has yet to be automated. In order to quickly recharge such a system automatically, it is necessary that they are positioned accurately on a platform that is either fitted with conductive contacts or with induction coils beneath the surface. The current implementation of landing algorithms utilise a GPS based approach that bounds the accuracy of their landing location to within (at best) a 3m by 3m box for drones that are 0.5m in diameter. 
@@ -9,5 +7,12 @@ Providing precise automated landing functionality will go a significant way to m
 We intend to implement state-of-the-art algorithms that permit precise automated landing using hardware produced by robotics startup, 3D Robotics\footnote{\url{http://www.3drobotics.com}}. To constrain the problem significantly, we will focus on multicopter UAS. 3D Robotics produces a line of embedded computers that run an open source autopilot software called ArduCopter\footnote{There are variants called ArduPilot and ArduRover too, for fixed wing and ground robots respectively.}. We will accomplish this by supplementing the 3D Robotics hardware with an additional commodity embedded computer and a webcam. Our work will be open sourced under the CRAPL license\footnote{\url{http://matt.might.net/articles/crapl/}}.
 
 Approaches that have been considered in the past include:
-
-% \cite{ref}
+Vision based: 
+\cite{simamitra2013} 
+\cite{ginkel2013} 
+\cite{saripalli2003experimental}
+\cite{green2003autonomous}
+\cite{merz2006autonomous}
+\cite{garcia2002towards}
+\cite{johnson2005vision}
+\cite{saripalli2002vision}
