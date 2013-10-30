@@ -2,12 +2,12 @@
 \documentclass[10pt, twocolumn]{scrartcl} % use larger type; default would be 10pt
 
 \usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
-\usepackage{fullpage}
+\usepackage[cm]{fullpage}
 \usepackage{graphicx} % support the \includegraphics command and options
-\usepackage[style=numeric-comp]{biblatex} % [style=nature] use biber command to regenerate references
+\usepackage{biblatex} % use biber command to regenerate references
 
-\pagestyle{plain} 
-
+\renewcommand{\bibfont}{\footnotesize}
+\pagenumbering{gobble}
 \usepackage{hyperref}
 \addbibresource{bib/proposal.bib}
 
@@ -18,13 +18,8 @@
 
 \begin{document}
 \maketitle
-
 \input{section/description}
-
 \input{section/goals}
-
-\nocite{*}
 \printbibliography
-
 \end{document}
 
