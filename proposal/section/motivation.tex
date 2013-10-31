@@ -1,0 +1,27 @@
+\section*{Motivation}
+
+Currently, unmanned aerial vehicles (UAVs) are only partly autonomous. Existing
+open-source, low-cost autopilots enable autonomous takeoff, flight, and
+landing. However, the process of charging UAVs is still largely done by hand.
+Because of the limited flight time of current UAVs, charging is a frequent
+operation. Thus, the manual process of charging UAVs is a major barrier to
+large-scale applications, such as farm monitoring.
+
+One approach to automatic recharging of UAVs is to have them land on automated
+charging stations. This requires that the UAV locate the charging station and
+land accurately on top of it. Current methods for automated landing largely
+rely on GPS localization, which does not provide sufficient accuracy. In the
+best case, they get UAVs to land within a 3m by 3m box around the desired
+landing location (3D Robotics, personal communication).
+
+Our project aims to use on-board vision data to improve localization and
+achieve more accurate landing. Several papers claim to solve this problem, but
+there is little code available to the public that can be used with
+off-the-shelf autopilots. Proprietary solutions do offer this functionality,
+but they cost thousands of dollars and require deep technical expertise to
+integrate.
+
+Achieving autonomous landing will be a significant step towards building an
+automated charging station. (The mechanical and electrical design of the
+charging station are part of an ongoing MEng capstone project.) Our work will
+be published under an open-source license.
