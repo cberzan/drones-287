@@ -1,2 +1,39 @@
-\section*{Plan}
-Our initial plan is to simultaneously explore the computer vision aspect of marker identification on the bench and to grab as much sensing data from our test quadcopter as possible. For the November 15th milestone, we plan to have characterised the sensor data available using the default sensors.
+\section*{Implementation Plan}
+
+For the November 15 milestone, we plan to:
+
+\begin{enumerate}
+
+\item {\bf Validate our architecture.} Assemble all the components of our
+system, and make sure there are no surprises (insufficient radio range,
+insufficient on-board compute power, difficulties controlling the autopilot
+from software, etc).
+
+\item {\bf Characterize our sensing error.} Make the drone land autonomously
+based on its internal pose estimate (GPS, IMU, barometer). Characterize the
+error in terms of displacement from the desired landing location on the ground,
+and the altitude at which the motors are powered off. This gives us a baseline
+that we are trying to improve upon by adding vision.
+
+\item {\bf Outline our vision approach.} Review the literature on vision-based
+autonomous landing, and choose an approach to implement. Build a prototype
+landing station with markers.
+
+\end{enumerate}
+
+\noindent
+For the approx. December 7 deadline, we plan to:
+
+\begin{enumerate}
+\setcounter{enumi}{3}
+
+\item {\bf Implement vision-based pose estimation.} Write the code that locates
+the landing station and estimates the drone's pose with respect to it. Test
+this in a lab setting, where we control the camera's position manually.
+
+\item {\bf Couple pose estimation and control.} Make the drone land
+autonomously based on real-time vision-based pose estimates. Characterize the
+error as before. If our project is successful, this should improve
+significantly over the vision-less baseline.
+
+\end{enumerate}
