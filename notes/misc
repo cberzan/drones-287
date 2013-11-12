@@ -1,0 +1,15 @@
+Stabilize and loiter modes
+http://copter.ardupilot.com/wiki/stabilize-mode/
+http://copter.ardupilot.com/wiki/loiter-mode/
+
+MAVLINK message reference
+https://pixhawk.ethz.ch/mavlink/
+
+MAVLINK subset implemented by APM
+http://dev.ardupilot.com/wiki/mavlink-commands/
+
+Explanation of RC channels
+http://copter.ardupilot.com/wiki/connecting-your-rc-input-and-motors/
+
+SET_ROLL_PITCH_YAW_THRUST implementation (mentions OF_LOITER)
+http://diydrones.com/group/arducopterusergroup/forum/topics/set-roll-pitch-yaw-thrust-implementation?commentId=705844%3AComment%3A1341504&groupId=705844%3AGroup%3A394475
