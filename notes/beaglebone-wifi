@@ -1,4 +1,33 @@
-Setting up an ad-hoc wifi network:
-https://help.ubuntu.com/community/WifiDocs/Adhoc
+Ad-hoc wifi did not work with the adafruit adapter. Worked fine with the wi-pi one.
+
+Better to have eth0 turned off to avoid confusion.
+
+On the beaglebone, set up `/etc/network/interfaces` like this:
+
+```
+auto lo
+iface lo inet loopback
+
+# auto eth0
+# iface eth0 inet dhcp
+
+auto wlan0
+iface wlan0 inet static
+   wireless-mode ad-hoc
+   wireless-channel 11
+   wireless-essid beagle-ad-hoc
+   wireless-key 1122334455
+   address 192.168.1.1
+   netmask 255.255.255.0
+```
+
+On the laptop, connect to the network that the beaglebone broadcasts. Set IP to
+192.168.1.2. Now able to SSH between the two.
 
 
+## References:
+
+[Setting up an ad-hoc wifi network][1]
+
+
+[1]: https://help.ubuntu.com/community/WifiDocs/Adhoc
