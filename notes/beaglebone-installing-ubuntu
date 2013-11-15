@@ -1,3 +1,5 @@
+## Initial installation:
+
 On laptop:
 
 1. Downloaded 12.04.3 image from [here][1].
@@ -27,10 +29,62 @@ On the beaglebone-black:
 1. Rebooted beaglebone; it boots without waiting for DHCP now, but it takes a
    while to acquire an IP address over wifi.
 
-Problems:
+
+## Ad-hoc wifi setup:
+
+Ad-hoc wifi did not work with the adafruit adapter. Worked fine with the wi-pi one.
+
+Better to have eth0 turned off to avoid confusion.
+
+On the beaglebone, set up `/etc/network/interfaces` like this:
+
+```
+auto lo
+iface lo inet loopback
+
+# auto eth0
+# iface eth0 inet dhcp
+
+auto wlan0
+iface wlan0 inet static
+   wireless-mode ad-hoc
+   wireless-channel 11
+   wireless-essid beagle-ad-hoc
+   wireless-key 1122334455
+   address 192.168.1.1
+   netmask 255.255.255.0
+```
+
+On the laptop, connect to the network that the beaglebone broadcasts. Set IP to
+192.168.1.2. Now able to SSH between the two.
+
+
+## Fixed problems:
+
+- Install missing basics: `psmisc man-db`
+- Adjust font to something readable:
+  ```
+  sudo setfont /usr/share/consolefonts/Lat7-Terminus32x16.psf.gz
+  ```
+  Or automatically at boot: `sudo dpkg-reconfigure console-setup`
+- Change timezone to Pacific: `sudo dpkg-reconfigure tzdata`
+- When the beaglebone cold-boots, the time is reset to 2000.
+  This causes some weirdness to spawn a bunch of
+  `apt-get -s -o Debug::NoLocking=true upgrade` processes, clogging the system.
+  Turns out this is byobu's fault. See [this bug][3] and [this fix][4], which
+  didn't make it into ubuntu 12.04 yet.
+  How to work around it: edit `/usr/lib/byobu/updates_available` and add
+  neutralize the function `___update_cache` by making it `return` right away.
+
+
+## Remaining problems:
 
 - Wifi is unreliable; stops working after a while. Nothing in the logs.
+- USB hub with wifi & keyboard in it is unreliable. Not enough power?
+
 
 
 [1]: http://www.armhf.com/index.php/boards/beaglebone-black/#precise
 [2]: http://tech.pedersen-live.com/2012/05/disable-waiting-for-network-configuration-messages-on-ubuntu-boot/
+[3]: https://bugs.launchpad.net/byobu/+bug/999151
+[4]: https://github.com/dustinkirkland/byobu/commit/64d8ac8f459d145993e0840eeade4835df3e6858
