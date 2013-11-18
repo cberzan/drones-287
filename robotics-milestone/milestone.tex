@@ -95,7 +95,15 @@ We plan to finish architecture validation by the end of this week (November
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Landing Accuracy with GPS Only}
 
-Blarg.
+In order to chacterise the sensing error inherent in landing using the typical array of sensors (GPS, IMU and barometric pressure), we utilised the auto-landing functionality built into the ArduCopter autopilot software that 3D Robotics distributes. 
+
+Building the quadcopter model was a non-trivial undertaking of the better part of the week - requiring soldering of motors to speed controllers, balancing of propellors, radio control setup, telemetry radio setup and extensive calibration of all sensors on board. Once this was completed, we investigated the built-in landing features.
+
+ArduCopter provides two modes which attempt to land the quadcopter automatically: \textit{land} and  \textit{return to launch (RTL)}. Land mode will bring the quadcopter straight down at the location at which it is invoked. This does not fit within our intended goal for this project though, since our aim is for the quadcopter to be able to land on a precise target given any arbitrary starting location.
+
+RTL, however, does accomplish this functionality using GPS. It operates in a base configuration by climbing to an arbitrary high safe altitude, flying back to a pre-captured home location and descending to a hover. The home location is captured from the GPS receiver when the quadcopter is \textit{armed}, indicating that it is ready for flight. If an optional parameter is set, it will attempt to land the quadcopter. We first experimented with this mode using the default parameters - whereupon it would return to a hover 3 metres above the home location - and then adjusted the parameter to get the quadcopter to land.
+
+We managed to get RTL to work successfully once in this base configuration but due to a misconfiguration to do with an erroneous sonar sensor, managed to crash the drone on our second attempt. ArduCopter has optional sonar sensor integration which uses the sonar sensor for more accurate height estimates when below 10 metres. We initially installed a sonar sensor but disabled it when we realised it wasn't returning data correctly. We speculate that on the second attempt, the ArduCopter board gained an erroneous altitude estimate and, believing that the quadcopter was on the ground, cut power to the motors - causing it to fall.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Outline of Vision Approach}
