@@ -6,7 +6,7 @@
 \usepackage{biblatex} % use biber command to regenerate references
 
 \renewcommand{\bibfont}{\footnotesize}
-\pagenumbering{gobble}
+%\pagenumbering{gobble}
 \usepackage{hyperref}
 \addbibresource{bib/proposal.bib}
 
@@ -38,7 +38,7 @@ landing station with markers.
 
 \end{enumerate}
 
-Here we discuss our progress towards these goals.
+Here we discuss our progress towards these goals. (It should be noted that this project will also form our class project for CS280 - Computer Vision which has just begun.)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Architecture Validation}
@@ -86,7 +86,7 @@ We plan to finish architecture validation by the end of this week (November
 
 \begin{figure*}[h]
     \centering
-    \includegraphics[width=\textwidth]{architecture.png}
+    \includegraphics[width=\textwidth]{images/architecture.png}
     \caption{Proposed architecture of our automated landing system for UAVs}
     \label{fig:architecture}
 \end{figure*}
@@ -105,6 +105,42 @@ RTL, however, does accomplish this functionality using GPS. It operates in a bas
 
 We managed to get RTL to work successfully once in this base configuration but due to a misconfiguration to do with an erroneous sonar sensor, managed to crash the drone on our second attempt. ArduCopter has optional sonar sensor integration which uses the sonar sensor for more accurate height estimates when below 10 metres. We initially installed a sonar sensor but disabled it when we realised it wasn't returning data correctly. We speculate that on the second attempt, the ArduCopter board gained an erroneous altitude estimate and, believing that the quadcopter was on the ground, cut power to the motors - causing it to fall.
 
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/marker.JPG}
+    \caption{Testing landing accuracy using GPS}
+    \label{fig:marker}
+\end{figure*}
+
+
+After rebuilding a fractured quadcopter arm, reflashing the autopilot (to clear any relics of the misconfigured sonar sensor) and recalibrating, we were able to get many successful landings using the RTL mode. We experimentally gained 10 estimates for landing accuracy by drawing an X marker using yellow tape (Figure \ref{fig:marker}), arming the quadcopter at that location, flying it an arbitrary distance away and then invoking the RTL mode. We measured the straight line distance between the centre of the quadcopter and the centre of the marker. These results are shown in Table \ref{tbl:landing-data}, giving a mean accuracy of 195.33 centimetres and a standard deviation of 110.73 centimetres. 
+
+This gives us a good baseline to improve upon using a vision based approach. Evidently this accuracy (or lack thereof) is not ideal for landing a quadcopter precisely on top of a charging station. 
+
+\begin {table}
+  \centerline{
+  \begin{tabular}{ | c | c | }
+  \hline
+  Inches & Centimetres \\ 
+  \hline
+  22 & 55.88 \\ 
+  63 & 160.02 \\ 
+  39 & 99.06 \\ 
+  84.5 & 214.63 \\ 
+  25.5 & 64.77 \\ 
+  76 & 193.04 \\ 
+  158 & 401.32 \\ 
+  130.5 & 331.47 \\ 
+  76 & 193.04 \\ 
+  94.5 & 240.03 \\ 
+  \hline
+  \end{tabular}}
+   \caption{Distance of landing from home location using RTL}
+   \label{tbl:landing-data}
+\end {table}
+
+Additionally, we have requested a working sonar sensor from 3D Robotics and should soon be able to see if this yields any improvement. Intuitively, this should not affect landing accuracy in terms of distance from home location since it mainly provides more accurate height estimates.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Outline of Vision Approach}
 
@@ -117,7 +153,7 @@ vision system will continuously try to estimate the camera's position w.r.t.
 the landing platform. We will do this by first detecting the landing platform
 in each frame (thresholding, segmentation, corner detection, and feature
 labeling), and then estimating the pose of the camera (by solving a version of
-the structure-from-motion problem in computer vision). Following Sastry et al,
+the structure-from-motion problem in computer vision). Following Sharp et al,
 we can use the onboard GPS + IMU to get an estimate of the quadcopter's pose,
 and use this data to validate the vision-based pose estimate.
 
