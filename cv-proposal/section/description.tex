@@ -1,0 +1,18 @@
+\section*{Project Description}
+
+We constrain the problem by focusing on multicopter UAVs, which can land
+vertically. To prototype our automated-landing solution, we will use a
+quadcopter made by 3D Robotics, together with their autopilot software
+(ArduCopter). Additionally, we will equip our quadcopter with an embedded
+computer (BeagleBone) and a webcam.
+
+The autopilot, using GPS, will guide the quadcopter until it is near the
+landing station. At this point, the embedded computer will use vision to locate
+the (marked) landing station. It will then send controls to the autopilot,
+adjusting the quadcopter's position until it is directly above the landing
+station, at a low height that is appropriate for landing. Finally, the embedded
+computer will instruct the autopilot to shut off power to the motors, causing a
+gentle landing on top of the landing station.
+
+From the point of view of CS280, the most relevant part of our project is to
+design computer vision software and a marker pattern that will localise the quadcopter relative to the desired landing location. Detection of the marker will have to be invariant of lighting conditions and be able to orient the quadcopter correctly relative to the marker. The software will need to run on a low power embedded BeagleBone computer which has limited processing capability (at 4 frames per second for simple Canny Edge Detection).
