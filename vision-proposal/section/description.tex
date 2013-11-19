@@ -15,4 +15,9 @@ computer will instruct the autopilot to shut off power to the motors, causing a
 gentle landing on top of the landing station.
 
 From the point of view of CS280, the most relevant part of our project is to
-design computer vision software and a marker pattern that will localise the quadcopter relative to the desired landing location. Detection of the marker will have to be invariant of lighting conditions and be able to orient the quadcopter correctly relative to the marker. The software will need to run on a low power embedded BeagleBone computer which has limited processing capability (at 4 frames per second for simple Canny Edge Detection).
+design computer vision software and a marker pattern that will localise the
+quadcopter relative to the desired landing location. Detection of the marker
+will have to be invariant to lighting conditions and be able to orient the
+quadcopter correctly relative to the marker. The software will need to run on a
+low-power embedded BeagleBone computer, which has limited processing
+capability, at a sufficient frame rate to enable closed-loop control.
