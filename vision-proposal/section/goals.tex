@@ -1,19 +1,18 @@
 \section*{Implementation Plan}
 
-We plan to:
-\begin{enumerate}
+We plan to adapt the vision system presented by Sharp, Shakernia, and Sastry in
+their 2001 paper, ``A Vision System for Landing an Unmanned Aerial Vehicle''.
+Their system continuously estimates the camera's pose with respect to the
+landing platform, if it is within visual range. They use several techniques we
+studied in CS280, such as corner detection and structure-from-motion. We will
+evaluate our vision algorithm by comparing its pose estimate with the
+quadcopter's internal pose estimate (which is based on GPS and inertial
+sensors), and also by performing test landings. Figure \ref{fig:platform} shows
+the prototype landing station we have built for testing our algorithm.
 
-\item {\bf Outline our vision approach.} Review the literature on vision-based
-autonomous landing, and choose an approach to implement. Build a prototype
-landing station with markers.
-
-\item {\bf Implement vision-based pose estimation.} Write the code that locates
-the landing station and estimates the quadcopter's pose with respect to it.
-Test this in a lab setting, where we control the camera's position manually.
-
-\item {\bf Couple pose estimation and control.} Make the quadcopter land
-autonomously based on real-time vision-based pose estimates. Characterize the
-error as before. If our project is successful, this should improve
-significantly over the vision-less baseline.
-
-\end{enumerate}
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.5\textwidth]{platform.jpg}
+    \caption{Prototype landing platform seen from an angle}
+    \label{fig:platform}
+\end{figure}
