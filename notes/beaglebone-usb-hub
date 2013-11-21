@@ -1,0 +1,56 @@
+Our Beaglebone is running [this image][1], which uses kernel 3.8.13.
+
+
+## Devices we need to connect to the Beaglebone:
+
+`lsusb` shows device IDs and names, `lsusb -v` shows MaxPower and other stuff.
+
+- webcam: TODO
+- wifi dongle: ID 148f:5370 Ralink Technology, Corp. RT5370 Wireless Adapter
+  (MaxPower: 450mA)
+- APM: TODO
+- (debug only) keyboard: (various)
+
+
+## Hub 1: ID 05e3:0606 Genesys Logic, Inc. USB 2.0 Hub / D-Link DUB-H4 USB 2.0 Hub
+
+Not a powered hub. Got some instability issues with it.
+Did not investigate in detail, since it probably won't
+be enough to power 3 devices.
+
+
+## Hub 2: ID 0409:005a NEC Corp. HighSpeed Hub
+
+Powered hub. If we boot the Beaglebone with the hub unplugged, we can plug it
+in and out repeatedly, and the Beaglebone recognizes it every time. But if we
+boot the Beaglebone with the hub plugged in, it won't recognize it (and the
+blue lights on the hub don't turn on). In that case, the Beaglebone won't
+recognize any USB devices. E.g. if we plug the hub out and plug in a simple
+keyboard, it still doesn't get recognized. (Hard to interact with the
+Beaglebone in this case, so hard to debug. But it seems that its USB host port
+is completely dead.)
+
+With a normal boot (no USB hub connected), tried random pieces of code
+(resetusb, usbreset) to reset the USB port. These either had no effect,
+or made the Beaglebone lock up (no heartbeat).
+
+Verified that the Beaglebone boots fine with only a USB keyboard plugged in, or
+with only the wifi dongle plugged in. So the problem does not happen with every
+USB device, but happens specifically with this hub.
+
+TODO:
+- ssh into the Beaglebone using ethernet, and see what the logs say when USB
+  seems dead
+- one guy suggested disabling USB suspend:
+    juanjo@boil:~$ zcat /proc/config.gz |grep USB_SUSPEND
+    # CONFIG_USB_SUSPEND is not set
+- people are also saying you should ground the Beaglebone properly...
+  "You need to make sure that the HUB power is grounded and it has the same
+  ground as the power as the BeagleBone Black."
+- see suggestions in [this thread][2]
+
+
+## Hub 3: TODO
+
+1: http://s3.armhf.com/debian/precise/bone/ubuntu-precise-12.04.3-armhf-3.8.13-bone30.img.xz
+2: https://groups.google.com/forum/?fromgroups#!category-topic/beagleboard/beaglebone-black/nuyyVDhU6bw
