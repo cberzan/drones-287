@@ -1,0 +1,93 @@
+Our Beaglebone is running [this image][1], which uses kernel 3.8.13.
+
+
+## Devices we need to connect to the Beaglebone:
+
+`lsusb` shows device IDs and names, `lsusb -v` shows MaxPower and other stuff.
+
+- webcam: TODO
+- wifi dongle: ID 148f:5370 Ralink Technology, Corp. RT5370 Wireless Adapter
+  (MaxPower: 450mA)
+- APM: TODO
+- (debug only) keyboard: (various)
+
+
+## Hub 1: ID 05e3:0606 Genesys Logic, Inc. USB 2.0 Hub / D-Link DUB-H4 USB 2.0 Hub
+
+Not a powered hub. Got some instability issues with it.
+Did not investigate in detail, since it probably won't
+be enough to power 3 devices.
+
+
+## Hub 2: ID 0409:005a NEC Corp. HighSpeed Hub
+
+("Arkview Aquagate 7 port hi performance hub")
+
+Powered hub. If we boot the Beaglebone with the hub unplugged, we can plug it
+in and unplug it repeatedly, and the Beaglebone recognizes it every time. But
+if we boot the Beaglebone with the hub plugged in, it won't recognize it (and
+the blue lights on the hub don't turn on). In that case, the Beaglebone won't
+recognize any USB devices. E.g. if we unplug the hub and plug in a simple
+keyboard, it still doesn't get recognized. (Connected via ethernet to look at
+logs -- nothing appears in syslog when plugging / unplugging the hub or any
+other USB device.)
+
+With a normal boot (no USB hub connected), tried random pieces of code
+(resetusb, usbreset) to reset the USB port. These either had no effect,
+or made the Beaglebone lock up (no heartbeat).
+
+Verified that the Beaglebone boots fine with only a USB keyboard plugged in, or
+with only the wifi dongle plugged in. So the problem does not happen with every
+USB device, but happens specifically with this hub.
+
+Tried adding `noapic` to `optargs` in `/boot/uboot/uEnv.txt` (check params of
+currently running kernel with `dmesg |grep 'Kernel command line'`). No effect.
+
+Tried doing `lsusb -v` when booted with dead USB. This shows some usb-related
+messages in syslog, but does not fix the problem.
+
+Tried disabling autosuspend by adding `usbcore.autosuspend=-1` to `optargs` in
+`/boot/uboot/uEnv.txt` and creating a file
+`/etc/modprobe.d/disable-usb-autosuspend.conf` with `options usbcore
+autosuspend=-1` as content. No effect.
+
+Found one method to unbrick the USB port when booting with dead USB:
+1) unplug hub
+2) run:
+    ```
+    echo '0' | sudo tee /sys/bus/usb/devices/usb1/authorized
+    sleep 2
+    echo '1' | sudo tee /sys/bus/usb/devices/usb1/authorized
+    sleep 2
+    echo 'on' | sudo tee /sys/bus/usb/devices/usb1/power/control
+    ```
+3) plug hub again and it works!
+
+If I keep the hub plugged in while doing the above, the hub still doesn't work.
+If I unplug the hub and plug it back in, it still doesn't work. Seems like the
+reset has to be done with the hub unplugged. (No difference in the logs when
+doing the reset above with the hub plugged or unplugged.)
+
+Tried unbinding / rebinding the device to the driver (didn't help):
+```
+ubuntu@ubuntu-armhf:~$ echo "usb1" |sudo tee /sys/bus/usb/drivers/usb/unbind
+ubuntu@ubuntu-armhf:~$ echo "usb1" |sudo tee /sys/bus/usb/drivers/usb/bind
+```
+
+TODO:
+- people are also saying you should ground the Beaglebone properly...
+  "You need to make sure that the HUB power is grounded and it has the same
+  ground as the power as the BeagleBone Black."
+- look into `hub-ctrl.c`
+
+
+## Hub 3: ID 0409:005a NEC Corp. HighSpeed Hub
+
+(A different one from Rosewill, http://www.amazon.com/dp/B00552PMN8/)
+
+Worked flawlessly the first time...
+
+
+
+1: http://s3.armhf.com/debian/precise/bone/ubuntu-precise-12.04.3-armhf-3.8.13-bone30.img.xz
+2: https://groups.google.com/forum/?fromgroups#!category-topic/beagleboard/beaglebone-black/nuyyVDhU6bw
