@@ -1,0 +1,16 @@
+Notes on setting up a Linux Mint VM locally in VirtualBox for development.
+
+## VM setup:
+Mounting workspace directory
+From https://help.ubuntu.com/community/VirtualBox/SharedFolders:
+mkdir ~/workspace
+sudo mount -t vboxsf -o uid=1000,gid=1000 workspace ~/workspace 
+
+## OpenCV:
+From https://help.ubuntu.com/community/OpenCV:
+ wget https://raw.github.com/jayrambhia/Install-OpenCV/master/Ubuntu/opencv_latest.sh
+chmod +x opencv_latest.sh
+./opencv_latest.sh
+
+## ROS:
+Follow instructions here: http://wiki.ros.org/hydro/Installation/Ubuntu
