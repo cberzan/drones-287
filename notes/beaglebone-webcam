@@ -1,0 +1,9 @@
+Had to add myself to the `video` group.
+
+Camera doesn't work if plugged in directly, has to be plugged in via powered
+hub.
+
+CaptureFPS (capturing frames and doing nothing with them) gives me about 17
+FPS. Top shows full CPU usage while CaptureFPS is running.
+
+(In contrast, on my laptop, CaptureFPS gets 28 FPS, but does not use full CPU.)
