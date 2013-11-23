@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 2.8)
+project( PoseEstimator )
+find_package( OpenCV REQUIRED )
+add_executable( PoseEstimator PoseEstimator.cpp )
+target_link_libraries( PoseEstimator ${OpenCV_LIBS} )
