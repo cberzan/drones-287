@@ -7,3 +7,9 @@
 [submodule "roscopter"]
 	path = roscopter
 	url = https://github.com/cberzan/roscopter.git
+[submodule "roscopter_controller"]
+	path = roscopter_controller
+	url = https://github.com/ssk2/roscopter_controller.git
+[submodule "roscopter_lander"]
+	path = roscopter_lander
+	url = https://github.com/ssk2/roscopter_lander.git
