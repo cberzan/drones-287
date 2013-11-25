@@ -9,9 +9,9 @@ To check:
 sudo mount -t vboxsf -o uid=1000,gid=1000 workspace ~/workspace 
 ```
 
-To mount permanently on boot:
+To mount permanently on boot, check the 'Auto-Mount' option in VirtualBox. This will mount your directory at /media/sf_workspace. You can create a soft link like this:
 ```
-workspace       /home/sunil/workspace   vboxsf  uid=1000,gid=1000 0     0
+ln -s /media/sf_workspace /home/username/workspace 
 ```
 
 ## OpenCV:
