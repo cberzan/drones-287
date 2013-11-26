@@ -4,64 +4,72 @@
 #include "opencv2/highgui/highgui.hpp"
 #include <cv.h>
 #include <highgui.h>
+#include <iostream>
 
-#define CAM_STREAM "Camera Stream"
-#define THRESH_STREAM "Threshold Stream"
+#define INPUT_FRAMES "Input"
+#define CONTOURS "Contours"
+#define CANNY "Canny"
+
 #define ESCAPE_KEY 27
  
-IplImage* thresholdImage(IplImage* imgHSV)
-{        
-    IplImage* imgThresh = cvCreateImage(cvGetSize(imgHSV), IPL_DEPTH_8U, 1);
-    cvInRangeS(imgHSV, cvScalar(170,160,60), cvScalar(180,256,256), imgThresh); 
-    return imgThresh;
-} 
+using namespace cv;
+using namespace std;
 
 int main()
 {
-	CvCapture* capture = NULL;
-	cvNamedWindow(CAM_STREAM, CV_WINDOW_AUTOSIZE);
-	cvNamedWindow(THRESH_STREAM, CV_WINDOW_AUTOSIZE);
- 
+	VideoCapture capture(0);
+	if (!capture.isOpened())
+	{
+		printf("Device inaccessible. Damn!.\n");
+		return -1;
+	}
+
+	namedWindow(INPUT_FRAMES, CV_WINDOW_AUTOSIZE);
+	namedWindow(CONTOURS, CV_WINDOW_AUTOSIZE);
+	namedWindow(CANNY, CV_WINDOW_AUTOSIZE);
+
+	Mat frame, cannyImage;
+
+	vector<Vec4i> hierarchy;
+	vector<vector<Point>> contours;
+
+	// char* imageNames[] = { "platform1.jpg", "platform2.jpg", "platform3.jpg", NULL};
+	//int imageIndex = 0;
 	while (true)
 	{
-		capture = cvCaptureFromCAM(0);
-		if (!capture)
+		capture >> frame;	
+		// frame = imread(imageNames[imageIndex]);
+		if (frame.empty())
 		{
-            printf("Device inaccessible\n");
-            return -1;
+			cout << "Couldn't load input image" << endl;
+			continue;
+		}
+		//imageIndex++;
+		/*if (!imageNames[imageIndex])
+			imageIndex = 0;*/
+
+		GaussianBlur(frame, frame, Size(3,3), 0, 0);		
+
+		Canny(frame, cannyImage, 50, 200, 3);
+		imshow(CANNY, cannyImage);
+			
+		findContours(cannyImage, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+
+		Mat contourImg = Mat::zeros(cannyImage.size(), CV_8UC3);
+		vector<Point> approx;
+		for (int i = 0; i< contours.size(); i++)
+		{				
+			approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.02, true);
+			if (approx.size() == 4 && fabs(contourArea(Mat(approx))) > 100 && isContourConvex(Mat(approx)))
+				drawContours(contourImg, contours, i, Scalar(0,0,255), 2, 8, hierarchy, 0, Point());
 		}
 
-		IplImage* frame = cvCloneImage(cvQueryFrame(capture));
-        cvSmooth(frame, frame, CV_GAUSSIAN, 3, 3);
-        IplImage* imgHSV = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 3); 
-        cvCvtColor(frame, imgHSV, CV_BGR2HSV);
-        IplImage* imgThresh = thresholdImage(imgHSV);
-        cvSmooth(imgThresh, imgThresh, CV_GAUSSIAN, 3, 3);
-
-        cvShowImage(THRESH_STREAM, imgThresh);            
-        cvShowImage(CAM_STREAM, frame);
-            
-        cvReleaseImage(&imgThresh);          
-		cvReleaseImage(&imgHSV);
-        cvReleaseImage(&frame);
-		 
-		if (cvWaitKey(10) == ESCAPE_KEY)
-		{
-			break;
-		}
+		imshow(CONTOURS, contourImg);		
+		imshow(INPUT_FRAMES, frame);
+			
+		if ((char)waitKey(10) == ESCAPE_KEY)
+			break;		
 	}
-  
-	cvDestroyAllWindows();
-	cvReleaseCapture(&capture);
-	
+	destroyAllWindows();
 	return 0; 
 }
-
-
-// Hue values of basic colors
-// Orange  0-22
-// Yellow 22- 38
-// Green 38-75
-// Blue 75-130
-// Violet 130-160
-// Red 160-179

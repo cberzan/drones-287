@@ -104,7 +104,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>C:\opencv\build\x64\vc11\lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_core247.lib;opencv_imgproc247.lib;opencv_highgui247.lib;opencv_ml247.lib;opencv_video247.lib;opencv_features2d247.lib;opencv_calib3d247.lib;opencv_objdetect247.lib;opencv_contrib247.lib;opencv_legacy247.lib;opencv_flann247.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opencv_core247d.lib;opencv_imgproc247d.lib;opencv_highgui247d.lib;opencv_ml247d.lib;opencv_video247d.lib;opencv_features2d247.lib;opencv_calib3d247.lib;opencv_objdetect247.lib;opencv_contrib247.lib;opencv_legacy247.lib;opencv_flann247.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
