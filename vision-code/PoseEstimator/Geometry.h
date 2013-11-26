@@ -95,3 +95,14 @@ Mat_<double> worldHomToCameraHom(
     Mat_<double> const worldPtsHom,
     Mat_<double> const rotMatrix,
     Mat_<double> const translation);
+
+/**
+ * Draw the landing pad given by imagePts onto the given image.
+ *
+ * Inputs:
+ * imagePts (Nx2) = image points in the order described in the paper
+ *
+ * Outputs:
+ * (modifies image)
+ */
+void drawImagePts(Mat image, Mat_<double> const imagePts);

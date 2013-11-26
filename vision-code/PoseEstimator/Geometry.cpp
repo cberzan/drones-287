@@ -121,7 +121,7 @@ Mat_<double> getWorldPtsHom()
     worldPtsHom(18, 0) = -40;
     worldPtsHom(18, 1) = -200;
     worldPtsHom(19, 0) = 40;
-    worldPtsHom(19, 1) = 200;
+    worldPtsHom(19, 1) = -200;
 
     // Squre F:
     worldPtsHom(20, 0) = 200;
@@ -199,5 +199,27 @@ Mat_<double> worldHomToCameraHom(
     // Note that OpenCV treats size as "[cols rows]", so matrix multiplication
     // has to be done backwards (transpose everything).
     Mat_<double> projection = Mat_<double>::eye(3, 4);
-    return projection * rigidMotion * worldPtsHom.t();
+    Mat result = projection * rigidMotion * worldPtsHom.t();
+    return result.t();
+}
+
+void drawImagePts(Mat image, Mat_<double> const imagePts)
+{
+    assert(imagePts.rows == 24);
+    assert(imagePts.cols == 2);
+    double minVal, maxVal;
+    minMaxIdx(imagePts, &minVal, &maxVal);
+    double scale = 1.0 * image.rows / (maxVal - minVal);
+    Point points[6][4];
+    for(int i = 0; i < 24; i++) {
+        points[i / 4][i % 4] = Point(
+            scale * (imagePts(i, 0) - minVal),
+            scale * (imagePts(i, 1) - minVal));
+    }
+    Point const* points2[] = {
+        points[0], points[1], points[2],
+        points[3], points[4], points[5]
+    };  // stupid fillPoly won't acccept points directly
+    int numPoints[] = { 4, 4, 4, 4, 4, 4 };
+    fillPoly(image, points2, numPoints, 6, Scalar(255, 255, 255));
 }

@@ -24,8 +24,12 @@ void testHomCoords()
 void testWorldPts()
 {
     Mat_<double> worldPtsHom = getWorldPtsHom();
-    // cout << worldPtsHom << endl;
-    // TODO: verify that the worldPts are defined correctly.
+    Mat_<double> imagePts = worldPtsHom(Range::all(), Range(0, 2));
+    cout << imagePts << endl;
+    Mat image = Mat::zeros(600, 600, CV_8UC3);
+    drawImagePts(image, imagePts);
+    imshow("getWorldPtsHom", image);
+    waitKey(0);
 }
 
 void testRotMatrix()
@@ -67,7 +71,11 @@ void testSyntheticRotation()
     Mat_<double> imagePtsHom = worldHomToCameraHom(
         worldPtsHom, rotMatrix, translation);
     Mat_<double> imagePts = homToCart(imagePtsHom);
-    cout << imagePts << endl;
+
+    Mat image = Mat::zeros(600, 600, CV_8UC3);
+    drawImagePts(image, imagePts);
+    imshow("Test", image);
+    waitKey(0);
 }
 
 int main()
