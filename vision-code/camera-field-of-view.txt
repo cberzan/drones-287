@@ -1,0 +1,7 @@
+Height at which 56-cm red square spanned width of camera: 40.5 cm
+Height at which 56-cm red square spanned height of camera: 72.5 cm
+
+Resulting field of view:
+vertical: 0.737 radians = 42.23 deg
+horizontal: 1.21 radians = 69.32 deg
+

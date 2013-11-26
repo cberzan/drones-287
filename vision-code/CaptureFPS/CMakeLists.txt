@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 2.8)
+project( CaptureFPS )
+find_package( OpenCV REQUIRED )
+add_executable( CaptureFPS CaptureFPS.cpp )
+target_link_libraries( CaptureFPS ${OpenCV_LIBS} )

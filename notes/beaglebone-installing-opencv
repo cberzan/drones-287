@@ -1,0 +1,42 @@
+## Method 1: Compiling directly on the BeagleBone
+
+Followed [this][1].
+
+Note that compiling OpenCV requires ~3 GB of disk space. (The compiled library
+is not nearly as huge, but the build process produces a lot of object files...)
+For this reason I compiled OpenCV on a SD card plugged into the BeagleBone.
+Once OpenCV is installed into /usr/local, we can safely remove the SD card and
+forget about it.
+
+Compiling OpenCV on the BeagleBone took about 3.5h.
+
+
+## Method 2 (broken): Cross-compiling from my laptop
+
+See [this][2] for how to cross-compile OpenCV (faster than compiling it on the
+BeagleBone), and also how to turn on optimization flags. Check `/proc/cpuinfo`
+on the BeagleBone to see what its CPU supports.
+
+My cmake invocation ended up being:
+
+```
+cmake \
+    -DCMAKE_TOOLCHAIN_FILE=../platforms/linux/arm-gnueabi.toolchain.cmake \
+    -DUSE_VFPV3=ON \
+    -DUSE_NEON=ON \
+    ..
+```
+
+Then `make` failed with this error: `/usr/include/python2.7/pyport.h:849:2:
+error: #error "LONG_BIT definition appears wrong for platform (bad gcc/glibc
+config?)."` Don't know how to fix this -- probably need to have Python
+cross-compiled for arm???
+
+OK, run `ccmake` and disable `BUILD_opencv_python`. No python for now. This
+builds fine.
+
+XXX Now how do I install this thing onto the bone?
+
+
+[1]: http://docs.opencv.org/doc/tutorials/introduction/linux_install/linux_install.html
+[2]: http://docs.opencv.org/doc/tutorials/introduction/crosscompilation/arm_crosscompile_with_cmake.html
