@@ -25,11 +25,12 @@ void testWorldPts()
 {
     Mat_<double> worldPtsHom = getWorldPtsHom();
     Mat_<double> imagePts = worldPtsHom(Range::all(), Range(0, 2));
-    cout << imagePts << endl;
+    /*
     Mat image = Mat::zeros(600, 600, CV_8UC3);
     drawImagePts(image, imagePts);
     imshow("getWorldPtsHom", image);
     waitKey(0);
+    */
 }
 
 void testRotMatrix()
@@ -62,15 +63,17 @@ void testSyntheticRotation()
 {
     // Synthetic rotation + translation of the camera:
     Mat_<double> translation(3, 1);
-    translation << 100, 200, 400;
+    translation << 0, -50, 100;
     Mat_<double> rotAxis(3, 1);
-    rotAxis << 0, 0, 1;
-    double rotAngle = 30 * M_PI / 180;
+    rotAxis << 1, 0, 1;
+    rotAxis /= norm(rotAxis);
+    double rotAngle = 10 * M_PI / 180;
     Mat_<double> rotMatrix = rotAxisAngleToRotMatrix(rotAxis, rotAngle);
     Mat_<double> worldPtsHom = getWorldPtsHom();
     Mat_<double> imagePtsHom = worldHomToCameraHom(
         worldPtsHom, rotMatrix, translation);
     Mat_<double> imagePts = homToCart(imagePtsHom);
+    cout << imagePtsHom << endl << imagePts << endl;
 
     Mat image = Mat::zeros(600, 600, CV_8UC3);
     drawImagePts(image, imagePts);

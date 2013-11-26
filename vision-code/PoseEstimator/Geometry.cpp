@@ -222,4 +222,7 @@ void drawImagePts(Mat image, Mat_<double> const imagePts)
     };  // stupid fillPoly won't acccept points directly
     int numPoints[] = { 4, 4, 4, 4, 4, 4 };
     fillPoly(image, points2, numPoints, 6, Scalar(255, 255, 255));
+
+    // LEFT TODO: draw a rectangle around everything, otherwise it's hard to
+    // tell what's going on...
 }
