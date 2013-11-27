@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(roscopter_lander)
+project(roscopter_pose_estimator)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -79,7 +79,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES roscopter_lander
+#  LIBRARIES roscopter_pose_estimator
 #  CATKIN_DEPENDS roscopter
 #  DEPENDS system_lib
 )
@@ -96,19 +96,19 @@ include_directories(
 )
 
 ## Declare a cpp library
-# add_library(roscopter_lander
-#   src/${PROJECT_NAME}/roscopter_lander.cpp
+# add_library(roscopter_pose_estimator
+#   src/${PROJECT_NAME}/roscopter_pose_estimator.cpp
 # )
 
 ## Declare a cpp executable
-# add_executable(roscopter_lander_node src/roscopter_lander_node.cpp)
+# add_executable(roscopter_pose_estimator_node src/roscopter_pose_estimator_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(roscopter_lander_node roscopter_lander_generate_messages_cpp)
+# add_dependencies(roscopter_pose_estimator_node roscopter_pose_estimator_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(roscopter_lander_node
+# target_link_libraries(roscopter_pose_estimator_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -127,7 +127,7 @@ include_directories(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS roscopter_lander roscopter_lander_node
+# install(TARGETS roscopter_pose_estimator roscopter_pose_estimator_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -152,7 +152,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_roscopter_lander.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_roscopter_pose_estimator.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

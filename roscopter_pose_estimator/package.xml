@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <package>
-  <name>roscopter_lander</name>
+  <name>roscopter_pose_estimator</name>
   <version>0.0.0</version>
-  <description>ROS pose estimation using OpenCV for automated landing.</description>
+  <description>Pose estimator using a webcam and OpenCV for roscoptere</description>
 
+  
   <maintainer email="cberzan@gmail.com">cberzan</maintainer>
    <maintainer email="git@ss21k.co.uk">ssk2</maintainer>
    <maintainer email="nahush.nnb@gmail.com">nbhanage</maintainer>
