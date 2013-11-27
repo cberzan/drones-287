@@ -9,15 +9,15 @@ using namespace cv;
  * coordinate frame. The worldPts are expected to have z=0.
  *
  * Inputs:
- * worldPts (Nx4) = world points in homogeneous coordinates
- * imagePts (Nx3) = image points in homogeneous coordinates
+ * worldPts (Nx3) = world points
+ * imagePts (Nx2) = image points
  *
  * Returns:
  * pose (3x4) = [3x3] rotation and [3x1] translation of camera w.r.t. world
  */
 Mat_<double> estimateRotTransl(
-    Mat_<double> const worldPtsHom,
-    Mat_<double> const imagePtsHom);
+    Mat_<double> const worldPts,
+    Mat_<double> const imagePts);
 
 /**
  * Estimate camera pose w.r.t. hardcoded landing pad.
@@ -37,9 +37,9 @@ Mat_<double> estimatePose(Mat_<double> const imagePts);
  * The origin of the coordinate system is point #3, the pad center.
  *
  * Returns:
- * worldPts (24x4) = world points in homogeneous coordinates
+ * worldPts (24x3) = world points
  */
-Mat_<double> getWorldPtsHom();
+Mat_<double> getWorldPts();
 
 /**
  * Convert from Cartesian to homogeneous coordinates.

@@ -23,12 +23,12 @@ void testHomCoords()
 
 void testWorldPts()
 {
-    Mat_<double> worldPtsHom = getWorldPtsHom();
-    Mat_<double> imagePts = worldPtsHom(Range::all(), Range(0, 2));
+    Mat_<double> worldPts = getWorldPts();
+    Mat_<double> imagePts = worldPts(Range::all(), Range(0, 2));
     /*
     Mat image = Mat::zeros(600, 600, CV_8UC3);
     drawImagePts(image, imagePts);
-    imshow("getWorldPtsHom", image);
+    imshow("getWorldPts", image);
     waitKey(0);
     */
 }
@@ -65,20 +65,35 @@ void testSyntheticRotation()
     Mat_<double> translation(3, 1);
     translation << 0, -50, 100;
     Mat_<double> rotAxis(3, 1);
-    rotAxis << 1, 0, 1;
+    rotAxis << 0, 0, 1;
     rotAxis /= norm(rotAxis);
-    double rotAngle = 10 * M_PI / 180;
+    double rotAngle = 30 * M_PI / 180;
     Mat_<double> rotMatrix = rotAxisAngleToRotMatrix(rotAxis, rotAngle);
-    Mat_<double> worldPtsHom = getWorldPtsHom();
+    Mat_<double> worldPts = getWorldPts();
+    Mat_<double> worldPtsHom = cartToHom(worldPts);
     Mat_<double> imagePtsHom = worldHomToCameraHom(
         worldPtsHom, rotMatrix, translation);
     Mat_<double> imagePts = homToCart(imagePtsHom);
-    cout << imagePtsHom << endl << imagePts << endl;
+    cout << "true translation: " << translation << endl;
+    cout << "true yaw angle: " << rotAngle << endl;
+    cout << "true rotation matrix: " << rotMatrix << endl;
+    // cout << imagePtsHom << endl << imagePts << endl;
 
+    /*
     Mat image = Mat::zeros(600, 600, CV_8UC3);
     drawImagePts(image, imagePts);
     imshow("Test", image);
     waitKey(0);
+    */
+
+    Mat_<double> rotTransl = estimateRotTransl(worldPts, imagePts);
+    Mat_<double> gotRot = rotTransl(Range(0, 3), Range(0, 3));
+    Mat_<double> gotTransl = rotTransl.col(3);
+    double translErr = sum(abs(translation - gotTransl))[0];
+    double rotErr = sum(abs(rotMatrix - gotRot))[0];
+    cout << "translErr=" << translErr << ", rotErr=" << rotErr << endl;
+    assert(translErr < 1e-10);
+    assert(rotErr < 1e-10);
 }
 
 int main()

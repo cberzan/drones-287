@@ -5,52 +5,85 @@ using namespace std; // DEBUG
 
 
 Mat_<double> estimateRotTransl(
-    Mat_<double> const worldPtsHom,
-    Mat_<double> const imagePtsHom)
+    Mat_<double> const worldPts,
+    Mat_<double> const imagePts)
 {
-    assert(imagePtsHom.cols == 3);
-    assert(worldPtsHom.cols == 4);
-    assert(imagePtsHom.rows == worldPtsHom.rows);
-    // TODO verify all worldPtsHom have z=0
+    assert(imagePts.cols == 2);
+    assert(worldPts.cols == 3);
+    assert(imagePts.rows == worldPts.rows);
+    // TODO verify all worldPts have z=0
 
     // See "pose estimation" section in the paper.
 
     // Set up linear system of equations.
-    int const n = imagePtsHom.rows;
+    int const n = imagePts.rows;
     Mat_<double> F(2 * n, 9);
     for(int i = 0; i < n; i++)
     {
-        F(2 * i, 0) = worldPtsHom(i, 0);
+        F(2 * i, 0) = worldPts(i, 0);
         F(2 * i, 1) = 0;
-        F(2 * i, 2) = -worldPtsHom(i, 0) * imagePtsHom(i, 0);
-        F(2 * i, 3) = worldPtsHom(i, 1);
+        F(2 * i, 2) = -worldPts(i, 0) * imagePts(i, 0);
+        F(2 * i, 3) = worldPts(i, 1);
         F(2 * i, 4) = 0;
-        F(2 * i, 5) = -worldPtsHom(i, 1) * imagePtsHom(i, 0);
+        F(2 * i, 5) = -worldPts(i, 1) * imagePts(i, 0);
         F(2 * i, 6) = 1;
         F(2 * i, 7) = 0;
-        F(2 * i, 8) = -imagePtsHom(i, 0);
+        F(2 * i, 8) = -imagePts(i, 0);
 
         F(2 * i + 1, 0) = 0;
-        F(2 * i + 1, 1) = worldPtsHom(i, 0);
-        F(2 * i + 1, 2) = -worldPtsHom(i, 0) * imagePtsHom(i, 1);
+        F(2 * i + 1, 1) = worldPts(i, 0);
+        F(2 * i + 1, 2) = -worldPts(i, 0) * imagePts(i, 1);
         F(2 * i + 1, 3) = 0;
-        F(2 * i + 1, 4) = worldPtsHom(i, 1);
-        F(2 * i + 1, 5) = -worldPtsHom(i, 1) * imagePtsHom(i, 1);
+        F(2 * i + 1, 4) = worldPts(i, 1);
+        F(2 * i + 1, 5) = -worldPts(i, 1) * imagePts(i, 1);
         F(2 * i + 1, 6) = 0;
         F(2 * i + 1, 7) = 1;
-        F(2 * i + 1, 8) = -imagePtsHom(i, 1);
+        F(2 * i + 1, 8) = -imagePts(i, 1);
     }
 
     // Find least-squares estimate of rotation + translation.
     SVD svd(F);
-    cout << svd.u << endl << svd.w << endl << svd.vt << endl;
+    // cout << "u: " << svd.u.size() << endl << svd.u << endl << endl;
+    // cout << "w: " << svd.w.size() << endl << svd.w << endl << endl;
+    // cout << "vt: " << svd.vt.size() << endl << svd.vt << endl << endl;
+
+    Mat_<double> rrp = svd.vt.row(8);
+    rrp = rrp.clone().reshape(0, 3).t();
+    if(rrp(2, 2) < 0) {
+        rrp *= -1;  // make sure depth is positive
+    }
+    cout << "rrp: " << rrp << endl;
+
+    Mat_<double> transl = \
+        2 * rrp.col(2) / (norm(rrp.col(0)) + norm(rrp.col(1)));
+    cout << "transl: " << transl << endl;
+
+    Mat_<double> rot = Mat_<double>::zeros(3, 3);
+    rrp.col(0).copyTo(rot.col(0));
+    rrp.col(1).copyTo(rot.col(1));
+    SVD svd2(rot);
+    rot = svd2.u * svd2.vt;
+    if(determinant(rot) < 0) {
+        rot.col(2) *= -1; // make sure it's a valid rotation matrix
+    }
+    if(abs(determinant(rot) - 1) > 1e-10) {
+        cerr << "Warning: rotation matrix has determinant " \
+             << determinant(rot) << " where expected 1." << endl;
+    }
+    cout << "rot: " << rot << endl;
+
+    Mat_<double> rotTransl(3, 4);
+    rot.col(0).copyTo(rotTransl.col(0));
+    rot.col(1).copyTo(rotTransl.col(1));
+    rot.col(2).copyTo(rotTransl.col(2));
+    transl.copyTo(rotTransl.col(3));
+    return rotTransl;
 }
 
 Mat_<double> estimatePose(Mat_<double> const imagePts)
 {
-    Mat_<double> imagePtsHom = cartToHom(imagePts);
-    Mat_<double> const worldPtsHom = getWorldPtsHom();
-    Mat_<double> const pose = estimateRotTransl(worldPtsHom, imagePtsHom);
+    Mat_<double> const worldPts = getWorldPts();
+    Mat_<double> const pose = estimateRotTransl(worldPts, imagePts);
 
     Mat_<double> simplePose;
     simplePose(0) = pose(0, 3);  // x
@@ -64,13 +97,11 @@ Mat_<double> estimatePose(Mat_<double> const imagePts)
     return simplePose;
 }
 
-Mat_<double> getWorldPtsHom()
+Mat_<double> getWorldPts()
 {
-    Mat_<double> worldPtsHom(24, 4, CV_64FC1);
-    for(int i = 0; i < 24; i++)
-    {
+    Mat_<double> worldPtsHom(24, 3, CV_64FC1);
+    for(int i = 0; i < 24; i++) {
         worldPtsHom[i][2] = 0;  // z = 0
-        worldPtsHom[i][3] = 1;  // homogeneous coords
     }
 
     // Square A:
@@ -194,6 +225,7 @@ Mat_<double> worldHomToCameraHom(
     rotMatrix.copyTo(rigidMotion(Range(0, 3), Range(0, 3)));
     translation.copyTo(rigidMotion(Range(0, 3), Range(3, 4)));
     rigidMotion(3, 3) = 1;
+    // cout << "rigidMotion: " << rigidMotion << endl;
 
     // Assuming camera calibration matrix is identity.
     // Note that OpenCV treats size as "[cols rows]", so matrix multiplication
