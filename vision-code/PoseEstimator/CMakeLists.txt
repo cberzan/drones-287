@@ -1,8 +1,0 @@
-cmake_minimum_required(VERSION 2.8)
-project( PoseEstimator )
-find_package( OpenCV REQUIRED )
-add_executable( PoseEstimator PoseEstimator.cpp )
-add_executable( TestGeometry TestGeometry.cpp Geometry.h Geometry.cpp )
-target_link_libraries( PoseEstimator ${OpenCV_LIBS} )
-target_link_libraries( TestGeometry ${OpenCV_LIBS} )
-set( CMAKE_BUILD_TYPE Debug )
