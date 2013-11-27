@@ -1,7 +1,20 @@
 #include "Geometry.h"
 
+#include <cmath>
 #include <cstdio>
+#include <iostream>
 using namespace std;
+
+// Sample from Normal distribution.
+// See https://en.wikipedia.org/wiki/Normal_distribution#Generating_values_from_normal_distribution
+// Not a very efficient implementation.
+double randomNormal(double mean, double variance)
+{
+    double u = rand() * 1.0 / RAND_MAX;
+    double v = rand() * 1.0 / RAND_MAX;
+    double z = sqrt(-2 * log(u)) * cos(2 * M_PI * v);
+    return mean + sqrt(variance) * z;
+}
 
 void testHomCoords()
 {
@@ -59,7 +72,7 @@ void testRotMatrix()
     assert(error < 1e-10);
 }
 
-void testSyntheticRotation()
+void testPoseEstimationExact()
 {
     // Synthetic rotation + translation of the camera:
     Mat_<double> translation(3, 1);
@@ -104,10 +117,117 @@ void testSyntheticRotation()
     assert(yawErr < 1e-10);  // assumes rotating around z axis
 }
 
+void testNormal()
+{
+    int n = 1000000;
+    double mean = 100.0, variance = 20;
+    Mat_<double> samples(n, 1);
+    srand(666);
+    for(int i = 0; i < n; i++) {
+        samples(i) = randomNormal(mean, variance);
+    }
+    Scalar gotMean, gotStdDev;
+    meanStdDev(samples, gotMean, gotStdDev);
+    double meanErr = abs(mean - gotMean[0]);
+    double varianceErr = abs(variance - gotStdDev[0] * gotStdDev[0]);
+    // cout << "meanErr=" << meanErr << "; varianceErr=" << varianceErr << endl;
+    assert(meanErr < 0.01);
+    assert(varianceErr < 0.05);
+}
+
+void testPoseEstimationNoisy()
+{
+    // The idea here is to test that our pose estimation is immune to noise.
+    // We add Gaussian noise to the image points and compare the estimate of
+    // the translation + rotation to the ground truth.
+    //
+    // The noise parameters and error tolerances I pulled out out of thin air.
+
+    // Synthetic rotation + translation of the camera:
+    Mat_<double> translation(3, 1);
+    translation << 0, -50, 100;
+    Mat_<double> rotAxis(3, 1);
+    rotAxis << 0, 0, 1;
+    rotAxis /= norm(rotAxis);
+    double rotAngle = 30 * M_PI / 180;
+    Mat_<double> rotMatrix = rotAxisAngleToRotMatrix(rotAxis, rotAngle);
+    Mat_<double> worldPts = getWorldPts();
+    Mat_<double> worldPtsHom = cartToHom(worldPts);
+    Mat_<double> imagePtsHom = worldHomToCameraHom(
+        worldPtsHom, rotMatrix, translation);
+    Mat_<double> imagePts = homToCart(imagePtsHom);
+    // cout << "true translation: " << translation << endl;
+    // cout << "true yaw angle: " << rotAngle << endl;
+    // cout << "true rotation matrix: " << rotMatrix << endl;
+    // cout << "imagePts: " << imagePts << endl;
+
+    Scalar imagePtsMean, imagePtsStdDev;
+    meanStdDev(imagePts.reshape(0, 1), imagePtsMean, imagePtsStdDev);
+    // cout << "mean: " << imagePtsMean[0] << "; stdev: " << imagePtsStdDev[0] << endl;
+    double const mean = 0.0;
+    double const variance = 0.01;
+    int trials = 100;
+    int trialsGood = 0;
+    for(int i = 0; i < trials; i++) {
+        Mat_<double> noisyImagePts = imagePts.clone();
+        srand(666 + i);
+        for(int j = 0; j < noisyImagePts.rows; j++) {
+            noisyImagePts(j, 0) += randomNormal(mean, variance);
+            noisyImagePts(j, 1) += randomNormal(mean, variance);
+        }
+
+        /*
+        Mat image = Mat::zeros(600, 600, CV_8UC3);
+        drawImagePts(image, noisyImagePts);
+        imshow("Test", image);
+        waitKey(0);
+        */
+
+        Mat_<double> rotTransl = estimateRotTransl(worldPts, noisyImagePts);
+        Mat_<double> gotRot = rotTransl(Range(0, 3), Range(0, 3));
+        Mat_<double> gotTransl = rotTransl.col(3);
+        // cout << "gotRot: " << gotRot << endl;
+        // cout << "gotTransl: " << gotTransl << endl;
+        double translErr = sum(abs(translation - gotTransl))[0];
+        double rotErr = sum(abs(rotMatrix - gotRot))[0];
+        // cout << "translErr=" << translErr << ", rotErr=" << rotErr << endl;
+        bool good = true;
+        if(translErr >= 12) {
+            // cout << "bad translErr" << endl;
+            good = false;
+        }
+        if(rotErr > 0.2) {
+            // cout << "bad rotErr" << endl;
+            good = false;
+        }
+
+        Mat_<double> pose = estimatePose(noisyImagePts);
+        gotTransl = pose(Range(0, 3), Range::all());
+        double gotYaw = pose(3);
+        // cout << "gotYaw=" << gotYaw << endl;
+        translErr = sum(abs(translation - gotTransl))[0];
+        double yawErr = abs(gotYaw - rotAngle);
+        // cout << "translErr=" << translErr << ", yawErr=" << yawErr << endl;
+        if(yawErr >= 0.05) {
+            // cout << "bad yawErr" << endl;
+            good = false;
+        }
+        if(good) {
+            trialsGood++;
+        }
+    }
+    cout << "Within tolerance " << trialsGood
+         << " of " << trials << " times." << endl;
+    assert(1.0 * trialsGood / trials >= 0.9);
+}
+
 int main()
 {
     testHomCoords();
     testWorldPts();
     testRotMatrix();
-    testSyntheticRotation();
+    testPoseEstimationExact();
+    testNormal();
+    testPoseEstimationNoisy();
+    cout << "Tests passed." << endl;
 }
