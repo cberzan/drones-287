@@ -15,8 +15,7 @@ double get_wall_time()
 int main()
 {
     VideoCapture cap(0);
-    if(!cap.isOpened())
-    {
+    if(!cap.isOpened()) {
         fprintf(stderr, "Could not open camera.\n");
         return -1;
     }
@@ -31,19 +30,16 @@ int main()
     // printf("FPS:          %f\n", cap.get(CV_CAP_PROP_FPS));
 
     double start = get_wall_time();
-    int const num_frames = 100;
-    for(int i = 0; i < num_frames; i++)
-    {
+    int const num_frames = 10000;
+    for(int i = 0; i < num_frames; i++) {
         Mat frame;
         cap >> frame;
-
         stringstream s;
-        s << i;
-        s << ".png";
-
+        s.width(10);
+        s.fill('0');
+        s << i << ".jpg";
         imwrite(s.str(), frame);
-        printf(".");
-        fflush(stdout);
+        cout << "wrote " << s.str() << endl;
 	}
     printf("\n");
     double elapsed = get_wall_time() - start;
