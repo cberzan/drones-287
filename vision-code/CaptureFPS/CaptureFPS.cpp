@@ -14,7 +14,7 @@ double get_wall_time()
 
 int main()
 {
-    VideoCapture cap(1);
+    VideoCapture cap(0);
     if(!cap.isOpened())
     {
         fprintf(stderr, "Could not open camera.\n");
@@ -36,6 +36,12 @@ int main()
     {
         Mat frame;
         cap >> frame;
+
+        stringstream s;
+        s << i;
+        s << ".png";
+
+        imwrite(s.str(), frame);
         printf(".");
         fflush(stdout);
 	}
