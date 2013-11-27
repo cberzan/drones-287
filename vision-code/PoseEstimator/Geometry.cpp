@@ -43,20 +43,17 @@ Mat_<double> estimateRotTransl(
 
     // Find least-squares estimate of rotation + translation.
     SVD svd(F);
-    // cout << "u: " << svd.u.size() << endl << svd.u << endl << endl;
-    // cout << "w: " << svd.w.size() << endl << svd.w << endl << endl;
-    // cout << "vt: " << svd.vt.size() << endl << svd.vt << endl << endl;
 
     Mat_<double> rrp = svd.vt.row(8);
     rrp = rrp.clone().reshape(0, 3).t();
     if(rrp(2, 2) < 0) {
         rrp *= -1;  // make sure depth is positive
     }
-    cout << "rrp: " << rrp << endl;
+    // cout << "rrp: " << rrp << endl;
 
     Mat_<double> transl = \
         2 * rrp.col(2) / (norm(rrp.col(0)) + norm(rrp.col(1)));
-    cout << "transl: " << transl << endl;
+    // cout << "transl: " << transl << endl;
 
     Mat_<double> rot = Mat_<double>::zeros(3, 3);
     rrp.col(0).copyTo(rot.col(0));
@@ -70,7 +67,7 @@ Mat_<double> estimateRotTransl(
         cerr << "Warning: rotation matrix has determinant " \
              << determinant(rot) << " where expected 1." << endl;
     }
-    cout << "rot: " << rot << endl;
+    // cout << "rot: " << rot << endl;
 
     Mat_<double> rotTransl(3, 4);
     rot.col(0).copyTo(rotTransl.col(0));
@@ -84,8 +81,7 @@ Mat_<double> estimatePose(Mat_<double> const imagePts)
 {
     Mat_<double> const worldPts = getWorldPts();
     Mat_<double> const pose = estimateRotTransl(worldPts, imagePts);
-
-    Mat_<double> simplePose;
+    Mat_<double> simplePose(4, 1);
     simplePose(0) = pose(0, 3);  // x
     simplePose(1) = pose(1, 3);  // y
     simplePose(2) = pose(2, 3);  // z
@@ -93,7 +89,7 @@ Mat_<double> estimatePose(Mat_<double> const imagePts)
     // See http://planning.cs.uiuc.edu/node103.html
     // TODO verify that this is correct
     simplePose(3) = atan2(pose(1, 0), pose(0, 0));
-
+    // cout << "simplePose: " << simplePose << endl;
     return simplePose;
 }
 

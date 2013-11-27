@@ -74,9 +74,9 @@ void testSyntheticRotation()
     Mat_<double> imagePtsHom = worldHomToCameraHom(
         worldPtsHom, rotMatrix, translation);
     Mat_<double> imagePts = homToCart(imagePtsHom);
-    cout << "true translation: " << translation << endl;
-    cout << "true yaw angle: " << rotAngle << endl;
-    cout << "true rotation matrix: " << rotMatrix << endl;
+    // cout << "true translation: " << translation << endl;
+    // cout << "true yaw angle: " << rotAngle << endl;
+    // cout << "true rotation matrix: " << rotMatrix << endl;
     // cout << imagePtsHom << endl << imagePts << endl;
 
     /*
@@ -91,9 +91,17 @@ void testSyntheticRotation()
     Mat_<double> gotTransl = rotTransl.col(3);
     double translErr = sum(abs(translation - gotTransl))[0];
     double rotErr = sum(abs(rotMatrix - gotRot))[0];
-    cout << "translErr=" << translErr << ", rotErr=" << rotErr << endl;
+    // cout << "translErr=" << translErr << ", rotErr=" << rotErr << endl;
     assert(translErr < 1e-10);
     assert(rotErr < 1e-10);
+
+    Mat_<double> pose = estimatePose(imagePts);
+    gotTransl = pose(Range(0, 3), Range::all());
+    double gotYaw = pose(3);
+    translErr = sum(abs(translation - gotTransl))[0];
+    double yawErr = abs(gotYaw - rotAngle);
+    // cout << "translErr=" << translErr << ", yawErr=" << yawErr << endl;
+    assert(yawErr < 1e-10);  // assumes rotating around z axis
 }
 
 int main()
