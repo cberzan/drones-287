@@ -24,10 +24,19 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable(PoseEstimator PoseEstimator.cpp)
-target_link_libraries(PoseEstimator ${catkin_LIBRARIES})
+add_executable(PoseEstimator
+    PoseEstimator.cpp
+    Corners.h
+    Corners.cpp
+    Geometry.h
+    Geometry.cpp
+)
+target_link_libraries(PoseEstimator ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
-add_executable(TestGeometry TestGeometry.cpp Geometry.h Geometry.cpp)
+add_executable(TestGeometry
+    TestGeometry.cpp
+    Geometry.h
+    Geometry.cpp)
 target_link_libraries(TestGeometry ${OpenCV_LIBS})
 
 set( CMAKE_BUILD_TYPE Debug )

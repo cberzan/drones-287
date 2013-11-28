@@ -1,62 +1,69 @@
+#include "Corners.h"
+#include "Geometry.h"
+
 #include "ros/ros.h"
 #include "std_msgs/Float64MultiArray.h"
-#include "std_msgs/MultiArrayDimension.h"
-#include "std_msgs/String.h"
 
 #include <sstream>
 using namespace std;
+
+std_msgs::Float64MultiArray makeCornersMsg(Mat_<double> const imagePts)
+{
+    assert(imagePts.rows == 24);
+    assert(imagePts.cols == 2);
+    std_msgs::Float64MultiArray cornersMsg;
+    for(int i = 0; i < 24; i++) {
+        cornersMsg.data.push_back(imagePts(i, 0));
+        cornersMsg.data.push_back(imagePts(i, 1));
+    }
+    return cornersMsg;
+}
+
+std_msgs::Float64MultiArray makeSimplePoseMsg(Mat_<double> const simplePose)
+{
+    std_msgs::Float64MultiArray simplePoseMsg;
+    simplePoseMsg.data.push_back(simplePose(0));
+    simplePoseMsg.data.push_back(simplePose(1));
+    simplePoseMsg.data.push_back(simplePose(2));
+    simplePoseMsg.data.push_back(simplePose(3));
+    return simplePoseMsg;
+}
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "PoseEstimator");
     ros::NodeHandle node;
-
     int const queueSize = 1000;
-    ros::Publisher chatterPub = node.advertise<std_msgs::String>("chatter", queueSize);
-    ros::Publisher cornerImagePtsPub = \
-        node.advertise<std_msgs::Float64MultiArray>(
-            "cornerImagePts", queueSize);
-    ros::Publisher simplePosePub = \
-        node.advertise<std_msgs::Float64MultiArray>(
-            "simplePose", queueSize);
-
     ros::Rate loopRate(4);  // publish messages at 4 Hz
 
-    int count = 0;
+    // "corners" message: [x1, y1, ..., x24, y24] -- contains the image
+    // coordinates of the 24 corners, in the order described in the paper
+    ros::Publisher cornersPub = \
+        node.advertise<std_msgs::Float64MultiArray>("corners", queueSize);
+
+    // "simplePose" message: [x, y, z, yaw] -- contains the estimate
+    // of the camera pose w.r.t. the landing pad
+    ros::Publisher simplePosePub = \
+        node.advertise<std_msgs::Float64MultiArray>("simplePose", queueSize);
+
+    Mat_<double> imagePts;
+    Mat_<double> simplePose;
     while(ros::ok()) {
-        std_msgs::String msg;
-        stringstream ss;
-        ss << "hello world " << count;
-        msg.data = ss.str();
-        ROS_INFO("%s", msg.data.c_str());
-        chatterPub.publish(msg);
-
-        std_msgs::Float64MultiArray cornerImagePts;
-        std_msgs::MultiArrayDimension dim1;
-        dim1.label = "corner";
-        dim1.size = 24;
-        dim1.stride = 2;
-        std_msgs::MultiArrayDimension dim2;
-        dim2.label = "xy";
-        dim2.size = 2;
-        dim2.stride = 1;
-        cornerImagePts.layout.dim.push_back(dim1);
-        cornerImagePts.layout.dim.push_back(dim2);
-        for(int i = 0; i < 24; i++) {
-            cornerImagePts.data.push_back(i);
-            cornerImagePts.data.push_back(-i);
+        bool ok = captureAndDetectCorners(imagePts);
+        if(ok) {
+            std_msgs::Float64MultiArray cornersMsg = makeCornersMsg(imagePts);
+            cornersPub.publish(cornersMsg);
+            simplePose = estimatePose(imagePts);
+            std_msgs::Float64MultiArray simplePoseMsg = \
+                makeSimplePoseMsg(simplePose);
+            simplePosePub.publish(simplePoseMsg);
+            ROS_INFO("Tick.");
+        } else {
+            // Don't publish anything this tick.
+            ROS_INFO("Could not detect all corners!");
         }
-        cornerImagePtsPub.publish(cornerImagePts);
-
-        std_msgs::Float64MultiArray simplePose;
-        simplePose.data.push_back(1);
-        simplePose.data.push_back(2);
-        simplePose.data.push_back(3);
-        simplePose.data.push_back(4);
-        simplePosePub.publish(simplePose);
 
         ros::spinOnce();
         loopRate.sleep();
-        count++;
     }
 }
