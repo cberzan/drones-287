@@ -12,6 +12,20 @@
 using namespace cv;
 using namespace std;
 
+int getIndexOfMax(int (&Arr)[50], size_t size)
+{
+	int max = 0, indexOfMax = 0;
+	for (int i=0; i<size; i++)
+	{
+		if (Arr[i] > max)
+		{
+			max = Arr[i];
+			indexOfMax = i;
+		}
+	}
+	return indexOfMax;
+}
+
 int main()
 {
 	VideoCapture capture(0);
@@ -25,7 +39,7 @@ int main()
 	namedWindow(CONTOURS, CV_WINDOW_AUTOSIZE);
 	// namedWindow(CANNY, CV_WINDOW_AUTOSIZE);
 
-	Mat frame, cannyImage;
+	Mat frame, cannyImage, filteredImage;
 
 	vector<Vec4i> hierarchy;
 	vector<vector<Point> > contours;
@@ -39,26 +53,58 @@ int main()
 			continue;
 		}
 
-		GaussianBlur(frame, frame, Size(3,3), 0, 0);		
+		// GaussianBlur(frame, frame, Size(3,3), 0, 0);		
 
-		Canny(frame, cannyImage, 50, 200, 3);
+		medianBlur(frame, filteredImage, 3);
+		Canny(filteredImage, cannyImage, 50, 200, 3);
 		// imshow(CANNY, cannyImage);
 			
 		findContours(cannyImage, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
 		Mat contourImg = Mat::zeros(cannyImage.size(), CV_8UC3);
 		vector<Point> approx;
-		for (int i = 0; i< contours.size(); i++)
-		{				
-			approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.02, true);
+
+		int parentContours[50] = {0}, selectedContours[50] = {0}, vContourCount = 0;
+		for (int i=0; i<contours.size(); i++)
+		{	
+			if (hierarchy[i].val[3] == -1)
+				continue;
+			approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.03, true);
 			if (approx.size() == 4 && fabs(contourArea(Mat(approx))) > 100 && isContourConvex(Mat(approx)))
-				drawContours(contourImg, contours, i, Scalar(0,0,255), 2, 8, hierarchy, 0, Point());
+			{
+				parentContours[hierarchy[i].val[3]]++;
+				selectedContours[vContourCount] = i;
+				vContourCount++;
+			}
+		}
+
+		int indexOfOuterSquare = getIndexOfMax(parentContours, contours.size());
+		// If all squares are not detected, move on to the next frame
+		if (parentContours[indexOfOuterSquare] != 6)
+			continue;
+
+		int cIndex;
+		for (int i=0; i<vContourCount; i++)
+		{	
+			cIndex = selectedContours[i];
+			if (hierarchy[cIndex].val[3] != indexOfOuterSquare)
+				continue;
+			approxPolyDP(Mat(contours[cIndex]), approx, arcLength(Mat(contours[cIndex]), true)*0.03, true);
+			if (approx.size() == 4 && fabs(contourArea(Mat(approx))) > 100 && isContourConvex(Mat(approx)))
+			{
+				// To-do: Fix Labeling
+				putText(contourImg, "0", approx[0], FONT_HERSHEY_PLAIN, 1, Scalar(255,255,255));
+				putText(contourImg, "1", approx[1], FONT_HERSHEY_PLAIN, 1, Scalar(255,255,255));
+				putText(contourImg, "2", approx[2], FONT_HERSHEY_PLAIN, 1, Scalar(255,255,255));
+				putText(contourImg, "3", approx[3], FONT_HERSHEY_PLAIN, 1, Scalar(255,255,255));
+				drawContours(contourImg, contours, cIndex, Scalar(255,0,0), 1, 8, hierarchy, 0, Point());
+			}
 		}
 
 		imshow(CONTOURS, contourImg);		
 		imshow(INPUT_FRAMES, frame);
 			
-		if ((char)waitKey(10) == ESCAPE_KEY)
+		if ((char)waitKey(0) == ESCAPE_KEY)
 			break;		
 	}
 	destroyAllWindows();
