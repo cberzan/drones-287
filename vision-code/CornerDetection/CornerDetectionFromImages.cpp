@@ -62,9 +62,11 @@ int main()
 		Mat contourImg = Mat::zeros(cannyImage.size(), CV_8UC3);
 		vector<Point> approx;
 
+		// Calculate number of children for each approximated 4-sided contour
 		int parentContours[50] = {0}, selectedContours[50] = {0}, vContourCount = 0;
 		for (int i=0; i<contours.size(); i++)
 		{	
+			// hierarchy[i].val[3] stores the index of i's parent contour
 			if (hierarchy[i].val[3] == -1)
 				continue;
 			approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.03, true);
@@ -76,17 +78,20 @@ int main()
 			}
 		}
 
+		// Identify the outermost square in the landing station
 		int indexOfOuterSquare = getIndexOfMax(parentContours, contours.size());
 		// If all squares are not detected, move on to the next frame
 		if (parentContours[indexOfOuterSquare] != 6)
 			continue;
 
+		// Identify inner squares
 		int cIndex;
 		for (int i=0; i<vContourCount; i++)
 		{	
 			cIndex = selectedContours[i];
 			if (hierarchy[cIndex].val[3] != indexOfOuterSquare)
 				continue;
+
 			approxPolyDP(Mat(contours[cIndex]), approx, arcLength(Mat(contours[cIndex]), true)*0.03, true);
 			if (approx.size() == 4 && fabs(contourArea(Mat(approx))) > 100 && isContourConvex(Mat(approx)))
 			{
