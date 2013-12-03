@@ -1,3 +1,4 @@
 <launch>
+    <node pkg="python_node" name="dummy" type="talker.py"/>
     <node pkg="roscopter_pose_estimator" name="pose_estimator" type="PoseEstimator"/>
 </launch>
