@@ -36,19 +36,40 @@ target_link_libraries(PoseEstimator ${catkin_LIBRARIES} ${OpenCV_LIBS})
 add_executable(TestGeometry
     TestGeometry.cpp
     Geometry.h
-    Geometry.cpp)
+    Geometry.cpp
+)
 target_link_libraries(TestGeometry ${OpenCV_LIBS})
 
 add_executable(TestCornersFromImages
     TestCornersFromImages.cpp
     Corners.h
-    Corners.cpp)
+    Corners.cpp
+)
 target_link_libraries(TestCornersFromImages ${OpenCV_LIBS})
 
 add_executable(TestCornersFromCamera
     TestCornersFromCamera.cpp
     Corners.h
-    Corners.cpp)
+    Corners.cpp
+)
 target_link_libraries(TestCornersFromCamera ${OpenCV_LIBS})
+
+add_executable(TestPoseFromImages
+    TestPoseFromImages.cpp
+    Corners.h
+    Corners.cpp
+    Geometry.h
+    Geometry.cpp
+)
+target_link_libraries(TestPoseFromImages ${OpenCV_LIBS})
+
+add_executable(TestPoseFromCamera
+    TestPoseFromCamera.cpp
+    Corners.h
+    Corners.cpp
+    Geometry.h
+    Geometry.cpp
+)
+target_link_libraries(TestPoseFromCamera ${OpenCV_LIBS})
 
 set( CMAKE_BUILD_TYPE Debug )
