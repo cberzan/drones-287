@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <package>
-  <name>roscopter_controller</name>
+  <name>lander</name>
   <version>0.0.0</version>
-  <description>Higher level controller for roscopter.</description>
+  <description>Higher level controller / lander.</description>
 
   <maintainer email="cberzan@gmail.com">cberzan</maintainer>
-   <maintainer email="git@ss21k.co.uk">ssk2</maintainer>
-   <maintainer email="nahush.nnb@gmail.com">nbhanage</maintainer>
+  <maintainer email="git@ss21k.co.uk">ssk2</maintainer>
+  <maintainer email="nahush.nnb@gmail.com">nbhanage</maintainer>
 
   <license>BSD</license>
 

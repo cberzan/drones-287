@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(roscopter_pose_estimator)
+project(pose_estimator)
 
 find_package(OpenCV REQUIRED)
 find_package(catkin REQUIRED COMPONENTS

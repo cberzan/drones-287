@@ -1,4 +1,4 @@
 <launch>
     <node pkg="roscopter" name="roscopter" type="roscopter.py" args="--device=/dev/ttyACM0 --baudrate=115200 --enable-control=true" />
-    <node pkg="roscopter_pose_estimator" name="pose_estimator" type="PoseEstimator" />
+    <node pkg="pose_estimator" name="pose_estimator" type="PoseEstimator" />
 </launch>
