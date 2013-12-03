@@ -41,6 +41,7 @@ int main()
             inputWindowHandle,
             NULL, // cannyWindowHandle,
             contourWindowHandle);
+        cout << corners << endl;
         if(corners.rows) {
             Mat_<double> simplePose = estimatePose(corners);
             cout << simplePose << endl;

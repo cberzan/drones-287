@@ -221,6 +221,98 @@ void testPoseEstimationNoisy()
     assert(1.0 * trialsGood / trials >= 0.9);
 }
 
+void drawImagePtsNoRescale(
+    Mat image,
+    Mat_<double> const imagePts,
+    Scalar const& color)
+{
+    int const imageHeight = 480;
+    int const imageWidth = 640;
+    assert(imagePts.rows == 24);
+    assert(imagePts.cols == 2);
+    Point points[6][4];
+    for(int i = 0; i < 24; i++) {
+        points[i / 4][i % 4] = Point(
+            imagePts(i, 0) + imageWidth / 2,
+            imagePts(i, 1) + imageHeight / 2);
+    }
+    Point const* points2[] = {
+        points[0], points[1], points[2],
+        points[3], points[4], points[5]
+    };  // stupid fillPoly won't acccept points directly
+    int numPoints[] = { 4, 4, 4, 4, 4, 4 };
+    polylines(image, points2, numPoints, 6, true, color);
+}
+
+void testPoseFromRealData()
+{
+    Mat_<double> worldPts = getWorldPts();
+    Mat_<double> imagePts(24, 2);
+    imagePts << 244, 87,
+                  244, 186,
+                  341, 188,
+                  342, 89,
+                  244, 247,
+                  244, 284,
+                  282, 285,
+                  282, 247,
+                  322, 247,
+                  322, 285,
+                  361, 285,
+                  360, 247,
+                  400, 248,
+                  401, 286,
+                  441, 285,
+                  439, 247,
+                  401, 169,
+                  401, 208,
+                  441, 207,
+                  441, 169,
+                  402, 89,
+                  401, 129,
+                  441, 129,
+                  442, 90;
+
+    // Make the center of the visual field be 0, 0.
+    int const imageHeight = 480;
+    int const imageWidth = 640;
+    for(int i = 0; i < 24; i++) {
+        imagePts(i, 0) -= imageWidth / 2;
+        imagePts(i, 1) -= imageHeight / 2;
+    }
+
+    // Guess some focal length.
+    double const factor = 100;  // focal length * scale_factor (pixels / mm)
+    for(int i = 0; i < 24; i++) {
+        imagePts(i, 0) /= factor;
+        imagePts(i, 1) /= factor;
+    }
+
+    Mat_<double> rotTransl = estimateRotTransl(worldPts, imagePts);
+    Mat_<double> gotRot = rotTransl(Range(0, 3), Range(0, 3));
+    Mat_<double> gotTransl = rotTransl.col(3);
+    Mat_<double> pose = estimatePose(imagePts);
+    double gotYaw = pose(3);
+    cout << "got pose: " << pose << endl;
+
+    // Pass the world points through that transformation.
+    Mat_<double> worldPtsHom = cartToHom(worldPts);
+    Mat_<double> reprojImagePtsHom = worldHomToCameraHom(
+        worldPtsHom, gotRot, gotTransl);
+    Mat_<double> reprojImagePts = homToCart(reprojImagePtsHom);
+
+    for(int i = 0; i < 24; i++) {
+        cout << imagePts(i, 0) << ", " << imagePts(i, 1) << " -> "
+             << reprojImagePts(i, 0) << ", " << reprojImagePts(i, 1) << endl;
+    }
+
+    Mat image = Mat::zeros(480, 640, CV_8UC3);
+    drawImagePtsNoRescale(image, imagePts, Scalar(0, 255, 0));
+    drawImagePtsNoRescale(image, reprojImagePts, Scalar(0, 0, 255));
+    imshow("Test", image);
+    waitKey(0);
+}
+
 int main()
 {
     testHomCoords();
@@ -230,4 +322,6 @@ int main()
     testNormal();
     testPoseEstimationNoisy();
     cout << "Tests passed." << endl;
+
+    testPoseFromRealData();
 }
