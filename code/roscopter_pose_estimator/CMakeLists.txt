@@ -39,4 +39,16 @@ add_executable(TestGeometry
     Geometry.cpp)
 target_link_libraries(TestGeometry ${OpenCV_LIBS})
 
+add_executable(TestCornersFromImages
+    TestCornersFromImages.cpp
+    Corners.h
+    Corners.cpp)
+target_link_libraries(TestCornersFromImages ${OpenCV_LIBS})
+
+add_executable(TestCornersFromCamera
+    TestCornersFromCamera.cpp
+    Corners.h
+    Corners.cpp)
+target_link_libraries(TestCornersFromCamera ${OpenCV_LIBS})
+
 set( CMAKE_BUILD_TYPE Debug )

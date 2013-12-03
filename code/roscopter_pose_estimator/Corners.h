@@ -2,15 +2,19 @@
 using namespace cv;
 
 /**
- * Capture a frame from the camera and detect landing pad corners.
+ * Detect corners of landing pad in the provided image.
  *
- * If succeeds, returns true and fills imagePts.
- * If fails, returns false and leaves imagePts untouched.
+ * If succeeds, returns 24 points in the order described in the paper.
+ * If fails, returns an empty matrix.
  *
- * Outputs:
- * imagePts (24x2) = image points
+ * Inputs:
+ * frame = input image
  *
  * Returns:
- * ok = true if all corners detected, false otherwise
+ * imagePts (24x2) = image points
  */
-bool captureAndDetectCorners(Mat_<double> &imagePts);
+Mat_<double> detectCorners(
+    Mat const frame,
+    char const* inputWindowHandle = NULL,
+    char const* cannyWindowHandle = NULL,
+    char const* contourWindowHandle = NULL);

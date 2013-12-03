@@ -46,11 +46,20 @@ int main(int argc, char **argv)
     ros::Publisher simplePosePub = \
         node.advertise<std_msgs::Float64MultiArray>("simplePose", queueSize);
 
+    VideoCapture capture(0);
+    if(!capture.isOpened()) {
+        cerr << "Device inaccessible. Damn!" << endl;
+        return 1;
+    }
+
+    Mat frame;
     Mat_<double> imagePts;
     Mat_<double> simplePose;
     while(ros::ok()) {
-        bool ok = captureAndDetectCorners(imagePts);
-        if(ok) {
+        capture >> frame;
+        imagePts = detectCorners(frame);
+        bool success = (imagePts.rows > 0);
+        if(success) {
             std_msgs::Float64MultiArray cornersMsg = makeCornersMsg(imagePts);
             cornersPub.publish(cornersMsg);
             simplePose = estimatePose(imagePts);
