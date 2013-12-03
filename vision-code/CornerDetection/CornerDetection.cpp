@@ -1,5 +1,7 @@
-#include <cv.h>
-#include <highgui.h>
+#include <cstdio>
+
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #define INPUT_FRAMES "Input"
 #define CONTOURS "Contours"
