@@ -295,6 +295,7 @@ Mat_<double> detectCorners(
     Moments mo;
 
     int orderOfPolygons[6] = {0};
+    int contourIndices[6];
     for (int i=0; i<vContourCount; i++)
     {
         cIndex = selectedContours[i];
@@ -317,7 +318,7 @@ Mat_<double> detectCorners(
                 maxPolyArea = PolyArea;
                 orderOfPolygons[0] = polygonIndex;
             }
-
+            contourIndices[polygonIndex] = cIndex;
             polygonIndex++;
         }
     }
@@ -327,9 +328,9 @@ Mat_<double> detectCorners(
     labelCorners(Polygons, orderOfPolygons, Corners);
 
     if(contourWindowHandle) {
-        /*
-        FIXME: this was in the loop above; need to factor out here
-        if(contourWindowHandle) {
+        Mat contourImg = Mat::zeros(cannyImage.size(), CV_8UC3);
+        for(int i = 0; i < 6; i++) {
+            cIndex = contourIndices[i];
             drawContours(
                 contourImg,
                 contours,
@@ -340,9 +341,6 @@ Mat_<double> detectCorners(
                 0,
                 Point());
         }
-        */
-
-        Mat contourImg = Mat::zeros(cannyImage.size(), CV_8UC3);
         drawPolygonLabels(contourImg, Polygons, orderOfPolygons);
         drawCornerLabels(contourImg, Corners);
         imshow(contourWindowHandle, contourImg);
