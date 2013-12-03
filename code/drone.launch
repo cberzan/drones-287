@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="roscopter_pose_estimator" name="pose_estimator" type="PoseEstimator"/>
+</launch>
