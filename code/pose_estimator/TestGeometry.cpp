@@ -282,7 +282,7 @@ void testPoseFromRealData()
     }
 
     // Guess some focal length.
-    double const factor = 100;  // focal length * scale_factor (pixels / mm)
+    double const factor = 810;  // focal length * scale_factor (pixels / mm)
     for(int i = 0; i < 24; i++) {
         imagePts(i, 0) /= factor;
         imagePts(i, 1) /= factor;

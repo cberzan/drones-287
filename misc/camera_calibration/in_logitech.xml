@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<Settings>
+  <BoardSize_Width> 9</BoardSize_Width>
+  <BoardSize_Height>6</BoardSize_Height>
+  <Square_Size>23</Square_Size>
+  <Calibrate_Pattern>"CHESSBOARD"</Calibrate_Pattern>
+  <Input>"1"</Input>
+  <Input_FlipAroundHorizontalAxis>0</Input_FlipAroundHorizontalAxis>
+  <Input_Delay>100</Input_Delay>
+  <Calibrate_NrOfFrameToUse>25</Calibrate_NrOfFrameToUse>
+  <Calibrate_FixAspectRatio>1</Calibrate_FixAspectRatio>
+  <Calibrate_AssumeZeroTangentialDistortion>1</Calibrate_AssumeZeroTangentialDistortion>
+  <Calibrate_FixPrincipalPointAtTheCenter>1</Calibrate_FixPrincipalPointAtTheCenter>
+
+  <Write_outputFileName>"out_logitech.xml"</Write_outputFileName>
+  <Write_DetectedFeaturePoints>1</Write_DetectedFeaturePoints>
+  <Write_extrinsicParameters>1</Write_extrinsicParameters>
+  <Show_UndistortedImage>1</Show_UndistortedImage>
+</Settings>
+</opencv_storage>
