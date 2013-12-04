@@ -1,7 +1,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <signal.h>
+#include <string>
 #include <sys/time.h>
+#include <time.h>
 #include <opencv2/opencv.hpp>
 using namespace cv;
 using namespace std;
@@ -18,6 +20,21 @@ double get_wall_time()
     struct timeval time;
     gettimeofday(&time, NULL);  // FIXME: ignoring errors
     return (double)time.tv_sec + (double)time.tv_usec * .000001;
+}
+
+string get_timestamp()
+{
+    struct timeval tv;
+    struct tm* tm;
+    gettimeofday(&tv, NULL);
+    if((tm = localtime(&tv.tv_sec)) != NULL) {
+        char format[100], timestamp[100];
+        strftime(format, sizeof(format), "%Y-%m-%d %H:%M:%S.%%06u", tm);
+        snprintf(timestamp, sizeof(timestamp), format, tv.tv_usec);
+        return timestamp;
+    } else {
+        return "";
+    }
 }
 
 int main(int argc, char *argv[])
@@ -54,7 +71,7 @@ int main(int argc, char *argv[])
         s.fill('0');
         s << frameNo << ".jpg";
         imwrite(s.str(), frame);
-        cout << "wrote " << s.str() << endl;
+        cout << "wrote " << s.str() << " at " << get_timestamp() << endl;
         if(display) {
             imshow("CaptureFPS", frame);
             // Give highgui a chance to event-loop.
@@ -67,5 +84,5 @@ int main(int argc, char *argv[])
     double elapsed = get_wall_time() - start;
     printf("Captured %d frames in %f seconds (%f FPS).\n",
         frameNo, elapsed, frameNo / elapsed);
-	return 0; 
+	return 0;
 }
