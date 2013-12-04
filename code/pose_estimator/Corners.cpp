@@ -286,6 +286,11 @@ Mat_<double> detectCorners(
     int indexOfOuterSquare = getIndexOfOuterSquare(parentContours, contours.size());
     // If all squares are not detected, return failure.
     if (parentContours[indexOfOuterSquare] != 6) {
+        if(contourWindowHandle) {
+            Mat contourImg = Mat::zeros(cannyImage.size(), CV_8UC3);
+            imshow(contourWindowHandle, contourImg);
+        }
+
         return Mat_<double>();  // empty
     }
 
