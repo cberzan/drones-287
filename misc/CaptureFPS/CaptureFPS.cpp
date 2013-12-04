@@ -12,8 +12,13 @@ double get_wall_time()
     return (double)time.tv_sec + (double)time.tv_usec * .000001;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+    bool display = false;
+    if(argc == 2 && strcmp(argv[1], "--display") == 0) {
+        display = true;
+    }
+
     VideoCapture cap(0);
     if(!cap.isOpened()) {
         fprintf(stderr, "Could not open camera.\n");
@@ -40,6 +45,12 @@ int main()
         s << i << ".jpg";
         imwrite(s.str(), frame);
         cout << "wrote " << s.str() << endl;
+        if(display) {
+            imshow("CaptureFPS", frame);
+            // Give highgui a chance to event-loop.
+            // (Otherwise no image shows up. Go figure.)
+            waitKey(1);
+        }
 	}
     printf("\n");
     double elapsed = get_wall_time() - start;
