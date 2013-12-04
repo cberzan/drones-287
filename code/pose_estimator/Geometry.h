@@ -106,3 +106,37 @@ Mat_<double> worldHomToCameraHom(
  * (modifies image)
  */
 void drawImagePts(Mat image, Mat_<double> const imagePts);
+
+/**
+ * Return camera matrix.
+ *
+ * This function encapsulates the calibration info for our camera.
+ *
+ * Returns:
+ * cameraMatrix (3x3)
+ */
+Mat_<double> getCameraMatrix();
+
+/**
+ * Convert image points to calibrated image points.
+ *
+ * This function encapsulates the calibration info for our camera.
+ *
+ * Inputs:
+ * imagePts (Nx2) = uncalibrated image points
+ *
+ * Outputs:
+ * calibratedImagePts (Nx2) = calibrated image points
+ */
+Mat_<double> calibrateImagePoints(Mat_<double> const imagePts);
+
+/**
+ * Invert the transformation done by `calibrateImagePoints`.
+ *
+ * Inputs:
+ * calibratedImagePts (Nx2) = calibrated image points
+ *
+ * Outputs:
+ * imagePts (Nx2) = uncalibrated image points
+ */
+Mat_<double> unCalibrateImagePoints(Mat_<double> const calibratedImagePts);

@@ -254,3 +254,40 @@ void drawImagePts(Mat image, Mat_<double> const imagePts)
     // LEFT TODO: draw a rectangle around everything, otherwise it's hard to
     // tell what's going on...
 }
+
+Mat_<double> getCameraMatrix()
+{
+    Mat_<double> cameraMatrix(3, 3);
+    cameraMatrix << 810,   0, 320,
+                      0,   810, 240,
+                      0,     0,   1;
+    return cameraMatrix;
+}
+
+Mat_<double> calibrateImagePoints(Mat_<double> const imagePts)
+{
+    Mat_<double> const cameraMatrix = getCameraMatrix();
+    assert(imagePts.cols == 2);
+    Mat_<double> calibratedImagePts(imagePts.rows, 2);
+    for(int i = 0; i < imagePts.rows; i++) {
+        calibratedImagePts(i, 0) = \
+            (imagePts(i, 0) - cameraMatrix(0, 2)) / cameraMatrix(0, 0);
+        calibratedImagePts(i, 1) = \
+            (imagePts(i, 1) - cameraMatrix(1, 2)) / cameraMatrix(1, 1);
+    }
+    return calibratedImagePts;
+}
+
+Mat_<double> unCalibrateImagePoints(Mat_<double> const calibratedImagePts)
+{
+    Mat_<double> const cameraMatrix = getCameraMatrix();
+    assert(calibratedImagePts.cols == 2);
+    Mat_<double> imagePts(calibratedImagePts.rows, 2);
+    for(int i = 0; i < imagePts.rows; i++) {
+        imagePts(i, 0) = \
+            calibratedImagePts(i, 0) * cameraMatrix(0, 0) + cameraMatrix(0, 2);
+        imagePts(i, 1) = \
+            calibratedImagePts(i, 1) * cameraMatrix(1, 1) + cameraMatrix(1, 2);
+    }
+    return imagePts;
+}

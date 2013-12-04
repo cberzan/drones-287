@@ -226,15 +226,11 @@ void drawImagePtsNoRescale(
     Mat_<double> const imagePts,
     Scalar const& color)
 {
-    int const imageHeight = 480;
-    int const imageWidth = 640;
     assert(imagePts.rows == 24);
     assert(imagePts.cols == 2);
     Point points[6][4];
     for(int i = 0; i < 24; i++) {
-        points[i / 4][i % 4] = Point(
-            imagePts(i, 0) + imageWidth / 2,
-            imagePts(i, 1) + imageHeight / 2);
+        points[i / 4][i % 4] = Point(imagePts(i, 0), imagePts(i, 1));
     }
     Point const* points2[] = {
         points[0], points[1], points[2],
@@ -272,21 +268,7 @@ void testPoseFromRealData()
                   401, 129,
                   441, 129,
                   442, 90;
-
-    // Make the center of the visual field be 0, 0.
-    int const imageHeight = 480;
-    int const imageWidth = 640;
-    for(int i = 0; i < 24; i++) {
-        imagePts(i, 0) -= imageWidth / 2;
-        imagePts(i, 1) -= imageHeight / 2;
-    }
-
-    // Guess some focal length.
-    double const factor = 810;  // focal length * scale_factor (pixels / mm)
-    for(int i = 0; i < 24; i++) {
-        imagePts(i, 0) /= factor;
-        imagePts(i, 1) /= factor;
-    }
+    imagePts = calibrateImagePoints(imagePts);
 
     Mat_<double> rotTransl = estimateRotTransl(worldPts, imagePts);
     Mat_<double> gotRot = rotTransl(Range(0, 3), Range(0, 3));
@@ -307,8 +289,14 @@ void testPoseFromRealData()
     }
 
     Mat image = Mat::zeros(480, 640, CV_8UC3);
-    drawImagePtsNoRescale(image, imagePts, Scalar(0, 255, 0));
-    drawImagePtsNoRescale(image, reprojImagePts, Scalar(0, 0, 255));
+    drawImagePtsNoRescale(
+        image,
+        unCalibrateImagePoints(imagePts),
+        Scalar(0, 255, 0));
+    drawImagePtsNoRescale(
+        image,
+        unCalibrateImagePoints(reprojImagePts),
+        Scalar(0, 0, 255));
     imshow("Test", image);
     waitKey(0);
 }
