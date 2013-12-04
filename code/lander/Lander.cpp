@@ -51,7 +51,7 @@ void poseCallback(const std_msgs::Float64MultiArray::ConstPtr& poseMsg) {
 void rcCallback(const roscopter::RC::ConstPtr& rcMsg)) {
 	//TODO: Store RC values?
 	if (updateLanderActive(rcMsg.channel[4])) { //CHECK CHANNEL
-		if (isLanderActive() && (getState == States.FLYING) {
+		if (isLanderActive() && (getState == States.FLYING)) {
 			// Activate lander
 			setStateAndPerformAction(States.SEEK_HOME);
 		} else {
