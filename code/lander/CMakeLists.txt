@@ -5,6 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
   	genmsg
     roscpp
     std_msgs
+    roscopter
 )
 
 ## Declare ROS messages, services and actions
@@ -27,7 +28,12 @@ add_executable(Lander
     Lander.cpp
     Controller.h
     Controller.cpp
+    LanderStates.h
+    LanderStates.cpp
+    QuadcopterState.h
+    QuadcopterState.cpp
 )
+
 target_link_libraries(Lander ${catkin_LIBRARIES})
 
 set( CMAKE_BUILD_TYPE Debug )

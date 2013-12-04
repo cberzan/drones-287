@@ -9,9 +9,6 @@
 #include "roscopter/RC.h"
 #include "roscopter/VFR_HUD.h"
 
-#include <cstdio>
-
-using namespace std;
 using namespace LanderStates;
 
 void attitudeCallback(const roscopter::Attitude::ConstPtr& attitudeMsg) {
