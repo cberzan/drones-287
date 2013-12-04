@@ -6,8 +6,7 @@
 
 bool landerActive = false;
 
-bool isLanderActive() 
-{
+bool isLanderActive() {
 	return landerActive;
 }
 
@@ -21,8 +20,7 @@ bool updateLanderActive(int32 controlChannelValue) {
 	return (oldLanderActive == landerActive);
 }
 
-enum class States : char 
-{
+enum class States : char {
 	FLYING,
 	SEEK_HOME,
 	LAND_HIGH,
@@ -32,43 +30,35 @@ enum class States : char
 
 States currentState;
 
-States getState () 
-{
+States getState () {
 	return currentState;
 }
 
-bool setState (States newState) 
-{
+bool setState (States newState) {
 	bool changed = true;
-	if (newState == currentState) 
-	{
+	if (newState == currentState) {
 		changed = false;
 	} 
-	else
-	{
+	else {
 		currentState = newState;
 	}
 	return changed;
 }
 
-roscopter::RC performStateAction() 
-{
+roscopter::RC performStateAction() {
 	switch (currentState)
 	case (States.FLYING):
-		// Return to manual control == OVERRIDE
-		return Controller::returnControl();
-	case(States.SEEK_HOME):
-		// if current mode is not RTL, set mode to RTL
-	case(States.LAND_HIGH):
-		// Iff attitude of quadcopter is stable
-			// (i.e., we're not moving to left or right)	
-				// Calculate control input WRT pose estimate
-				// Send control input
-		
-	case(States.LAND_LOW):
-		// Descend an orderly pace
-	case(States.POWER_OFF):
-		// Check altitude close to 0, orientation level 
-		// and climb rate is 0
-		// Change mode to stabilise, set throttle to low
-}	
+		return Controller::getManualControlMsg();
+	case (States.SEEK_HOME):
+		return Controller::getRTLControlMsg()
+	case (States.LAND_HIGH):
+		return Controller::getTranslateAndDescendControlMsg()
+	case (States.LAND_LOW):
+		return Controller::getDescentOnlyControlMsg();
+	case (States.POWER_OFF):
+		if (QuadcopterState::onGround()) {
+			return Controller::getPowerOffControlMsg(); 
+		}
+}
+
+

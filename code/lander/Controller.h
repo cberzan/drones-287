@@ -7,4 +7,4 @@
 
 roscopter::RC getControlMsg ();
 
-roscopter::RC getReturnControlMsg ();
+roscopter::RC getManualControlMsg ();

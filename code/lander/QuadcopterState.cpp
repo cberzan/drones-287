@@ -43,11 +43,16 @@ void updateTelemetry (const roscopter::VFR_HUD::ConstPtr& hudMsg) {
 	latestState.climb = latestState.climb;
 }
 
-
 void updatePose (const std_msgs::Float64MultiArray::ConstPtr& poseMsg) {
 	//[x, y, z, yaw] 
 	latestPose.x = poseMsg[0];
 	latestPose.y = poseMsg[1];
 	latestPose.z = poseMsg[2];
 	latestPose.yaw = poseMsg[3];
+}
+
+bool onGround () {
+	// Check altitude close to 0, orientation level 
+	// and climb rate is 0
+	return false;
 }
