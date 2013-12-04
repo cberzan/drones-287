@@ -2,7 +2,7 @@
 <package>
   <name>lander</name>
   <version>0.0.0</version>
-  <description>Higher level controller / lander.</description>
+  <description>High level lander that uses roscopter to bring a quadcopter to the ground using pose estimates.</description>
 
   <maintainer email="cberzan@gmail.com">cberzan</maintainer>
   <maintainer email="git@ss21k.co.uk">ssk2</maintainer>
