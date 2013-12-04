@@ -1,0 +1,13 @@
+==rosbags==
+Using rosbags we can record the state of all messages sent on all topics:
+```
+mkdir ~/bagfiles
+cd ~/bagfiles
+rosbag record -a
+```
+
+Play back the file (assuming all nodes are up):
+``` rosbag play <your bagfile> ```
+
+
+http://wiki.ros.org/ROS/Tutorials/Recording%20and%20playing%20back%20data
