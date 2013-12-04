@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(lander)
+project(debugger)
 
 find_package(catkin REQUIRED COMPONENTS
   	genmsg
     roscpp
     std_msgs
-    roscopter
 )
 
 ## Declare ROS messages, services and actions
@@ -24,16 +23,10 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable(Lander
-    Lander.cpp
-    Controller.h
-    Controller.cpp
-    LanderStates.h
-    LanderStates.cpp
-    QuadcopterState.h
-    QuadcopterState.cpp
+add_executable(Debugger
+    Debugger.cpp
 )
 
-target_link_libraries(Lander ${catkin_LIBRARIES})
+target_link_libraries(Debugger ${catkin_LIBRARIES})
 
 set( CMAKE_BUILD_TYPE Debug )
