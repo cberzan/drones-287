@@ -60,6 +60,7 @@ int main(int argc, char **argv)
         imagePts = detectCorners(frame);
         bool success = (imagePts.rows > 0);
         if(success) {
+            imagePts = calibrateImagePoints(imagePts);
             std_msgs::Float64MultiArray cornersMsg = makeCornersMsg(imagePts);
             cornersPub.publish(cornersMsg);
             simplePose = estimatePose(imagePts);

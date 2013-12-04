@@ -42,8 +42,10 @@ int main()
             NULL, // cannyWindowHandle,
             contourWindowHandle);
         cout << corners << endl;
+        Mat_<double> calibratedCorners = calibrateImagePoints(corners);
+        cout << calibratedCorners << endl;
         if(corners.rows) {
-            Mat_<double> simplePose = estimatePose(corners);
+            Mat_<double> simplePose = estimatePose(calibratedCorners);
             cout << simplePose << endl;
         } else {
             cout << "could not detect all corners" << endl;
