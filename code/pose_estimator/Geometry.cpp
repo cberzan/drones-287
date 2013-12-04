@@ -258,9 +258,9 @@ void drawImagePts(Mat image, Mat_<double> const imagePts)
 Mat_<double> getCameraMatrix()
 {
     Mat_<double> cameraMatrix(3, 3);
-    cameraMatrix << 810,   0, 320,
-                      0,   810, 240,
-                      0,     0,   1;
+    cameraMatrix << 620,   0, 320,
+                      0, 620, 240,
+                      0,   0,   1;
     return cameraMatrix;
 }
 
