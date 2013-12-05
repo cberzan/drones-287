@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
         display = true;
     }
 
-    VideoCapture cap(0);
+    VideoCapture cap(1);
     if(!cap.isOpened()) {
         fprintf(stderr, "Could not open camera.\n");
         return -1;
@@ -55,6 +55,11 @@ int main(int argc, char *argv[])
     printf("Frame width:  %f\n", cap.get(CV_CAP_PROP_FRAME_WIDTH));
     printf("Frame height: %f\n", cap.get(CV_CAP_PROP_FRAME_HEIGHT));
     printf("FPS:          %f\n", cap.get(CV_CAP_PROP_FPS));
+    printf("Mode:         %f\n", cap.get(CV_CAP_PROP_MODE));
+    printf("Auto exposure: %f\n", cap.get(CV_CAP_PROP_AUTO_EXPOSURE));
+    printf("Exposure:     %f\n", cap.get(CV_CAP_PROP_EXPOSURE));
+    printf("Gain:         %f\n", cap.get(CV_CAP_PROP_GAIN));
+
 
     // Getting or setting FPS doesn't seem to work.
     // See http://answers.opencv.org/question/6713/#post-id-6869
