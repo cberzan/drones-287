@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 2.8)
+project( CaptureOneFrame )
+find_package( OpenCV REQUIRED )
+add_executable( CaptureOneFrame CaptureOneFrame.cpp )
+target_link_libraries( CaptureOneFrame ${OpenCV_LIBS} )
