@@ -1,6 +1,8 @@
 #include "Corners.h"
-
 #include <cstdio>
+
+#define PARENT_CONTOURS_SIZE 512
+
 using namespace std;
 
 
@@ -219,7 +221,7 @@ void drawCornerLabels(Mat & contourImg, Point2f (&Corners)[24])
     }
 }
 
-int getIndexOfOuterSquare(int (&Arr)[50], size_t size)
+int getIndexOfOuterSquare(int (&Arr)[PARENT_CONTOURS_SIZE], size_t size)
 {
     int max = 0, indexOfMax = 0;
     for (int i=0; i<size; i++)
@@ -264,8 +266,8 @@ Mat_<double> detectCorners(
         Point(0, 0));
 
     vector<Point> approx;
-    int parentContours[50] = {0};
-    int selectedContours[50] = {0};
+    int parentContours[PARENT_CONTOURS_SIZE] = {0};
+    int selectedContours[256] = {0};
     int vContourCount = 0;
     for (int i=0; i<contours.size(); i++)
     {
@@ -286,6 +288,11 @@ Mat_<double> detectCorners(
     int indexOfOuterSquare = getIndexOfOuterSquare(parentContours, contours.size());
     // If all squares are not detected, return failure.
     if (parentContours[indexOfOuterSquare] != 6) {
+        if(contourWindowHandle) {
+            Mat contourImg = Mat::zeros(cannyImage.size(), CV_8UC3);
+            imshow(contourWindowHandle, contourImg);
+        }
+
         return Mat_<double>();  // empty
     }
 
