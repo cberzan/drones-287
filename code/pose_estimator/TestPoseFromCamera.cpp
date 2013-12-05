@@ -16,7 +16,7 @@ int main()
     // namedWindow(cannyWindowHandle, CV_WINDOW_AUTOSIZE);
     namedWindow(contourWindowHandle, CV_WINDOW_AUTOSIZE);
 
-    VideoCapture capture(0);
+    VideoCapture capture(1);
     if(!capture.isOpened()) {
         cerr << "Device inaccessible. Damn!" << endl;
         return -1;
@@ -31,13 +31,14 @@ int main()
             NULL, // cannyWindowHandle,
             contourWindowHandle);
         if(corners.rows) {
-            Mat_<double> simplePose = estimatePose(corners);
+            Mat_<double> calibratedCorners = calibrateImagePoints(corners);
+            Mat_<double> simplePose = estimatePose(calibratedCorners);
             cout << simplePose << endl;
         } else {
             cout << "could not detect all corners" << endl;
         }
 
-        if ((char)waitKey(0) == ESCAPE_KEY)
+        if ((char)waitKey(100) == ESCAPE_KEY)
             break;
     }
     destroyAllWindows();

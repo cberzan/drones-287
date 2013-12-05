@@ -1,9 +1,19 @@
 #include <cstdio>
 #include <cstdlib>
+#include <signal.h>
+#include <string>
 #include <sys/time.h>
+#include <time.h>
 #include <opencv2/opencv.hpp>
 using namespace cv;
 using namespace std;
+
+static bool keepRunning = true;
+
+void intHandler(int dummy = 0)
+{
+    keepRunning = false;
+}
 
 double get_wall_time()
 {
@@ -12,8 +22,30 @@ double get_wall_time()
     return (double)time.tv_sec + (double)time.tv_usec * .000001;
 }
 
-int main()
+string get_timestamp()
 {
+    struct timeval tv;
+    struct tm* tm;
+    gettimeofday(&tv, NULL);
+    if((tm = localtime(&tv.tv_sec)) != NULL) {
+        char format[100], timestamp[100];
+        strftime(format, sizeof(format), "%Y-%m-%d %H:%M:%S.%%06u", tm);
+        snprintf(timestamp, sizeof(timestamp), format, tv.tv_usec);
+        return timestamp;
+    } else {
+        return "";
+    }
+}
+
+int main(int argc, char *argv[])
+{
+    signal(SIGINT, intHandler);
+
+    bool display = false;
+    if(argc == 2 && strcmp(argv[1], "--display") == 0) {
+        display = true;
+    }
+
     VideoCapture cap(0);
     if(!cap.isOpened()) {
         fprintf(stderr, "Could not open camera.\n");
@@ -30,20 +62,27 @@ int main()
     // printf("FPS:          %f\n", cap.get(CV_CAP_PROP_FPS));
 
     double start = get_wall_time();
-    int const num_frames = 10000;
-    for(int i = 0; i < num_frames; i++) {
+    int frameNo = 0;
+    while(keepRunning) {
         Mat frame;
         cap >> frame;
         stringstream s;
         s.width(10);
         s.fill('0');
-        s << i << ".jpg";
+        s << frameNo << ".jpg";
         imwrite(s.str(), frame);
-        cout << "wrote " << s.str() << endl;
+        cout << "wrote " << s.str() << " at " << get_timestamp() << endl;
+        if(display) {
+            imshow("CaptureFPS", frame);
+            // Give highgui a chance to event-loop.
+            // (Otherwise no image shows up. Go figure.)
+            waitKey(1);
+        }
+        frameNo++;
 	}
     printf("\n");
     double elapsed = get_wall_time() - start;
     printf("Captured %d frames in %f seconds (%f FPS).\n",
-        num_frames, elapsed, num_frames / elapsed);
-	return 0; 
+        frameNo, elapsed, frameNo / elapsed);
+	return 0;
 }
