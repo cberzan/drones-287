@@ -9,8 +9,6 @@
 #include "roscopter/RC.h"
 #include "roscopter/VFR_HUD.h"
 
-using namespace LanderStates;
-
 ros::Publisher rcPub;
 
 
@@ -27,7 +25,7 @@ void setStateAndPerformAction(States newState) {
 
 
 void attitudeCallback(const roscopter::Attitude::ConstPtr& attitudeMsg) {
-	QuadcopterState::updateAttitude(attitudeMsg);
+	updateAttitude(attitudeMsg);
 }
 
 /**
@@ -38,7 +36,7 @@ void attitudeCallback(const roscopter::Attitude::ConstPtr& attitudeMsg) {
 */
 
 void hudCallback(const roscopter::VFR_HUD::ConstPtr& hudMsg) {
-	QuadcopterState::updateTelemetry(hudMsg);
+	updateTelemetry(hudMsg);
 
 	if (isLanderActive()) {
 		if (getState() == LAND_LOW) {
@@ -50,13 +48,13 @@ void hudCallback(const roscopter::VFR_HUD::ConstPtr& hudMsg) {
 
 
 void poseCallback(const std_msgs::Float64MultiArray::ConstPtr& poseMsg) {
-	QuadcopterState::updatePose(poseMsg);
+	updatePose(poseMsg);
 
 	if (isLanderActive()) {
-		if (getState() == States.SEEK_HOME) {
+		if (getState() == SEEK_HOME) {
 			// We must be above the landing pad (valid pose_estimate)
-			setStateAndPerformAction(States.LAND_HIGH);
-		} else if (getState() == States.LAND_HIGH) {
+			setStateAndPerformAction(LAND_HIGH);
+		} else if (getState() == LAND_HIGH) {
 			performAction();
 		}
 	} 
@@ -65,13 +63,13 @@ void poseCallback(const std_msgs::Float64MultiArray::ConstPtr& poseMsg) {
 
 void rcCallback(const roscopter::RC::ConstPtr& rcMsg) {
 	//TODO: Store RC values?
-	if (updateLanderActive(rcMsg.channel[4])) { //CHECK CHANNEL
-		if (isLanderActive() && (getState == States.FLYING)) {
+	if (updateLanderActive(rcMsg->channel[4])) {  // CHECK CHANNEL
+		if (isLanderActive() && (getState() == FLYING)) {
 			// Activate lander
-			setStateAndPerformAction(States.SEEK_HOME);
+			setStateAndPerformAction(SEEK_HOME);
 		} else {
 			// Revert to manual control
-			setStateAndPerformAction(States.FLYING);
+			setStateAndPerformAction(FLYING);
 		}
 	}
 	// else no change

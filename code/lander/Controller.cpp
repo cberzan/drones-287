@@ -36,3 +36,6 @@ roscopter::RC getManualControlMsg () {
 roscopter::RC getPowerOffControlMsg () {
 	// Change mode to stabilise, set throttle to low 
 }
+
+roscopter::RC getDescentOnlyControlMsg() {
+}
