@@ -1,30 +1,5 @@
 #include "QuadcopterState.h"
 
-#include "std_msgs/Float64MultiArray.h"
-
-#include "roscopter/Attitude.h"
-#include "roscopter/VFR_HUD.h"
-
-struct QuadcopterState {
-	float32 roll;
-	float32 pitch;
-	float32 yaw; 
-	float32 airspeed;
-	float32 groundspeed; 
-	int16 heading;
-	uint16 throttle;
-	float32 alt;
-	float32 climb;
-};
-
-
-struct QuadcopterPose {
-	float32 x;
-	float32 y;
-	float32 z;
-	float32 yaw;
-};
-
 QuadcopterState latestState;
 QuadcopterPose latestPose;
 
@@ -55,4 +30,12 @@ bool onGround () {
 	// Check altitude close to 0, orientation level 
 	// and climb rate is 0
 	return false;
+}
+
+QuadcopterState getQuadcopterState() {
+	return latestState;
+}
+
+QuadcopterPose getQuadcopterPose() {
+	return latestPose;
 }

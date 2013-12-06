@@ -11,6 +11,21 @@
 
 using namespace LanderStates;
 
+ros::Publisher rcPub;
+
+
+void performAction() {
+	roscopter::RC controlMsg = performStateAction();
+	rcPub.publish(controlMsg);
+}
+
+void setStateAndPerformAction(States newState) {
+	setState(newState);
+	performAction();
+}
+
+
+
 void attitudeCallback(const roscopter::Attitude::ConstPtr& attitudeMsg) {
 	QuadcopterState::updateAttitude(attitudeMsg);
 }
@@ -26,7 +41,7 @@ void hudCallback(const roscopter::VFR_HUD::ConstPtr& hudMsg) {
 	QuadcopterState::updateTelemetry(hudMsg);
 
 	if (isLanderActive()) {
-		if (getState() == States.LAND_LOW) {
+		if (getState() == LAND_LOW) {
 			performAction();
 		}
 		// we don't care about the other states at the moment
@@ -48,7 +63,7 @@ void poseCallback(const std_msgs::Float64MultiArray::ConstPtr& poseMsg) {
 	// not active, don't do anything
 }
 
-void rcCallback(const roscopter::RC::ConstPtr& rcMsg)) {
+void rcCallback(const roscopter::RC::ConstPtr& rcMsg) {
 	//TODO: Store RC values?
 	if (updateLanderActive(rcMsg.channel[4])) { //CHECK CHANNEL
 		if (isLanderActive() && (getState == States.FLYING)) {
@@ -60,18 +75,6 @@ void rcCallback(const roscopter::RC::ConstPtr& rcMsg)) {
 		}
 	}
 	// else no change
-}
-
-ros::Publisher rcPub;
-
-void setStateAndPerformAction(States newState) {
-	setState(newState);
-	performAction();
-}
-
-void performAction() {
-	roscopter::RC controlMsg = performStateAction();
-	rcPub.publish(controlMsg);
 }
 
 int main(int argc, char **argv) {
