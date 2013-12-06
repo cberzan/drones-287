@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
         Mat frame;
         for(int i = 0; i < 10; i++) {
             cap >> frame;
-            system(command);
+            // system(command);
         }
         char filename[100];
         snprintf(filename, 100, "%04d.jpeg", exposure);
