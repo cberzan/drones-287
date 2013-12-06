@@ -43,12 +43,17 @@ int main(int argc, char *argv[])
         system(command);
 
         // Capture and save frame.
+        // HACK: The exposure change isn't immediate, so capture
+        // a number of frames instead. Save only the last one.
         Mat frame;
-        cap >> frame;
+        for(int i = 0; i < 10; i++) {
+            cap >> frame;
+            system(command);
+        }
         char filename[100];
         snprintf(filename, 100, "%04d.jpeg", exposure);
         imwrite(filename, frame);
         cout << "wrote " << filename << endl;
-        cout << "Wrote images to current dir." << endl;
 	}
+    cout << "Wrote images to current dir." << endl;
 }
