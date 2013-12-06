@@ -64,8 +64,8 @@ int main(int argc, char *argv[])
     // Need to capture something first, or else it's unreliable.
     Mat dummy;
     cap >> dummy;
-    system("v4l2-ctl -d /dev/video1 -c exposure_auto=1");
-    system("v4l2-ctl -d /dev/video1 -c exposure_absolute=200");
+    system("v4l2-ctl -d /dev/video0 -c exposure_auto=1");
+    system("v4l2-ctl -d /dev/video0 -c exposure_absolute=200");
 
     // Getting or setting FPS doesn't seem to work.
     // See http://answers.opencv.org/question/6713/#post-id-6869
