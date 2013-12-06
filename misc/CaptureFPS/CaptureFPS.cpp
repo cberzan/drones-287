@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
         display = true;
     }
 
-    VideoCapture cap(1);
+    VideoCapture cap(0);
     if(!cap.isOpened()) {
         fprintf(stderr, "Could not open camera.\n");
         return -1;

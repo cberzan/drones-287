@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    VideoCapture cap(1);
+    VideoCapture cap(0);
     if(!cap.isOpened()) {
         cerr << "Could not open camera." << endl;
         return 1;
