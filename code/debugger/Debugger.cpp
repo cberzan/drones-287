@@ -11,7 +11,7 @@ int main(int argc, char **argv)
     int const queueSize = 1000;
     ros::Rate loopRate(4);  // publish messages at 4 Hz
 
-    ros::Subscriber sub = node.subscribe("control", 1000, controlCallback);
+    //ros::Subscriber sub = node.subscribe("control", 1000, controlCallback);
 
 	//Debugger posts output to command line
 	//Log info messages too?
