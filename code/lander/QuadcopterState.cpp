@@ -4,12 +4,14 @@ QuadcopterState latestState;
 QuadcopterPose latestPose;
 
 void updateAttitude(const roscopter::Attitude::ConstPtr& attitudeMsg) {
+	ROS_INFO("Updated attitude");
 	latestState.roll = attitudeMsg->roll;
 	latestState.pitch = attitudeMsg->pitch;
 	latestState.yaw = attitudeMsg->yaw;
 }
 
 void updateTelemetry (const roscopter::VFR_HUD::ConstPtr& hudMsg) {
+	ROS_INFO("Updated telemetry");
  	latestState.airspeed  = hudMsg->airspeed;
 	latestState.groundspeed = hudMsg->groundspeed;
 	latestState.heading = hudMsg->heading;
@@ -20,6 +22,7 @@ void updateTelemetry (const roscopter::VFR_HUD::ConstPtr& hudMsg) {
 
 void updatePose (const std_msgs::Float64MultiArray::ConstPtr& poseMsg) {
 	//[x, y, z, yaw]
+	ROS_INFO("Updated pose");
 	latestPose.x = poseMsg->data[0];
 	latestPose.y = poseMsg->data[1];
 	latestPose.z = poseMsg->data[2];
@@ -32,10 +35,14 @@ bool onGround () {
 	return false;
 }
 
-QuadcopterState getQuadcopterState() {
+bool belowFieldOfView () {
+	return false;
+}
+
+QuadcopterState getQuadcopterState () {
 	return latestState;
 }
 
-QuadcopterPose getQuadcopterPose() {
+QuadcopterPose getQuadcopterPose () {
 	return latestPose;
 }
