@@ -1,26 +1,58 @@
+#include <string>
+
 #include "Controller.h"
 #include "LanderStates.h"
 #include "QuadcopterState.h"
 
 #include "ros/ros.h"
 #include "std_msgs/Float64MultiArray.h"
+#include "std_srvs/Empty.h"
 
 #include "roscopter/Attitude.h"
 #include "roscopter/RC.h"
 #include "roscopter/VFR_HUD.h"
 
 ros::Publisher rcPub;
+ros::ServiceClient armClient;
 
+// default = SEEK_HOME
+const States START_STATE = LAND_LOW;
+const std::string START_STATE_NAME = "LAND_LOW";
+const int MAX_CONTROL_CYCLES = 2;
+int cyclesSinceControlInput = 0;
+bool armed = false;
 
-void performAction() {
+void armIfNecessary() {
+	if (!armed) {
+		ROS_INFO("Autopilot disarmed. Arming");		
+		std_srvs::Empty request;
+		if (armClient.call(request)) {
+			ROS_INFO("Autopilot armed");		
+			armed = true;
+		}
+	}
+}
+
+void publishControlMsgs(std::vector<roscopter::RC> controlMsgs) {
+	for (int i=0; i<controlMsgs.size(); i++) {
+		rcPub.publish(controlMsgs[i]);	
+	}
+}
+
+void performNeutralAction() {
+	ROS_INFO("Sending neutral control message");
+	publishControlMsgs(getNeutralAction());	
+}
+
+void performStateAction() {
 	ROS_INFO("Sending control message");
-	roscopter::RC controlMsg = performStateAction();
-	rcPub.publish(controlMsg);
+	armIfNecessary();
+	publishControlMsgs(getStateAction());
 }
 
 void setStateAndPerformAction(States newState) {
 	setState(newState);
-	performAction();
+	performStateAction();
 }
 
 
@@ -50,7 +82,7 @@ void hudCallback(const roscopter::VFR_HUD::ConstPtr& hudMsg) {
 				setStateAndPerformAction(POWER_OFF);
 			} else {
 				ROS_INFO("Performing action: LAND_LOW");
-				performAction();	
+				performStateAction();	
 			}
 		}
 		// we don't care about the other states at the moment
@@ -66,9 +98,20 @@ void poseCallback(const std_msgs::Float64MultiArray::ConstPtr& poseMsg) {
 			ROS_INFO("Setting state and performing action: LAND_HIGH");
 			setStateAndPerformAction(LAND_HIGH);
 		} else if (getState() == LAND_HIGH) {
-			// Stay the course, cap'n
-			ROS_INFO("Performing action: LAND_HIGH");
-			performAction();
+			if (isStable() && (cyclesSinceControlInput >= MAX_CONTROL_CYCLES)) {
+				// Correct course, cap'n
+				cyclesSinceControlInput = 0;
+				ROS_INFO("Performing action: LAND_HIGH");
+				performStateAction();
+			} else {
+				if (cyclesSinceControlInput == MAX_CONTROL_CYCLES) {
+					// Give it a control input if a certain number
+					// of estimates have passed
+					performNeutralAction();
+				} 
+				// Stay the course, cap'n
+				cyclesSinceControlInput++;
+			}
 		} else if (getState() == LAND_LOW) {
 			// Somehow we can see the landing pad again
 			ROS_INFO("Setting state and performing action: LAND_HIGH");
@@ -84,22 +127,24 @@ void rcCallback(const roscopter::RC::ConstPtr& rcMsg) {
 	if (updateLanderActive(rcMsg->channel[4])) {  // CHECK CHANNEL
 		if (isLanderActive() && getState() == FLYING) {
 			// Activate lander
-			ROS_INFO("Setting state and performing action: SEEK_HOME");
-			setStateAndPerformAction(SEEK_HOME);
+			ROS_INFO("ACTIVATING LANDER");
+			ROS_INFO_STREAM("Setting state and performing action: " << START_STATE_NAME);
+			setStateAndPerformAction(START_STATE);
 		} else if (!isLanderActive() && getState() != FLYING) {
 			// Revert to manual control
 			ROS_INFO("Setting state and performing action: FLYING");
 			setStateAndPerformAction(FLYING);
+			armed = false;
 		}
 	}
-	// else no change
+	// Else no change
 }
 
 int main(int argc, char **argv) {
 	ros::init(argc, argv, "Lander");
     ros::NodeHandle node;
     int const queueSize = 1000;
-    ros::Rate loopRate(4);  // publish messages at 4 Hz
+
 	ROS_INFO("Setting up subscriptions");
     // Subscribe to pose estimates
     ros::Subscriber simplePoseSub = \
@@ -119,6 +164,9 @@ int main(int argc, char **argv) {
     // Set up publisher for RC output
     rcPub = \
     	node.advertise<roscopter::RC>("send_rc", queueSize);
+
+
+    armClient = node.serviceClient<std_srvs::Empty>("arm");
 
     ros::spin();
 

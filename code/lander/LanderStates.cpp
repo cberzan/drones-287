@@ -37,17 +37,30 @@ bool setState (States newState) {
     return changed;
 }
 
-roscopter::RC performStateAction() {
+std::vector<roscopter::RC> getStateAction() {
+	std::vector<roscopter::RC> controlMsgs;
     switch (currentState) {
         case FLYING:
-            return getManualControlMsg();
+        	controlMsgs.push_back(getManualControlMsg());
+            break;
         case SEEK_HOME:
-            return getRTLControlMsg();
+            controlMsgs.push_back(getRTLControlMsg());
+            break;
         case LAND_HIGH:
-            return getTranslateAndDescendControlMsg();
+        	controlMsgs.push_back(getTranslateAndDescendControlMsg());
+        	break;
         case LAND_LOW:
-            return getDescentOnlyControlMsg();
+        	controlMsgs.push_back(getDescendOnlyControlMsg());
+        	break;
         case POWER_OFF:
-            return getPowerOffControlMsg();
+            controlMsgs.push_back(getPowerOffControlMsg());
+            break;
     }
+    return controlMsgs;
+}
+
+std::vector<roscopter::RC> getNeutralAction() {
+	std::vector<roscopter::RC> controlMsgs;
+	controlMsgs.push_back(getNeutralControlMsg());
+    return controlMsgs;
 }

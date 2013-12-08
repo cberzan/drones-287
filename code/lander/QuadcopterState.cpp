@@ -1,5 +1,9 @@
 #include "QuadcopterState.h"
 
+const float NO_CLIMB_RATE = 0.01;
+const float GROUND_ALT = 0.1; 
+const float MIN_FIELD_OF_VIEW_ALT = 0.75;
+
 QuadcopterState latestState;
 QuadcopterPose latestPose;
 
@@ -30,13 +34,16 @@ void updatePose (const std_msgs::Float64MultiArray::ConstPtr& poseMsg) {
 }
 
 bool onGround () {
-	// Check altitude close to 0, orientation level
-	// and climb rate is 0
-	return false;
+	return (latestState.climb <= NO_CLIMB_RATE && latestState.alt <= GROUND_ALT);
 }
 
 bool belowFieldOfView () {
-	return false;
+	return (latestState.alt <= MIN_FIELD_OF_VIEW_ALT);
+}
+
+bool isStable () {
+	return (latestState.roll >= -0.01 && latestState.roll <= 0.01 \
+		&& latestState.pitch >= -0.01 && latestState.pitch <= 0.01);
 }
 
 QuadcopterState getQuadcopterState () {

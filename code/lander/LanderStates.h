@@ -1,3 +1,4 @@
+#include <vector>
 #include "roscopter/RC.h"
 
 
@@ -65,4 +66,14 @@ bool setState(States newState);
 * Returns:
 * controlMsg = roscopter::RC control input
 */
-roscopter::RC performStateAction ();
+std::vector<roscopter::RC> getStateAction ();
+
+
+/**
+* Returns a neutral input that will reset values 
+* to neutral to maintain straight and level flight.
+*
+* Returns:
+* controlMsg = roscopter::RC control input
+*/
+std::vector<roscopter::RC> getNeutralAction ();

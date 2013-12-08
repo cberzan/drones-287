@@ -36,17 +36,23 @@ const float	ELEVATOR_GAIN = 0.2;
 const float	THROTTLE_GAIN = 0.2;
 const float	YAW_GAIN = 0.2;
 
-roscopter::RC buildRCMsg(int aileron, int elevator, int throttle, int yaw,  int mode) {
+roscopter::RC buildRCMsg(int aileron, int elevator, int throttle, int yaw,  int mode, bool neutral_5_to_8 = true) {
 	roscopter::RC msg;
 	msg.channel[0] = aileron;
 	msg.channel[1] = elevator;
 	msg.channel[2] = throttle;
 	msg.channel[3] = yaw;
 	msg.channel[4] = mode;
-	//Channels 5-7 are not in use, so we set them = NEUTRAL.
-	msg.channel[5] = NEUTRAL;
-	msg.channel[6] = NEUTRAL;
-	msg.channel[7] = NEUTRAL;
+	if (neutral_5_to_8) {
+		//Channels 5-7 are not in use, so we set them = NEUTRAL.
+		msg.channel[5] = NEUTRAL;
+		msg.channel[6] = NEUTRAL;
+		msg.channel[7] = NEUTRAL;
+	} else {
+		msg.channel[5] = 0;
+		msg.channel[6] = 0;
+		msg.channel[7] = 0;
+	}
 	return msg;
 }
 
@@ -60,37 +66,39 @@ roscopter::RC getRTLControlMsg () {
 		YAW_NEUTRAL, MODE_RTL);
 }
 
-bool isQuadcopterStable() {
-//QuadcopterState::getQuadcopterState().roll
-	//TODO: do we want this check?
-	return true;
-}
-
 roscopter::RC getTranslateAndDescendControlMsg () {
-	if (isQuadcopterStable())
-	{	
-		// TODO: calculate control input relative to latest pose
-		int aileron;
-		int elevator; 
-		int throttle = (1 - THROTTLE_GAIN) * THROTTLE_NEUTRAL;
-		int yaw;
-	// Iff attitude of quadcopter is stable
-				// (i.e., we're not moving to left or right)	
-					// Calculate control input WRT pose estimate
-					// Send control input
-		return buildRCMsg(aileron, elevator, throttle, yaw, MODE_LOITER);
-	}
-	
-	return getNeutralControlMsg();
+
+	// Calculate x error
+
+	// Calculate y error
+
+	// Calculate z error
+	// FIX THROTTLE FOR NOW (always descending)
+	int throttle = (1 - THROTTLE_GAIN) * THROTTLE_NEUTRAL;
+
+	// Calculate yaw error
+
+
+	// TODO: calculate control input relative to latest pose
+	int aileron;
+	int elevator; 
+	int yaw;
+
+
+			// (i.e., we're not moving to left or right)	
+				// Calculate control input WRT pose estimate
+				// Send control input
+	return buildRCMsg(aileron, elevator, throttle, yaw, MODE_LOITER);
+
 }
 
-roscopter::RC getDescentOnlyControlMsg () {
+roscopter::RC getDescendOnlyControlMsg () {
 	int throttle = (1 - THROTTLE_GAIN) * THROTTLE_NEUTRAL;
 	return buildRCMsg(AILERON_NEUTRAL, ELEVATOR_NEUTRAL, throttle, YAW_NEUTRAL, MODE_LOITER);
 }
 
 roscopter::RC getManualControlMsg () {
-	return buildRCMsg(0,0,0,0,0);
+	return buildRCMsg(0,0,0,0,0, false);
 }
 
 roscopter::RC getPowerOffControlMsg () {
