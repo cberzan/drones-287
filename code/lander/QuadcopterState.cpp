@@ -41,6 +41,11 @@ bool belowFieldOfView () {
 	return (latestState.alt <= MIN_FIELD_OF_VIEW_ALT);
 }
 
+bool isStable () {
+	return (latestState.roll >= -0.01 && latestState.roll <= 0.01 \
+		&& latestState.pitch >= -0.01 && latestState.pitch <= 0.01);
+}
+
 QuadcopterState getQuadcopterState () {
 	return latestState;
 }

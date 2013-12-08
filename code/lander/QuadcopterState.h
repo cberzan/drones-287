@@ -53,6 +53,8 @@ bool onGround();
 
 bool belowFieldOfView();
 
+bool isStable();
+
 QuadcopterState getQuadcopterState();
 
 QuadcopterPose getQuadcopterPose();
