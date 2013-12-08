@@ -2,8 +2,6 @@
 #include "LanderStates.h"
 #include "QuadcopterState.h"
 
-#include "roscopter/RC.h"
-
 bool landerActive = false;
 
 bool isLanderActive() {
@@ -11,8 +9,10 @@ bool isLanderActive() {
 }
 
 bool updateLanderActive(int controlChannelValue) {
-    bool oldLanderActive = false;
-    if (controlChannelValue >= 1000 && controlChannelValue <= 2000) //CHECK ME
+    bool oldLanderActive = landerActive;
+
+    //Add 10 to account for inaccuracy in signal
+    if (controlChannelValue <= (MODE_LOITER - 10)) 
         landerActive = true;
     else
         landerActive = false;
@@ -48,9 +48,6 @@ roscopter::RC performStateAction() {
         case LAND_LOW:
             return getDescentOnlyControlMsg();
         case POWER_OFF:
-            if (onGround()) {
-                return getPowerOffControlMsg();
-            }
-            break;
+            return getPowerOffControlMsg();
     }
 }

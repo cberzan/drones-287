@@ -1,5 +1,6 @@
 #include "std_msgs/Float64MultiArray.h"
 
+#include "ros/ros.h"
 #include "roscopter/Attitude.h"
 #include "roscopter/VFR_HUD.h"
 
@@ -49,6 +50,8 @@ void updatePose (const std_msgs::Float64MultiArray::ConstPtr& poseMsg);
 
 
 bool onGround();
+
+bool belowFieldOfView();
 
 QuadcopterState getQuadcopterState();
 
