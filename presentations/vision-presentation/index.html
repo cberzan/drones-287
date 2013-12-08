@@ -68,6 +68,8 @@
 							<li> Pose estimation </li>
 							<li> Landing controller </li>
 						</ul>
+						<p>&nbsp;</p>
+						<small>(Adapted from Sharp, Shakernia, Sastry, "A Vision System for Landing an Unmanned Aerial Vehicle", ICRA 2001)</small>
 					</section>
 
 					<section>
@@ -85,6 +87,9 @@
 						<ul>
 							<li> Input: 24 point correspondences </li>
 							<li> Output: camera pose (x, y, z, roll, pitch, yaw) </li>
+							<li> Have 48 equations (2 for each point pair) </li>
+							<li> System of equations has 6 degrees of freedom</li>
+							<li> Solve it using an SVD trick </li>
 						</ul>
 
 					</section>
