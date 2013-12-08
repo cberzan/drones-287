@@ -25,7 +25,7 @@ roscopter::RC getNeutralControlMsg ();
 
 roscopter::RC getTranslateAndDescendControlMsg ();
 
-roscopter::RC getDescentOnlyControlMsg ();
+roscopter::RC getDescendOnlyControlMsg ();
 
 /**
 * Creates a message that will return the drone to manual control.

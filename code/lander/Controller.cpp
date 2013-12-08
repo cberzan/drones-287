@@ -36,17 +36,23 @@ const float	ELEVATOR_GAIN = 0.2;
 const float	THROTTLE_GAIN = 0.2;
 const float	YAW_GAIN = 0.2;
 
-roscopter::RC buildRCMsg(int aileron, int elevator, int throttle, int yaw,  int mode) {
+roscopter::RC buildRCMsg(int aileron, int elevator, int throttle, int yaw,  int mode, bool neutral_5_to_8 = true) {
 	roscopter::RC msg;
 	msg.channel[0] = aileron;
 	msg.channel[1] = elevator;
 	msg.channel[2] = throttle;
 	msg.channel[3] = yaw;
 	msg.channel[4] = mode;
-	//Channels 5-7 are not in use, so we set them = NEUTRAL.
-	msg.channel[5] = NEUTRAL;
-	msg.channel[6] = NEUTRAL;
-	msg.channel[7] = NEUTRAL;
+	if (neutral_5_to_8) {
+		//Channels 5-7 are not in use, so we set them = NEUTRAL.
+		msg.channel[5] = NEUTRAL;
+		msg.channel[6] = NEUTRAL;
+		msg.channel[7] = NEUTRAL;
+	} else {
+		msg.channel[5] = 0;
+		msg.channel[6] = 0;
+		msg.channel[7] = 0;
+	}
 	return msg;
 }
 
@@ -84,13 +90,13 @@ roscopter::RC getTranslateAndDescendControlMsg () {
 	return getNeutralControlMsg();
 }
 
-roscopter::RC getDescentOnlyControlMsg () {
+roscopter::RC getDescendOnlyControlMsg () {
 	int throttle = (1 - THROTTLE_GAIN) * THROTTLE_NEUTRAL;
 	return buildRCMsg(AILERON_NEUTRAL, ELEVATOR_NEUTRAL, throttle, YAW_NEUTRAL, MODE_LOITER);
 }
 
 roscopter::RC getManualControlMsg () {
-	return buildRCMsg(0,0,0,0,0);
+	return buildRCMsg(0,0,0,0,0, false);
 }
 
 roscopter::RC getPowerOffControlMsg () {

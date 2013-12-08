@@ -1,3 +1,4 @@
+#include <vector>
 #include "roscopter/RC.h"
 
 
@@ -65,4 +66,4 @@ bool setState(States newState);
 * Returns:
 * controlMsg = roscopter::RC control input
 */
-roscopter::RC performStateAction ();
+std::vector<roscopter::RC> performStateAction ();

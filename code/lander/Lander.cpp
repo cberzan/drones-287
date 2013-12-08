@@ -1,3 +1,5 @@
+#include <string>
+
 #include "Controller.h"
 #include "LanderStates.h"
 #include "QuadcopterState.h"
@@ -11,11 +13,18 @@
 
 ros::Publisher rcPub;
 
+// default = SEEK_HOME
+const States START_STATE = LAND_LOW;
+const std::string START_STATE_NAME = "LAND_LOW";
+
 
 void performAction() {
 	ROS_INFO("Sending control message");
-	roscopter::RC controlMsg = performStateAction();
-	rcPub.publish(controlMsg);
+	std::vector<roscopter::RC> controlMsgs = performStateAction();
+
+	for (int i=0; i<controlMsgs.size(); i++) {
+		rcPub.publish(controlMsgs[i]);	
+	}
 }
 
 void setStateAndPerformAction(States newState) {
@@ -84,8 +93,9 @@ void rcCallback(const roscopter::RC::ConstPtr& rcMsg) {
 	if (updateLanderActive(rcMsg->channel[4])) {  // CHECK CHANNEL
 		if (isLanderActive() && getState() == FLYING) {
 			// Activate lander
-			ROS_INFO("Setting state and performing action: SEEK_HOME");
-			setStateAndPerformAction(SEEK_HOME);
+			ROS_INFO("Activating lander");
+			ROS_INFO_STREAM("Setting state and performing action: " << START_STATE_NAME);
+			setStateAndPerformAction(START_STATE);
 		} else if (!isLanderActive() && getState() != FLYING) {
 			// Revert to manual control
 			ROS_INFO("Setting state and performing action: FLYING");
@@ -99,7 +109,7 @@ int main(int argc, char **argv) {
 	ros::init(argc, argv, "Lander");
     ros::NodeHandle node;
     int const queueSize = 1000;
-    ros::Rate loopRate(4);  // publish messages at 4 Hz
+
 	ROS_INFO("Setting up subscriptions");
     // Subscribe to pose estimates
     ros::Subscriber simplePoseSub = \
