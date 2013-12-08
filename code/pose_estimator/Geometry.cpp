@@ -79,16 +79,25 @@ Mat_<double> estimateRotTransl(
 
 Mat_<double> estimatePose(Mat_<double> const imagePts)
 {
+    // Note that given R, t, the camera location in world
+    // coordinates is not just t, but instead -inv(R)*t.
+
     Mat_<double> const worldPts = getWorldPts();
-    Mat_<double> const pose = estimateRotTransl(worldPts, imagePts);
+    Mat_<double> const rotTransl = estimateRotTransl(worldPts, imagePts);
+    Mat_<double> rotMatrix(3, 3);
+    Mat_<double> translation(3, 1);
+    rotTransl.col(0).copyTo(rotMatrix.col(0));
+    rotTransl.col(1).copyTo(rotMatrix.col(1));
+    rotTransl.col(2).copyTo(rotMatrix.col(2));
+    rotTransl.col(3).copyTo(translation);
+    Mat_<double> cameraLoc = -rotMatrix.t() * translation;
     Mat_<double> simplePose(4, 1);
-    simplePose(0) = pose(0, 3);  // x
-    simplePose(1) = pose(1, 3);  // y
-    simplePose(2) = pose(2, 3);  // z
+    simplePose(0) = cameraLoc(0);  // x
+    simplePose(1) = cameraLoc(1);  // y
+    simplePose(2) = cameraLoc(2);  // z
     // Yaw (rotation around z axis):
     // See http://planning.cs.uiuc.edu/node103.html
-    // TODO verify that this is correct
-    simplePose(3) = atan2(pose(1, 0), pose(0, 0));
+    simplePose(3) = atan2(rotMatrix(1, 0), rotMatrix(0, 0));
     // cout << "simplePose: " << simplePose << endl;
     return simplePose;
 }
