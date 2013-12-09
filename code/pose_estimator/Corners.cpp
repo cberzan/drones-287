@@ -1,8 +1,6 @@
 #include "Corners.h"
 #include <cstdio>
 
-#define PARENT_CONTOURS_SIZE 512
-
 using namespace std;
 
 inline float sqr(float x)
@@ -190,7 +188,7 @@ void drawCornerLabels(Mat & contourImg, Point2f (&Corners)[24])
     }
 }
 
-int getIndexOfOuterSquare(int (&Arr)[PARENT_CONTOURS_SIZE], size_t size)
+int getIndexOfOuterSquare(int *Arr, size_t size)
 {
     int max = 0, indexOfMax = 0;
     for (int i=0; i<size; i++)
@@ -237,9 +235,11 @@ Mat_<double> detectCorners(
         Point(0, 0));
 
     vector<Point> approx;
-    int parentContours[PARENT_CONTOURS_SIZE] = {0};
-    int selectedContours[256] = {0};
-    int vContourCount = 0;
+    int *parentContours = new int[contours.size()];
+    for(int i = 0; i < contours.size(); i++) {
+        parentContours[i] = 0;
+    }
+    vector<int> selectedContours;
     for (int i=0; i<contours.size(); i++)
     {
         if (hierarchy[i].val[3] == -1) 
@@ -252,14 +252,17 @@ Mat_<double> detectCorners(
             isContourConvex(Mat(approx)))
         {
             parentContours[hierarchy[i].val[3]]++;
-            selectedContours[vContourCount] = i;
-            vContourCount++;
+            selectedContours.push_back(i);
         }
     }
 
     int indexOfOuterSquare = getIndexOfOuterSquare(parentContours, contours.size());
+    bool allCornersDetected = (parentContours[indexOfOuterSquare] == 6);
+    delete[] parentContours;
+    parentContours = 0;
+
     // If all squares are not detected, return failure.
-    if (parentContours[indexOfOuterSquare] != 6) 
+    if (!allCornersDetected)
 	{
         if(contourWindowHandle) 
 		{
@@ -276,7 +279,7 @@ Mat_<double> detectCorners(
 
     int orderOfPolygons[6] = {0};
     int contourIndices[6];
-    for (int i=0; i<vContourCount; i++)
+    for (int i=0; i < selectedContours.size(); i++)
     {
         cIndex = selectedContours[i];
         if (hierarchy[cIndex].val[3] != indexOfOuterSquare) 
