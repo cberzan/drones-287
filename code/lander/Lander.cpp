@@ -14,8 +14,8 @@
 ros::Publisher rcPub;
 
 // default = SEEK_HOME
-const States START_STATE = LAND_LOW;
-const std::string START_STATE_NAME = "LAND_LOW";
+const States START_STATE = LAND_HIGH;
+const std::string START_STATE_NAME = "LAND_HIGH";
 const int MAX_CONTROL_CYCLES = 2;
 int cyclesSinceControlInput = 0;
 
@@ -84,7 +84,7 @@ void poseCallback(const std_msgs::Float64MultiArray::ConstPtr& poseMsg) {
 			setStateAndPerformAction(LAND_HIGH);
 		} else if (getState() == LAND_HIGH) {
 			// We need the quad to be stable to get a valid pose estimate.
-			if (isStable() && (cyclesSinceControlInput >= MAX_CONTROL_CYCLES)) {
+			if (isStable() && (cyclesSinceControlInput > MAX_CONTROL_CYCLES)) {
 				// Correct course, cap'n
 				cyclesSinceControlInput = 0;
 				ROS_INFO("Performing action: LAND_HIGH");
@@ -97,6 +97,7 @@ void poseCallback(const std_msgs::Float64MultiArray::ConstPtr& poseMsg) {
 				} 
 				// Stay the course, cap'n
 				cyclesSinceControlInput++;
+				ROS_INFO("Staying the course %d cycles", cyclesSinceControlInput);
 			}
 		} else if (getState() == LAND_LOW) {
 			// Somehow we can see the landing pad again

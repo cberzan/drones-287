@@ -3,9 +3,10 @@
 const float NO_CLIMB_RATE = 0.01;
 const float GROUND_ALT = 0.1; 
 const float MIN_FIELD_OF_VIEW_ALT = 0.75;
+const float STABILITY_LIMIT = 0.2;
 
-QuadcopterState latestState;
-QuadcopterPose latestPose;
+QuadcopterState latestState = QuadcopterState();
+QuadcopterPose latestPose = QuadcopterPose();
 
 void updateAttitude(const roscopter::Attitude::ConstPtr& attitudeMsg) {
 	ROS_DEBUG("Updated attitude");
@@ -34,16 +35,18 @@ void updatePose (const std_msgs::Float64MultiArray::ConstPtr& poseMsg) {
 }
 
 bool onGround () {
-	return (latestState.climb <= NO_CLIMB_RATE && latestState.alt <= GROUND_ALT);
+	double highestAltitudeEstimate = std::max(latestState.alt, latestPose.z / 100);
+	return (latestState.climb <= NO_CLIMB_RATE && highestAltitudeEstimate <= GROUND_ALT);
 }
 
 bool belowFieldOfView () {
-	return (latestState.alt <= MIN_FIELD_OF_VIEW_ALT);
+	double highestAltitudeEstimate = std::max(latestState.alt, latestPose.z / 100);
+	return (highestAltitudeEstimate <= MIN_FIELD_OF_VIEW_ALT);
 }
 
 bool isStable () {
-	return (latestState.roll >= -0.01 && latestState.roll <= 0.01 \
-		&& latestState.pitch >= -0.01 && latestState.pitch <= 0.01);
+	return (latestState.roll >= (-1 * STABILITY_LIMIT) && latestState.roll <= STABILITY_LIMIT \
+		&& latestState.pitch >= (-1 * STABILITY_LIMIT) && latestState.pitch <= STABILITY_LIMIT);
 }
 
 QuadcopterState getQuadcopterState () {

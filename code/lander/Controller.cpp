@@ -2,7 +2,6 @@
 #include "LanderStates.h"
 #include "QuadcopterState.h"
 
-#include <cmath>
 #include <vector>
 #include "std_msgs/Int32MultiArray.h"
 
@@ -43,6 +42,8 @@ int ELEVATOR_NEUTRAL = NEUTRAL;
 int THROTTLE_NEUTRAL = 0;
 int YAW_NEUTRAL = NEUTRAL;
 
+// TODO: Add +pi/2 offset for webcam being rotated
+const float YAW_CORRECTION = 0.08; // ~= 5 degrees 
 const float	THROTTLE_GAIN = 0.1;
 
 roscopter::RC buildRCMsg(int aileron, int elevator, int throttle, int yaw) {
@@ -75,28 +76,24 @@ roscopter::RC getRTLControlMsg () {
 
 // Max error for x,y dimensions in mm
 const int MAX_DISPLACEMENT_ERROR = 10000; 
-const float  PI_F=3.14159265358979f;
 
 roscopter::RC getRotationControlMsg () {
-
-
+	double yaw_error =  getQuadcopterPose().yaw; //radians
+	float yaw_gain = -1 * (yaw_error / 180);
+	int yaw = (int) (yaw_gain * YAW_RANGE) / 2;
+	return buildRCMsg(AILERON_NEUTRAL, ELEVATOR_NEUTRAL, THROTTLE_NEUTRAL, yaw);
 }
 
 roscopter::RC getTranslateAndDescendControlMsg () {
-	double yaw_error =  getQuadcopterPose().yaw; //degrees
-	float yaw_gain = abs(yaw_error) / 180;
 
-	// Calculate angular error
-	// Given in degrees from PoseEstimator
-	// +90 means we are pointing to the left
-	// -90 means we are pointing to the right
-	// FIX YAW FOR NOW
-	int yaw = YAW_NEUTRAL;
+	if (getQuadcopterPose().yaw > YAW_CORRECTION || getQuadcopterPose().yaw < (-1*YAW_CORRECTION)) {
+		return getRotationControlMsg();
+	}
 
-	// Naive first take, assume we are always pointing forwards
-	// Eventually, calculate error vector relative to actual angle of quad
+	// Assume we are always pointing forwards and therefore
+	// can map x and y onto aileron and elevator inputs
 	double x_error = getQuadcopterPose().x; //mm
-	double y_error = getQuadcopterPose().y; //mm
+				double y_error = getQuadcopterPose().y; //mm
 
 	float aileron_gain = -1 * (x_error / MAX_DISPLACEMENT_ERROR);
 	float elevator_gain = -1 * (y_error / MAX_DISPLACEMENT_ERROR);
@@ -109,7 +106,7 @@ roscopter::RC getTranslateAndDescendControlMsg () {
 	double z_error =  getQuadcopterPose().z; //mm
 	int throttle = (1 - THROTTLE_GAIN) * THROTTLE_NEUTRAL;
 
-	return buildRCMsg(aileron, elevator, throttle, yaw);
+	return buildRCMsg(aileron, elevator, throttle, YAW_NEUTRAL);
 }
 
 roscopter::RC getDescendOnlyControlMsg () {
