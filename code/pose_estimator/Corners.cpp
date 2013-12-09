@@ -5,28 +5,6 @@
 
 using namespace std;
 
-
-class _Polygon
-{
-public:
-    char Label[2];
-    vector<Point> Corners;
-    Point2f Center;
-
-    _Polygon()
-    {
-        Label[0] = '-';
-        Label[1] = '\0';
-    }
-};
-
-struct _Diagonal
-{
-    Vec2f Diag;
-    int indexOfCorner1;
-    int indexOfCorner2;
-};
-
 inline float sqr(float x)
 {
     return x*x;
@@ -35,6 +13,11 @@ inline float sqr(float x)
 inline float calcDistanceBet2Points(Point2f P1, Point2f P2)
 {
     return sqrt(sqr(P1.x - P2.x) + sqr(P1.y - P2.y));
+}
+
+inline float maxFloat(float & A, float & B)
+{
+	return ((A > B) ? A : B);
 }
 
 void labelPolygons(_Polygon (&Polygons)[6], int (&orderOfPolygons)[6])
@@ -57,7 +40,8 @@ void labelPolygons(_Polygon (&Polygons)[6], int (&orderOfPolygons)[6])
                     Polygons[orderOfPolygons[0]].Center.y - Polygons[orderOfPolygons[3]].Center.y,
                     0);
 
-    float distFromD, pCount = 0, nCount = 0, pDist = 0, nDist = 0;
+    float distFromD, distBCFromD[2][2] = {0}, distEFFromD[2][2] = {0};
+	int indexBC = 0, indexEF = 0;
     for (int k=0; k<6; k++)
     {
         if (k == orderOfPolygons[3] || k == orderOfPolygons[0])
@@ -71,64 +55,49 @@ void labelPolygons(_Polygon (&Polygons)[6], int (&orderOfPolygons)[6])
         Vec3f cP = DA.cross(DV);
         if (cP.val[2] > 0)
         {
-            if (pCount == 0)
-            {
-                pDist = distFromD;
-                orderOfPolygons[5] = k;
-                pCount++;
-            }
-            else
-            {
-                if (pDist < distFromD)
-                {
-                    orderOfPolygons[4] = orderOfPolygons[5];
-                    orderOfPolygons[5] = k;
-                }
-                else
-                {
-                    orderOfPolygons[4] = k;
-                }
-            }
+			distEFFromD[indexEF][0] = distFromD;
+			distEFFromD[indexEF][1] = k;
+			indexEF++;
         }
         else
         {
-            if (nCount == 0)
-            {
-                nDist = distFromD;
-                orderOfPolygons[1] = k;
-                nCount++;
-            }
-            else
-            {
-                if (nDist < distFromD)
-                {
-                    orderOfPolygons[2] = orderOfPolygons[1];
-                    orderOfPolygons[1] = k;
-                }
-                else
-                {
-                    orderOfPolygons[2] = k;
-                }
-            }
+			distBCFromD[indexBC][0] = distFromD;
+			distBCFromD[indexBC][1] = k;
+			indexBC++;
         }
+		if (distBCFromD[0][0] > distBCFromD[1][0])
+		{
+			orderOfPolygons[1] = distBCFromD[0][1]; // Polygon B
+			orderOfPolygons[2] = distBCFromD[1][1]; // Polygon C
+		}
+		else
+		{
+			orderOfPolygons[1] = distBCFromD[1][1]; // Polygon B
+			orderOfPolygons[2] = distBCFromD[0][1]; // Polygon C
+		}
+		
+		if (distEFFromD[0][0] > distEFFromD[1][0])
+		{
+			orderOfPolygons[5] = distEFFromD[0][1]; // Polygon F
+			orderOfPolygons[4] = distEFFromD[1][1]; // Polygon E
+		}
+		else
+		{
+			orderOfPolygons[5] = distEFFromD[1][1]; // Polygon F
+			orderOfPolygons[4] = distEFFromD[0][1]; // Polygon E
+		}		
     }
 }
 
 void drawPolygonLabels(Mat & contourImg, _Polygon (&Polygons)[6], int (&orderOfPolygons)[6])
 {
-    Polygons[orderOfPolygons[0]].Label[0] = 'A';
-    Polygons[orderOfPolygons[1]].Label[0] = 'B';
-    Polygons[orderOfPolygons[2]].Label[0] = 'C';
-    Polygons[orderOfPolygons[3]].Label[0] = 'D';
-    Polygons[orderOfPolygons[4]].Label[0] = 'E';
-    Polygons[orderOfPolygons[5]].Label[0] = 'F';
-
-    putText(contourImg, Polygons[orderOfPolygons[0]].Label, Polygons[orderOfPolygons[0]].Center, FONT_HERSHEY_PLAIN, 1, Scalar(255,255,255));
-    putText(contourImg, Polygons[orderOfPolygons[1]].Label, Polygons[orderOfPolygons[1]].Center, FONT_HERSHEY_PLAIN, 1, Scalar(255,255,255));
-    putText(contourImg, Polygons[orderOfPolygons[2]].Label, Polygons[orderOfPolygons[2]].Center, FONT_HERSHEY_PLAIN, 1, Scalar(255,255,255));
-    putText(contourImg, Polygons[orderOfPolygons[3]].Label, Polygons[orderOfPolygons[3]].Center, FONT_HERSHEY_PLAIN, 1, Scalar(255,255,255));
-    putText(contourImg, Polygons[orderOfPolygons[4]].Label, Polygons[orderOfPolygons[4]].Center, FONT_HERSHEY_PLAIN, 1, Scalar(255,255,255));
-    putText(contourImg, Polygons[orderOfPolygons[5]].Label, Polygons[orderOfPolygons[5]].Center, FONT_HERSHEY_PLAIN, 1, Scalar(255,255,255));
+	char label = 'A';
+	for (int i = 0; i < 6; i++)
+	{
+		Polygons[orderOfPolygons[i]].Label[0] = label;
+		putText(contourImg, Polygons[orderOfPolygons[i]].Label, Polygons[orderOfPolygons[i]].Center, FONT_HERSHEY_PLAIN, 1, Scalar(255,255,255));
+		label++;
+	}
 }
 
 void labelCorners(_Polygon (&Polygons)[6], int (&orderOfPolygons)[6], Point2f (&Corners)[24])
@@ -242,7 +211,8 @@ Mat_<double> detectCorners(
     char const* cannyWindowHandle,
     char const* contourWindowHandle)
 {
-    if(inputWindowHandle) {
+    if(inputWindowHandle) 
+	{
         imshow(inputWindowHandle, frame);
     }
 
@@ -251,7 +221,8 @@ Mat_<double> detectCorners(
     // GaussianBlur(frame, filteredImage, Size(3,3), 0, 0);
     medianBlur(frame, filteredImage, 3);
     Canny(filteredImage, cannyImage, 50, 200, 3);
-    if(cannyWindowHandle) {
+    if(cannyWindowHandle) 
+	{
         imshow(cannyWindowHandle, cannyImage);
     }
 
@@ -271,7 +242,8 @@ Mat_<double> detectCorners(
     int vContourCount = 0;
     for (int i=0; i<contours.size(); i++)
     {
-        if (hierarchy[i].val[3] == -1) {
+        if (hierarchy[i].val[3] == -1) 
+		{
             continue;
         }
         approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.03, true);
@@ -287,12 +259,13 @@ Mat_<double> detectCorners(
 
     int indexOfOuterSquare = getIndexOfOuterSquare(parentContours, contours.size());
     // If all squares are not detected, return failure.
-    if (parentContours[indexOfOuterSquare] != 6) {
-        if(contourWindowHandle) {
+    if (parentContours[indexOfOuterSquare] != 6) 
+	{
+        if(contourWindowHandle) 
+		{
             Mat contourImg = Mat::zeros(cannyImage.size(), CV_8UC3);
             imshow(contourWindowHandle, contourImg);
         }
-
         return Mat_<double>();  // empty
     }
 
@@ -306,7 +279,8 @@ Mat_<double> detectCorners(
     for (int i=0; i<vContourCount; i++)
     {
         cIndex = selectedContours[i];
-        if (hierarchy[cIndex].val[3] != indexOfOuterSquare) {
+        if (hierarchy[cIndex].val[3] != indexOfOuterSquare) 
+		{
             continue;
         }
         approxPolyDP(
@@ -315,28 +289,27 @@ Mat_<double> detectCorners(
             arcLength(Mat(contours[cIndex]), true) * 0.03,
             true);
         PolyArea = fabs(contourArea(Mat(approx)));
-        if (approx.size() == 4 && PolyArea > 100 && isContourConvex(Mat(approx)))
+        Polygons[polygonIndex].Corners = approx;
+        mo = moments(contours[cIndex], false);
+        Polygons[polygonIndex].Center = Point2f(mo.m10/mo.m00 , mo.m01/mo.m00);
+        if (PolyArea > maxPolyArea)
         {
-            Polygons[polygonIndex].Corners = approx;
-            mo = moments(contours[cIndex], false);
-            Polygons[polygonIndex].Center = Point2f(mo.m10/mo.m00 , mo.m01/mo.m00);
-            if (PolyArea > maxPolyArea)
-            {
-                maxPolyArea = PolyArea;
-                orderOfPolygons[0] = polygonIndex;
-            }
-            contourIndices[polygonIndex] = cIndex;
-            polygonIndex++;
+            maxPolyArea = PolyArea;
+            orderOfPolygons[0] = polygonIndex;
         }
+        contourIndices[polygonIndex] = cIndex;
+        polygonIndex++;
     }
 
     Point2f Corners[24];
     labelPolygons(Polygons, orderOfPolygons);
     labelCorners(Polygons, orderOfPolygons, Corners);
 
-    if(contourWindowHandle) {
+    if(contourWindowHandle) 
+	{
         Mat contourImg = Mat::zeros(cannyImage.size(), CV_8UC3);
-        for(int i = 0; i < 6; i++) {
+        for(int i = 0; i < 6; i++) 
+		{
             cIndex = contourIndices[i];
             drawContours(
                 contourImg,
@@ -354,7 +327,8 @@ Mat_<double> detectCorners(
     }
 
     Mat_<double> cornerMatrix(24, 2);
-    for(int i = 0; i < 24; i++) {
+    for(int i = 0; i < 24; i++) 
+	{
         cornerMatrix(i, 0) = Corners[i].x;
         cornerMatrix(i, 1) = Corners[i].y;
     }

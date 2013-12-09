@@ -13,6 +13,28 @@ using namespace cv;
  * Returns:
  * imagePts (24x2) = image points
  */
+
+class _Polygon
+{
+public:
+    char Label[2];
+    vector<Point> Corners;
+    Point2f Center;
+
+    _Polygon()
+    {
+        Label[0] = '-';
+        Label[1] = '\0';
+    }
+};
+
+struct _Diagonal
+{
+    Vec2f Diag;
+    int indexOfCorner1;
+    int indexOfCorner2;
+};
+
 Mat_<double> detectCorners(
     Mat const frame,
     char const* inputWindowHandle = NULL,
