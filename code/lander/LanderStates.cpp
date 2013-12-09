@@ -11,8 +11,9 @@ bool isLanderActive() {
 bool updateLanderActive(int controlChannelValue) {
     bool oldLanderActive = landerActive;
 
-    //Add 10 to account for inaccuracy in signal
-    if (controlChannelValue <= (MODE_LOITER - 10)) 
+    //Add 10 either side to account for inaccuracy in signal
+    if (controlChannelValue <= (MODE_LOITER + 10) && \
+    	controlChannelValue >= (MODE_LOITER - 10)) 
         landerActive = true;
     else
         landerActive = false;
