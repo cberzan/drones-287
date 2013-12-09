@@ -44,9 +44,6 @@ std::vector<roscopter::RC> getStateAction() {
         case FLYING:
         	controlMsgs.push_back(getManualControlMsg());
             break;
-        case SEEK_HOME:
-            controlMsgs.push_back(getRTLControlMsg());
-            break;
         case LAND_HIGH:
         	controlMsgs.push_back(getTranslateAndDescendControlMsg());
         	break;

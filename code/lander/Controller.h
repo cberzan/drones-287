@@ -1,7 +1,6 @@
 #include "roscopter/RC.h"
 
-// TODO: Do we want to set third mode to RTL or
-// just to loiter?
+/* User defined in MissionPlanner */
 enum Mode {
 	MODE_RTL = 1128,
 	MODE_LOITER = 1528,
@@ -11,12 +10,6 @@ enum Mode {
 /**
 * Responsible for generating all control input messages
 */
-
-/**
-* Responsible for generating all control input messages
-*/
-roscopter::RC getRTLControlMsg ();
-
 roscopter::RC getNeutralControlMsg ();
 
 roscopter::RC getTranslateAndDescendControlMsg ();

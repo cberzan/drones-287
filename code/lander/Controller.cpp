@@ -6,7 +6,7 @@
 #include "std_msgs/Int32MultiArray.h"
 
 
-// values from radio calibration
+// values from radio calibration in MissionPlanner
 // 1: aileron, neutral = 1527, low = 1128, high = 1925
 // 2: elevator, neutral = 1528, low = 1921, high = 1124
 // 3: throttle, neutral ?, low = 1124, high = 1927
@@ -68,11 +68,6 @@ roscopter::RC buildRCMsg(int aileron, int elevator, int throttle, int yaw) {
 }
 
 roscopter::RC getNeutralControlMsg () {
-	return buildRCMsg(AILERON_NEUTRAL, ELEVATOR_NEUTRAL, THROTTLE_NEUTRAL, \
-		YAW_NEUTRAL);
-}
-
-roscopter::RC getRTLControlMsg () {
 	return buildRCMsg(AILERON_NEUTRAL, ELEVATOR_NEUTRAL, THROTTLE_NEUTRAL, \
 		YAW_NEUTRAL);
 }

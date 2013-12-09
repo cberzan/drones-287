@@ -5,14 +5,12 @@
 /**
 * Enum of all possible Lander states:
 * FLYING (stabilise)
-* SEEK_HOME (return to launch) <- user sets mode to return to launch, we detect this and begin overriding inputs
 * LAND_HIGH (loiter)
 * LAND_LOW (loiter)
-* POWER_OFF (stabilise)
+* POWER_OFF (loiter)
 */
 enum States {
     FLYING,
-    SEEK_HOME,
     LAND_HIGH,
     LAND_LOW,
     POWER_OFF
@@ -37,8 +35,6 @@ bool isLanderActive();
 * changed = true if the lander state has changed
 */
 bool updateLanderActive(int controlChannelValue);
-
-
 
 /**
 * Get the current state.
