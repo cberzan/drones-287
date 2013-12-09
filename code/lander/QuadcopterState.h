@@ -1,3 +1,6 @@
+#ifndef QUADCOPTER_STATE_H
+#define QUADCOPTER_STATE_H
+
 #include "std_msgs/Float64MultiArray.h"
 
 #include "ros/ros.h"
@@ -92,3 +95,5 @@ QuadcopterState getQuadcopterState();
 * boolean value, true if quadcopter is at ground level.
 */
 QuadcopterPose getQuadcopterPose();
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
+
 #include "roscopter/RC.h"
 
 // TODO: Do we want to set third mode to RTL or
@@ -31,3 +34,5 @@ roscopter::RC getManualControlMsg ();
 roscopter::RC getPowerOffControlMsg ();
 
 void updateRC(const roscopter::RC::ConstPtr& rcMsg) ;
+
+#endif
