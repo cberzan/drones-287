@@ -63,6 +63,15 @@ add_executable(TestPoseFromImages
 )
 target_link_libraries(TestPoseFromImages ${OpenCV_LIBS})
 
+add_executable(DemoPoseFromImages
+    DemoPoseFromImages.cpp
+    Corners.h
+    Corners.cpp
+    Geometry.h
+    Geometry.cpp
+)
+target_link_libraries(DemoPoseFromImages ${OpenCV_LIBS})
+
 add_executable(TestPoseFromCamera
     TestPoseFromCamera.cpp
     Corners.h
