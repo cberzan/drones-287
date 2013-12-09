@@ -1,18 +1,29 @@
 #include "Controller.h"
+#include "LanderStates.h"
 #include "QuadcopterState.h"
 
-
+#include <cmath>
 #include <vector>
 #include "std_msgs/Int32MultiArray.h"
 
+
+// values from radio calibration
+// 1: aileron, neutral = 1527, low = 1128, high = 1925
+// 2: elevator, neutral = 1528, low = 1921, high = 1124
+// 3: throttle, neutral ?, low = 1124, high = 1927
+// 4: yaw, neutral = 1530, low = 1131, high = 1928
+// 5: mode, low = 1128, med = 1528, high = 1928
+
 enum Aileron {
 	AILERON_LOW = 1128,
-	AILERON_HIGH = 1925
+	AILERON_HIGH = 1925,
+	AILERON_RANGE = 797
 };
 
 enum Elevator {
 	ELEVATOR_LOW = 1124,
-	ELEVATOR_HIGH = 1921 
+	ELEVATOR_HIGH = 1921,
+	ELEVATOR_RANGE = 797 
 };
 
 enum Throttle {
@@ -22,7 +33,8 @@ enum Throttle {
 
 enum Yaw {
 	YAW_LOW = 1128,
-	YAW_HIGH = 1928
+	YAW_HIGH = 1928,
+	YAW_RANGE = 800
 };
 
 const int NEUTRAL = 1528;
@@ -31,10 +43,7 @@ int ELEVATOR_NEUTRAL = NEUTRAL;
 int THROTTLE_NEUTRAL = 0;
 int YAW_NEUTRAL = NEUTRAL;
 
-const float	AILERON_GAIN = 0.2;
-const float	ELEVATOR_GAIN = 0.2;
-const float	THROTTLE_GAIN = 0.2;
-const float	YAW_GAIN = 0.2;
+const float	THROTTLE_GAIN = 0.1;
 
 roscopter::RC buildRCMsg(int aileron, int elevator, int throttle, int yaw) {
 	roscopter::RC msg;
@@ -56,38 +65,51 @@ roscopter::RC buildRCMsg(int aileron, int elevator, int throttle, int yaw) {
 
 roscopter::RC getNeutralControlMsg () {
 	return buildRCMsg(AILERON_NEUTRAL, ELEVATOR_NEUTRAL, THROTTLE_NEUTRAL, \
-		YAW_NEUTRAL, MODE_LOITER);
+		YAW_NEUTRAL);
 }
 
 roscopter::RC getRTLControlMsg () {
 	return buildRCMsg(AILERON_NEUTRAL, ELEVATOR_NEUTRAL, THROTTLE_NEUTRAL, \
-		YAW_NEUTRAL, MODE_RTL);
+		YAW_NEUTRAL);
+}
+
+// Max error for x,y dimensions in mm
+const int MAX_DISPLACEMENT_ERROR = 10000; 
+const float  PI_F=3.14159265358979f;
+
+roscopter::RC getRotationControlMsg () {
+
+
 }
 
 roscopter::RC getTranslateAndDescendControlMsg () {
+	double yaw_error =  getQuadcopterPose().yaw; //degrees
+	float yaw_gain = abs(yaw_error) / 180;
 
-	// Calculate x error
+	// Calculate angular error
+	// Given in degrees from PoseEstimator
+	// +90 means we are pointing to the left
+	// -90 means we are pointing to the right
+	// FIX YAW FOR NOW
+	int yaw = YAW_NEUTRAL;
 
-	// Calculate y error
+	// Naive first take, assume we are always pointing forwards
+	// Eventually, calculate error vector relative to actual angle of quad
+	double x_error = getQuadcopterPose().x; //mm
+	double y_error = getQuadcopterPose().y; //mm
+
+	float aileron_gain = -1 * (x_error / MAX_DISPLACEMENT_ERROR);
+	float elevator_gain = -1 * (y_error / MAX_DISPLACEMENT_ERROR);
+
+	int aileron = (int) (aileron_gain * AILERON_RANGE) / 2;
+	int elevator = (int) (elevator_gain * ELEVATOR_RANGE) / 2;
 
 	// Calculate z error
 	// FIX THROTTLE FOR NOW (always descending)
+	double z_error =  getQuadcopterPose().z; //mm
 	int throttle = (1 - THROTTLE_GAIN) * THROTTLE_NEUTRAL;
 
-	// Calculate yaw error
-
-
-	// TODO: calculate control input relative to latest pose
-	int aileron;
-	int elevator; 
-	int yaw;
-
-
-			// (i.e., we're not moving to left or right)	
-				// Calculate control input WRT pose estimate
-				// Send control input
 	return buildRCMsg(aileron, elevator, throttle, yaw);
-
 }
 
 roscopter::RC getDescendOnlyControlMsg () {
@@ -96,7 +118,7 @@ roscopter::RC getDescendOnlyControlMsg () {
 }
 
 roscopter::RC getManualControlMsg () {
-	return buildRCMsg(0,0,0,0,0);
+	return buildRCMsg(0,0,0,0);
 }
 
 roscopter::RC getPowerOffControlMsg () {
@@ -105,9 +127,11 @@ roscopter::RC getPowerOffControlMsg () {
 }
 
 void updateRC(const roscopter::RC::ConstPtr& rcMsg) {
-	AILERON_NEUTRAL = rcMsg->channel[0];
-	ELEVATOR_NEUTRAL = rcMsg->channel[1];
-	THROTTLE_NEUTRAL = rcMsg->channel[2];
-	YAW_NEUTRAL = rcMsg->channel[3];
+	if (!isLanderActive()) {
+		AILERON_NEUTRAL = rcMsg->channel[0];
+		ELEVATOR_NEUTRAL = rcMsg->channel[1];
+		THROTTLE_NEUTRAL = rcMsg->channel[2];
+		YAW_NEUTRAL = rcMsg->channel[3];
+	}
 }
 
