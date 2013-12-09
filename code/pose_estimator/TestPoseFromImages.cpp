@@ -7,7 +7,7 @@ using namespace std;
 #define ESCAPE_KEY 27
 
 
-int main()
+int main(int argc, char **argv)
 {
     char const* inputWindowHandle = "Input";
     char const* cannyWindowHandle = "Canny";
@@ -18,34 +18,28 @@ int main()
 
     Mat frame;
 
-    char const* imageNames[] = {
-        "platform1.jpg",
-        "platform2.jpg",
-        "platform3.jpg",
-        NULL
-    };
-    int imageIndex = 0;
+    int imageIndex = 1;
     while(true) {
-        frame = imread("../test/" + String(imageNames[imageIndex]));
+        frame = imread(argv[imageIndex]);
         if (frame.empty())
         {
             cout << "Couldn't load input image" << endl;
             continue;
         }
         imageIndex++;
-        if (!imageNames[imageIndex])
-            imageIndex = 0;
+		if (imageIndex == argc)
+			imageIndex = 1;
 
         Mat_<double> corners = detectCorners(
             frame,
             inputWindowHandle,
             NULL, // cannyWindowHandle,
             contourWindowHandle);
-        cout << corners << endl;
-        Mat_<double> calibratedCorners = calibrateImagePoints(corners);
-        cout << calibratedCorners << endl;
         if(corners.rows) {
+            Mat_<double> calibratedCorners = calibrateImagePoints(corners);
             Mat_<double> simplePose = estimatePose(calibratedCorners);
+            // cout << corners << endl;
+            // cout << calibratedCorners << endl;
             cout << simplePose << endl;
         } else {
             cout << "could not detect all corners" << endl;
