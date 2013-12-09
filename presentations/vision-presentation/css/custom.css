@@ -1,7 +1,7 @@
-html iframe.youtube {
+html div.youtube {
   visibility: hidden;
 }
 
-html.youtube iframe.youtube {
+html.youtube div.youtube {
   visibility: visible;
 }
