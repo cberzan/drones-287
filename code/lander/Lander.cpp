@@ -6,32 +6,18 @@
 
 #include "ros/ros.h"
 #include "std_msgs/Float64MultiArray.h"
-#include "std_srvs/Empty.h"
 
 #include "roscopter/Attitude.h"
 #include "roscopter/RC.h"
 #include "roscopter/VFR_HUD.h"
 
 ros::Publisher rcPub;
-ros::ServiceClient armClient;
 
 // default = SEEK_HOME
 const States START_STATE = LAND_LOW;
 const std::string START_STATE_NAME = "LAND_LOW";
 const int MAX_CONTROL_CYCLES = 2;
 int cyclesSinceControlInput = 0;
-bool armed = false;
-
-void armIfNecessary() {
-	if (!armed) {
-		ROS_INFO("Autopilot disarmed. Arming");		
-		std_srvs::Empty request;
-		if (armClient.call(request)) {
-			ROS_INFO("Autopilot armed");		
-			armed = true;
-		}
-	}
-}
 
 void publishControlMsgs(std::vector<roscopter::RC> controlMsgs) {
 	for (int i=0; i<controlMsgs.size(); i++) {
@@ -46,7 +32,6 @@ void performNeutralAction() {
 
 void performStateAction() {
 	ROS_INFO("Sending control message");
-	armIfNecessary();
 	publishControlMsgs(getStateAction());
 }
 
@@ -134,7 +119,6 @@ void rcCallback(const roscopter::RC::ConstPtr& rcMsg) {
 			// Revert to manual control
 			ROS_INFO("Setting state and performing action: FLYING");
 			setStateAndPerformAction(FLYING);
-			armed = false;
 		}
 	}
 	// Else no change
@@ -164,9 +148,6 @@ int main(int argc, char **argv) {
     // Set up publisher for RC output
     rcPub = \
     	node.advertise<roscopter::RC>("send_rc", queueSize);
-
-
-    armClient = node.serviceClient<std_srvs::Empty>("arm");
 
     ros::spin();
 
