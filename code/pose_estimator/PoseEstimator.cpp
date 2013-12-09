@@ -56,11 +56,13 @@ int main(int argc, char **argv)
     Mat_<double> imagePts;
     Mat_<double> simplePose;
 
-    // Set exposure manually.
+    // Set exposure and focus manually.
     // Seems to take effect after several frames.
     capture >> frame;
-    system("v4l2-ctl -d /dev/video0 -c exposure_auto=1");
-    system("v4l2-ctl -d /dev/video0 -c exposure_absolute=180");
+    system("v4l2-ctl -d 0 -c exposure_auto=1");
+    system("v4l2-ctl -d 0 -c exposure_absolute=180");
+    system("v4l2-ctl -d 0 -c focus_auto=0");
+    system("v4l2-ctl -d 0 -c focus_absolute=0");
 
     while(ros::ok()) {
         capture >> frame;
