@@ -49,12 +49,46 @@ void updateTelemetry (const roscopter::VFR_HUD::ConstPtr& hudMsg);
 void updatePose (const std_msgs::Float64MultiArray::ConstPtr& poseMsg);
 
 
+/**
+* Evaluates whether the quadcopter is on the ground or not.
+*
+* Output:
+* boolean value, true if quadcopter is at ground level.
+*/
 bool onGround();
 
+
+/**
+* Evaluates whether the quadcopter is below the camera's field
+* of view or not.
+*
+* Output:
+* boolean value, true if quadcopter is below minimum field of 
+* view altitude.
+*/
 bool belowFieldOfView();
 
+/**
+* Evaluates whether the quadcopter is flying stable or not.
+* 
+* Output:
+* boolean value, true if quadcopter is flying stable.
+*/
 bool isStable();
 
+/**
+* Evaluates whether the quadcopter is on the ground or not.
+*
+* Output:
+* boolean value, true if quadcopter is at ground level.
+*/
 QuadcopterState getQuadcopterState();
 
+
+/**
+* Evaluates whether the quadcopter is on the ground or not.
+*
+* Output:
+* boolean value, true if quadcopter is at ground level.
+*/
 QuadcopterPose getQuadcopterPose();

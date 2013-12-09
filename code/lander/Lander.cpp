@@ -83,6 +83,7 @@ void poseCallback(const std_msgs::Float64MultiArray::ConstPtr& poseMsg) {
 			ROS_INFO("Setting state and performing action: LAND_HIGH");
 			setStateAndPerformAction(LAND_HIGH);
 		} else if (getState() == LAND_HIGH) {
+			// We need the quad to be stable to get a valid pose estimate.
 			if (isStable() && (cyclesSinceControlInput >= MAX_CONTROL_CYCLES)) {
 				// Correct course, cap'n
 				cyclesSinceControlInput = 0;
