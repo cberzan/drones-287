@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
         display = true;
     }
 
-    VideoCapture cap(1);
+    VideoCapture cap(0);
     if(!cap.isOpened()) {
         fprintf(stderr, "Could not open camera.\n");
         return -1;
@@ -61,11 +61,11 @@ int main(int argc, char *argv[])
     printf("Gain:         %f\n", cap.get(CV_CAP_PROP_GAIN));
 
     // Set exposure manually.
-    // Need to capture something first, or else it's unreliable.
+    // Seems to take effect after several frames.
     Mat dummy;
     cap >> dummy;
-    system("v4l2-ctl -d /dev/video1 -c exposure_auto=1");
-    system("v4l2-ctl -d /dev/video1 -c exposure_absolute=200");
+    system("v4l2-ctl -d /dev/video0 -c exposure_auto=1");
+    system("v4l2-ctl -d /dev/video0 -c exposure_absolute=180");
 
     // Getting or setting FPS doesn't seem to work.
     // See http://answers.opencv.org/question/6713/#post-id-6869

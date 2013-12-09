@@ -55,6 +55,13 @@ int main(int argc, char **argv)
     Mat frame;
     Mat_<double> imagePts;
     Mat_<double> simplePose;
+
+    // Set exposure manually.
+    // Seems to take effect after several frames.
+    capture >> frame;
+    system("v4l2-ctl -d /dev/video0 -c exposure_auto=1");
+    system("v4l2-ctl -d /dev/video0 -c exposure_absolute=180");
+
     while(ros::ok()) {
         capture >> frame;
         imagePts = detectCorners(frame);

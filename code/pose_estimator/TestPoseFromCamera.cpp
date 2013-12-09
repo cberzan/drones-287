@@ -16,13 +16,20 @@ int main()
     // namedWindow(cannyWindowHandle, CV_WINDOW_AUTOSIZE);
     namedWindow(contourWindowHandle, CV_WINDOW_AUTOSIZE);
 
-    VideoCapture capture(1);
+    VideoCapture capture(0);
     if(!capture.isOpened()) {
         cerr << "Device inaccessible. Damn!" << endl;
         return -1;
     }
 
     Mat frame;
+
+    // Set exposure manually.
+    // Seems to take effect after several frames.
+    capture >> frame;
+    system("v4l2-ctl -d /dev/video0 -c exposure_auto=1");
+    system("v4l2-ctl -d /dev/video0 -c exposure_absolute=180");
+
     while(true) {
         capture >> frame;
         Mat_<double> corners = detectCorners(
