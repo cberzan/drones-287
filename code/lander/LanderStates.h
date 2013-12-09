@@ -1,3 +1,6 @@
+#ifndef LANDER_STATES_H
+#define LANDER_STATES_H
+
 #include <vector>
 #include "roscopter/RC.h"
 
@@ -73,3 +76,5 @@ std::vector<roscopter::RC> getStateAction ();
 * controlMsg = roscopter::RC control input
 */
 std::vector<roscopter::RC> getNeutralAction ();
+
+#endif

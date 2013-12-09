@@ -1,4 +1,7 @@
+#include <iostream>
+#include <map>
 #include <string>
+using namespace std;
 
 #include "Controller.h"
 #include "LanderStates.h"
@@ -11,11 +14,16 @@
 #include "roscopter/RC.h"
 #include "roscopter/VFR_HUD.h"
 
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
+
 ros::Publisher rcPub;
 
-// default = LAND_HIGH
-const States START_STATE = LAND_HIGH;
-const std::string START_STATE_NAME = "LAND_HIGH";
+map<States, string> stateName;
+
+// Starting state; set by command-line param.
+States START_STATE;
+
 const int MAX_CONTROL_CYCLES = 2;
 int cyclesSinceControlInput = 0;
 
@@ -113,7 +121,8 @@ void rcCallback(const roscopter::RC::ConstPtr& rcMsg) {
 		if (isLanderActive() && getState() == FLYING) {
 			// Activate lander
 			ROS_INFO("ACTIVATING LANDER");
-			ROS_INFO_STREAM("Setting state and performing action: " << START_STATE_NAME);
+			ROS_INFO_STREAM("Setting state and performing action: "
+                << stateName[START_STATE]);
 			setStateAndPerformAction(START_STATE);
 		} else if (!isLanderActive() && getState() != FLYING) {
 			// Revert to manual control
@@ -124,7 +133,55 @@ void rcCallback(const roscopter::RC::ConstPtr& rcMsg) {
 	// Else no change
 }
 
+// Parse command line and update global params.
+void parseCommandLine(int argc, char **argv)
+{
+    po::options_description desc("Allowed options");
+    desc.add_options()
+        ("max-displ", po::value<int>(), "max displacement error")
+        ("start-state", po::value<string>(), "start state")
+    ;
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+    po::notify(vm);
+
+    // MAX_DISPLACEMENT_ERROR
+    if (vm.count("max-displ")) {
+        setMaxDisplacementError(vm["max-displ"].as<int>());
+    } else {
+        setMaxDisplacementError(1000);  // default
+    }
+    cout << "MAX_DISPLACEMENT_ERROR: " << getMaxDisplacementError() << endl;
+
+    // START_STATE
+    // FIXME what's a good place to initialize this?
+    stateName[FLYING] = "FLYING";
+    stateName[LAND_HIGH] = "LAND_HIGH";
+    stateName[LAND_LOW] = "LAND_LOW";
+    stateName[POWER_OFF] = "POWER_OFF";
+    if (vm.count("start-state")) {
+        string value = vm["start-state"].as<string>();
+        // HACK: iterate enum values; assumes POWER_OFF is the last one.
+        int i;
+        for(i = 0; i <= POWER_OFF; i++) {
+            if(stateName[(States)i] == value) {
+                START_STATE = (States)i;
+                break;
+            }
+        }
+        if(i == POWER_OFF + 1) {
+            cerr << "Unrecognized start state." << endl;
+            exit(1);
+        }
+    } else {
+        START_STATE = LAND_HIGH;  // default
+    }
+    cout << "START_STATE: " << stateName[START_STATE] << endl;
+}
+
 int main(int argc, char **argv) {
+    parseCommandLine(argc, argv);
+
 	ros::init(argc, argv, "Lander");
     ros::NodeHandle node;
     int const queueSize = 1000;

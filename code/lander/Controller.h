@@ -1,3 +1,6 @@
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
+
 #include "roscopter/RC.h"
 
 /* User defined in MissionPlanner */
@@ -6,6 +9,9 @@ enum Mode {
 	MODE_LOITER = 1528,
 	MODE_STABILISE = 1928
 };
+
+int getMaxDisplacementError();
+void setMaxDisplacementError(int value);
 
 /**
 * Responsible for generating all control input messages
@@ -24,3 +30,5 @@ roscopter::RC getManualControlMsg ();
 roscopter::RC getPowerOffControlMsg ();
 
 void updateRC(const roscopter::RC::ConstPtr& rcMsg) ;
+
+#endif

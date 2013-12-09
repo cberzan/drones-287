@@ -1,0 +1,7 @@
+html div.youtube {
+  visibility: hidden;
+}
+
+html.youtube div.youtube {
+  visibility: visible;
+}
