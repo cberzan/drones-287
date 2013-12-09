@@ -1,0 +1,7 @@
+html iframe.youtube {
+  visibility: hidden;
+}
+
+html.youtube iframe.youtube {
+  visibility: visible;
+}
