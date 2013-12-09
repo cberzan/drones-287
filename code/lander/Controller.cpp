@@ -46,6 +46,10 @@ int YAW_NEUTRAL = NEUTRAL;
 const float YAW_CORRECTION = 0.08; // ~= 5 degrees 
 const float	THROTTLE_GAIN = 0.1;
 
+// Max error for x,y dimensions in mm
+const int MAX_DISPLACEMENT_ERROR = 10000; 
+const float  PI_F=3.14159265358979f;
+
 roscopter::RC buildRCMsg(int aileron, int elevator, int throttle, int yaw) {
 	roscopter::RC msg;
 	msg.channel[0] = aileron;
@@ -74,12 +78,10 @@ roscopter::RC getRTLControlMsg () {
 		YAW_NEUTRAL);
 }
 
-// Max error for x,y dimensions in mm
-const int MAX_DISPLACEMENT_ERROR = 10000; 
 
 roscopter::RC getRotationControlMsg () {
 	double yaw_error =  getQuadcopterPose().yaw; //radians
-	float yaw_gain = -1 * (yaw_error / 180);
+	float yaw_gain = -1 * (yaw_error / PI_F);
 	int yaw = (int) (yaw_gain * YAW_RANGE) / 2;
 	return buildRCMsg(AILERON_NEUTRAL, ELEVATOR_NEUTRAL, THROTTLE_NEUTRAL, yaw);
 }

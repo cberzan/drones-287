@@ -21,7 +21,9 @@ int cyclesSinceControlInput = 0;
 
 void publishControlMsgs(std::vector<roscopter::RC> controlMsgs) {
 	for (int i=0; i<controlMsgs.size(); i++) {
-		rcPub.publish(controlMsgs[i]);	
+		roscopter::RC controlMsg = controlMsgs[i];
+		ROS_INFO("%d %d %d %d", controlMsg.channel[0], controlMsg.channel[1], controlMsg.channel[2], controlMsg.channel[3]); 
+		rcPub.publish(controlMsg);	
 	}
 }
 
