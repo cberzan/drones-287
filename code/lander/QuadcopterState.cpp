@@ -4,6 +4,8 @@ const float NO_CLIMB_RATE = 0.01;
 const float GROUND_ALT = 0.1; 
 const float MIN_FIELD_OF_VIEW_ALT = 0.75;
 const float STABILITY_LIMIT = 0.2;
+const float PI_F=3.14159265358979f;
+const float CAMERA_ROTATION = PI_F / 2; // Camera is 90 degrees clockwise of the front
 
 QuadcopterState latestState = QuadcopterState();
 QuadcopterPose latestPose = QuadcopterPose();
@@ -25,13 +27,21 @@ void updateTelemetry (const roscopter::VFR_HUD::ConstPtr& hudMsg) {
 	latestState.climb = hudMsg->climb;
 }
 
+double normaliseYaw(double yaw) {
+	double normalisedYaw = yaw - CAMERA_ROTATION;
+	if (normalisedYaw < (-1 * PI_F)) {
+		normalisedYaw += 2 * PI_F;
+	}
+	return normalisedYaw;
+}
+
 void updatePose (const std_msgs::Float64MultiArray::ConstPtr& poseMsg) {
 	//[x, y, z, yaw]
 	ROS_DEBUG("Updated pose");
 	latestPose.x = poseMsg->data[0];
 	latestPose.y = poseMsg->data[1];
 	latestPose.z = poseMsg->data[2];
-	latestPose.yaw = poseMsg->data[3];
+	latestPose.yaw = normaliseYaw(poseMsg->data[3]);
 }
 
 bool onGround () {

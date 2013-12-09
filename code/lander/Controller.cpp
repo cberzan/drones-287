@@ -42,13 +42,12 @@ int ELEVATOR_NEUTRAL = NEUTRAL;
 int THROTTLE_NEUTRAL = 0;
 int YAW_NEUTRAL = NEUTRAL;
 
-// TODO: Add +pi/2 offset for webcam being rotated
+const float PI_F=3.14159265358979f;
 const float YAW_CORRECTION = 0.08; // ~= 5 degrees 
-const float	THROTTLE_GAIN = 0.1;
+const float	THROTTLE_GAIN = 0.05;
 
 // Max error for x,y dimensions in mm
-const int MAX_DISPLACEMENT_ERROR = 10000; 
-const float  PI_F=3.14159265358979f;
+const int MAX_DISPLACEMENT_ERROR = 1000; 
 
 roscopter::RC buildRCMsg(int aileron, int elevator, int throttle, int yaw) {
 	roscopter::RC msg;
@@ -78,16 +77,14 @@ roscopter::RC getRTLControlMsg () {
 		YAW_NEUTRAL);
 }
 
-
 roscopter::RC getRotationControlMsg () {
 	double yaw_error =  getQuadcopterPose().yaw; //radians
-	float yaw_gain = -1 * (yaw_error / PI_F);
-	int yaw = (int) (yaw_gain * YAW_RANGE) / 2;
+	double yaw_gain = -1 * (yaw_error / PI_F);
+	int yaw = (int) ((yaw_gain * YAW_RANGE) / 2) + YAW_NEUTRAL;
 	return buildRCMsg(AILERON_NEUTRAL, ELEVATOR_NEUTRAL, THROTTLE_NEUTRAL, yaw);
 }
 
 roscopter::RC getTranslateAndDescendControlMsg () {
-
 	if (getQuadcopterPose().yaw > YAW_CORRECTION || getQuadcopterPose().yaw < (-1*YAW_CORRECTION)) {
 		return getRotationControlMsg();
 	}
@@ -100,8 +97,8 @@ roscopter::RC getTranslateAndDescendControlMsg () {
 	float aileron_gain = -1 * (x_error / MAX_DISPLACEMENT_ERROR);
 	float elevator_gain = -1 * (y_error / MAX_DISPLACEMENT_ERROR);
 
-	int aileron = (int) (aileron_gain * AILERON_RANGE) / 2;
-	int elevator = (int) (elevator_gain * ELEVATOR_RANGE) / 2;
+	int aileron = (int) ((aileron_gain * AILERON_RANGE) / 2) + AILERON_NEUTRAL;
+	int elevator = (int) ((elevator_gain * ELEVATOR_RANGE) / 2) + ELEVATOR_NEUTRAL;
 
 	// Calculate z error
 	// FIX THROTTLE FOR NOW (always descending)
