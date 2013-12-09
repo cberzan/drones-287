@@ -8,6 +8,11 @@ find_package(catkin REQUIRED COMPONENTS
     roscopter
 )
 
+find_package(Boost REQUIRED COMPONENTS
+    program_options
+)
+
+
 ## Declare ROS messages, services and actions
 
 ## Generate added messages and services
@@ -23,6 +28,8 @@ catkin_package(
 ## Build
 
 include_directories(include ${catkin_INCLUDE_DIRS})
+include_directories(${Boost_INCLUDE_DIRS})
+
 
 add_executable(Lander
     Lander.cpp
@@ -34,6 +41,6 @@ add_executable(Lander
     QuadcopterState.cpp
 )
 
-target_link_libraries(Lander ${catkin_LIBRARIES})
+target_link_libraries(Lander ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 
 set( CMAKE_BUILD_TYPE Debug )

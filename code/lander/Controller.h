@@ -11,6 +11,9 @@ enum Mode {
 	MODE_STABILISE = 1928
 };
 
+int getMaxDisplacementError();
+void setMaxDisplacementError(int value);
+
 /**
 * Responsible for generating all control input messages
 */

@@ -46,8 +46,19 @@ const float PI_F=3.14159265358979f;
 const float YAW_CORRECTION = 0.08; // ~= 5 degrees 
 const float	THROTTLE_GAIN = 0.05;
 
+// Global, set by cmdline param
 // Max error for x,y dimensions in mm
-const int MAX_DISPLACEMENT_ERROR = 1000; 
+int MAX_DISPLACEMENT_ERROR;
+
+int getMaxDisplacementError()
+{
+    return MAX_DISPLACEMENT_ERROR;
+}
+
+void setMaxDisplacementError(int err)
+{
+    MAX_DISPLACEMENT_ERROR = err;
+}
 
 roscopter::RC buildRCMsg(int aileron, int elevator, int throttle, int yaw) {
 	roscopter::RC msg;
