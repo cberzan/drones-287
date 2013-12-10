@@ -48,7 +48,7 @@
 				<section>
 					<h2>Overview</h2>
 					<ul>
-						<li> Problem </li>
+						<li> Motivation </li>
 						<li> Approach </li>
 						<li> Results </li>
 						<li> Challenges &amp; Future </li>
@@ -57,12 +57,21 @@
 
 				<section>
 					<section>
-						<h2>Problem</h2>
+						<h2>Motivation</h2>
 					</section>
 
 					<section>
-						TODO
+						<!-- Automated landing is a subsystem within a larger -->
+						<!-- Accurate landing of UAV is an open problem, as is battery life. -->
+						<!-- Building a charging station that will 
+						let a UAV service a task indefinitely. -->
+						<!-- Requires UAV to land, charge and take off automatically -->
+						<!-- GPS landing is inaccurate. -->
 					</section>
+
+					<section>
+					</section>
+
 				</section>
 
 				<section>
@@ -84,12 +93,12 @@
 					</section>
 
 					<section>
-						<h2>Corner detection</h2>
+						<h3>Corner detection</h3>
 						<img src="images/corners.png">
 					</section>
 
 					<section>
-						<h2>Pose estimation</h2>
+						<h3>Pose estimation</h3>
 						<ul>
 							<li> Input: 24 point correspondences </li>
 							<li> Output: camera pose (x, y, z, roll, pitch, yaw) </li>
@@ -101,8 +110,11 @@
 					</section>
 
 					<section>
-						<h2>Landing controller</h2>
-						TODO
+						<h3>Landing controller</h3>
+						<ul>
+							<li> Implemented basic proportional controller. </li>
+							<li> Relied upon ArduCopter autopilot for low level stabilisation and control. </li>
+						</ul>
 					</section>
 
 				</section>
@@ -112,6 +124,7 @@
 						<h2> Results </h2>
 						<ul>
 							<li> Pose estimation </li>
+							<li> Automated landing </li>
 						</ul>
 					</section>
 
@@ -129,6 +142,13 @@
 						</div>
 					</section>
 
+					<section>
+						<h3> Automated landing </h3>
+						<ul> 
+							<li> Hardware is hard.</li>
+							<li> Noisy data and sub-optimal flying conditions means we were unable to fully test our UAV landing. </li>
+						</ul>
+					</section>
 				</section>
 
 				<section>
@@ -165,6 +185,23 @@
 						<h2> Testing </h2>
 						TODO
 					</section>
+
+					<section>
+						<h3> Future Directions </h3>
+						<ol>
+							<li> Use higher quality optics. </li>
+							<li> Explore landing pad design. </li>
+							<li> Allow landing in darker scenarios. </li>
+							<li> Use more advanced control loops (PID instead of just P). </li>
+						</ol>
+					</section>
+
+					<section data-state="youtube-3">
+						<div class="youtube-3">
+							<iframe width="854" height="510" src="http://www.youtube.com/embed/0rzGlHQbYBs?rel=0" frameborder="0" allowfullscreen></iframe>
+						</div>
+					</section>
+
 				</section>
 
 			</div>
