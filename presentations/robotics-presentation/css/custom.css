@@ -31,3 +31,14 @@ table.results th, table.results td {
   padding: 5px 15px 5px 15px;
   text-align: center;
 }
+
+img.fov {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+table.fov {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 80%;
+}
