@@ -21,3 +21,13 @@ html div.youtube-3 {
 html.youtube-3 div.youtube-3 {
   visibility: visible;
 }
+
+table.results {
+  border-collapse:collapse;
+}
+
+table.results th, table.results td {
+  border: 1px solid black;
+  padding: 5px 15px 5px 15px;
+  text-align: center;
+}
