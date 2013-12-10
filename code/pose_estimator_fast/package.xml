@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+  <name>pose_estimator</name>
+  <version>0.0.0</version>
+  <description>Pose estimator using a webcam and OpenCV</description>
+
+  <maintainer email="cberzan@gmail.com">cberzan</maintainer>
+  <maintainer email="git@ss21k.co.uk">ssk2</maintainer>
+  <maintainer email="nahush.nnb@gmail.com">nbhanage</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>roscopter</build_depend>
+  <run_depend>roscopter</run_depend>
+
+</package>
