@@ -1,7 +1,15 @@
-html div.youtube {
+html div.youtube-1 {
   visibility: hidden;
 }
 
-html.youtube div.youtube {
+html.youtube-1 div.youtube-1 {
+  visibility: visible;
+}
+
+html div.youtube-2 {
+  visibility: hidden;
+}
+
+html.youtube-2 div.youtube-2 {
   visibility: visible;
 }
