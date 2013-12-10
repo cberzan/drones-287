@@ -14,10 +14,23 @@ html.youtube-2 div.youtube-2 {
   visibility: visible;
 }
 
-html div.youtube-3 {
-  visibility: hidden;
+table.results {
+  border-collapse:collapse;
 }
 
-html.youtube-3 div.youtube-3 {
-  visibility: visible;
+table.results th, table.results td {
+  border: 1px solid black;
+  padding: 5px 15px 5px 15px;
+  text-align: center;
+}
+
+img.fov {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+table.fov {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 80%;
 }
