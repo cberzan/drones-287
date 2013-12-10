@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>pose_estimator</name>
+  <name>pose_estimator_fast</name>
   <version>0.0.0</version>
   <description>Pose estimator using a webcam and OpenCV</description>
 
