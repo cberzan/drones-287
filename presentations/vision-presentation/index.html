@@ -4,9 +4,12 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>Automated Landing</title>
+		<title>Accurate Vision-Based Landing For Multicopter UAVs</title>
 
 		<meta name="description" content="">
+		
+		<meta name="author" content="Constantin Berzan">
+		<meta name="author" content="Nahush Bhanage">
 		<meta name="author" content="Sunil Shah">
 
 		<meta name="apple-mobile-web-app-capable" content="yes" />
@@ -43,165 +46,6 @@
 					<h3>CS280: Project Presentation</h3>
 					<h4> &nbsp; </h4>
 					<h4>Constantin Berzan, Nahush Bhanage, Sunil Shah</h4>
-				</section>
-				
-				<section>
-					<h2>Overview</h2>
-					<ul>
-						<li> Motivation </li>
-						<li> Approach </li>
-						<li> Results </li>
-						<li> Challenges &amp; Future </li>
-					</ul>
-				</section>
-
-				<section>
-					<section>
-						<h2>Motivation</h2>
-					</section>
-
-					<section>
-						<!-- Automated landing is a subsystem within a larger -->
-						<!-- Accurate landing of UAV is an open problem, as is battery life. -->
-						<!-- Building a charging station that will 
-						let a UAV service a task indefinitely. -->
-						<!-- Requires UAV to land, charge and take off automatically -->
-						<!-- GPS landing is inaccurate. -->
-					</section>
-
-					<section>
-					</section>
-
-				</section>
-
-				<section>
-					<section>
-						<h2>Approach</h2>
-						<ul>
-							<li> Hardware </li>
-							<li> Corner detection </li>
-							<li> Pose estimation </li>
-							<li> Landing controller </li>
-						</ul>
-						<p>&nbsp;</p>
-						<small>(Adapted from Sharp, Shakernia, Sastry, "A Vision System for Landing an Unmanned Aerial Vehicle", ICRA 2001)</small>
-					</section>
-
-					<section>
-						<h2>Hardware</h2>
-						<img src="images/hardware.jpg" style="max-height: 80%">
-					</section>
-
-					<section>
-						<h3>Corner detection</h3>
-						<img src="images/corners.png">
-					</section>
-
-					<section>
-						<h3>Pose estimation</h3>
-						<ul>
-							<li> Input: 24 point correspondences </li>
-							<li> Output: camera pose (x, y, z, roll, pitch, yaw) </li>
-							<li> Have 48 equations (2 for each point pair) </li>
-							<li> System of equations has 6 degrees of freedom</li>
-							<li> Solve it using an SVD trick </li>
-						</ul>
-
-					</section>
-
-					<section>
-						<h3>Landing controller</h3>
-						<ul>
-							<li> Implemented basic proportional controller. </li>
-							<li> Relied upon ArduCopter autopilot for low level stabilisation and control. </li>
-						</ul>
-					</section>
-
-				</section>
-
-				<section>
-					<section>
-						<h2> Results </h2>
-						<ul>
-							<li> Pose estimation </li>
-							<li> Automated landing </li>
-						</ul>
-					</section>
-
-					<section data-state="youtube-1">
-						<h2>Pose estimation (lab)</h2>
-						<div class="youtube-1">
-							<iframe width="640" height="360" src="http://www.youtube.com/embed/9SVWvjeoO1o?rel=0" frameborder="0" allowfullscreen></iframe>
-						</div>
-					</section>
-
-					<section data-state="youtube-2">
-						<h2>Pose estimation (flying)</h2>
-						<div class="youtube-2">
-							<iframe width="640" height="360" src="http://www.youtube.com/embed/gFiCEo77A1Q?rel=0" frameborder="0" allowfullscreen></iframe>
-						</div>
-					</section>
-
-					<section>
-						<h3> Automated landing </h3>
-						<ul> 
-							<li> Hardware is hard.</li>
-							<li> Noisy data and sub-optimal flying conditions means we were unable to fully test our UAV landing. </li>
-						</ul>
-					</section>
-				</section>
-
-				<section>
-					<section>
-						<h2> Challenges &amp; Future </h2>
-						<ul>
-							<li> Integration </li>
-							<li> Image quality </li>
-							<li> Field of view </li>
-							<li> Testing </li>
-						</ul>
-					</section>
-
-					<section>
-						<h2> Integration </h2>
-						<ul>
-							<li> Tried 2 wifi adapters, 3 USB hubs </li>
-							<li> Fixing camera exposure and focus </li>
-							<li> Roscopter documentation incorrect </li>
-						</ul>
-					</section>
-
-					<section>
-						<h2> Image quality </h2>
-						<img src="images/badimage.jpg" style="max-height: 80%">
-					</section>
-
-					<section>
-						<h2> Field of view </h2>
-						TODO
-					</section>
-
-					<section>
-						<h2> Testing </h2>
-						TODO
-					</section>
-
-					<section>
-						<h3> Future Directions </h3>
-						<ol>
-							<li> Use higher quality optics. </li>
-							<li> Explore landing pad design. </li>
-							<li> Allow landing in darker scenarios. </li>
-							<li> Use more advanced control loops (PID instead of just P). </li>
-						</ol>
-					</section>
-
-					<section data-state="youtube-3">
-						<div class="youtube-3">
-							<iframe width="854" height="510" src="http://www.youtube.com/embed/0rzGlHQbYBs?rel=0" frameborder="0" allowfullscreen></iframe>
-						</div>
-					</section>
-
 				</section>
 
 			</div>
