@@ -62,22 +62,23 @@
 						<ul>
 							<li> Automated landing </li>
 							<li> Vision vs. GPS </li>
+							<li> Project Aims </li>
 						</ul>
 					</section>
 
 					<section>
 						<h3> Automated landing </h3>
 						<ul>
-							<li> Multicopter UAVs are gaining popularity due to ease of control, availability of cheap IMUs and maker movement. </li>
-							<li> Accurate automated landing is essential to make these UAVs useful. </li>
-							<li> This class project is part of a larger project to build an automated charging station to mitigate short flight time of multicopters. </li>
+							<li> Multicopter UAVs are gaining popularity due to:
+							<ul>
+								<li> ease of control </li>
+								<li> availability of cheap IMUs </li>
+								<li> the maker movement </li>
+							</ul>
+							</li>
+							<li> <b>Accurate</b> automated landing is essential to make these UAVs useful. </li>
+							<li> Part of a larger project to build an automated charging station to mitigate short flight time of multicopters. </li>
 						</ul>
-						Accurate automated landing is essential for multicopter UAVs
-						<ul>
-							<li> </li>
-						
-						<!-- Automated landing is a subsystem within a larger -->
-						<!-- Accurate landing of UAV is an open problem, as is battery life. -->
 						<!-- Building a charging station that will 
 						let a UAV service a task indefinitely. -->
 						<!-- Requires UAV to land, charge and take off automatically -->
@@ -85,6 +86,24 @@
 					</section>
 
 					<section>
+						<h3> Vision vs. GPS </h3>
+						<ul>
+							<li> Current <em> open source </em> autopilots offer GPS landing functionality. </li>					
+							<li> Accuracy of GPS landing tracks GPS accuracy, landing on average 195 cm away from the launch location. </li>
+							<li> Vision based approaches yield much better accuracy but are not openly available or implemented beyond academic literature. </li>
+						</ul>
+					</section>
+
+					<section>
+						<h3> Project Aims </h3>
+						Our intended aims were:
+						<ol>
+							<li> To assemble and integrate a multicopter system using the open source ArduCopter autopilot. </li>
+							<li> To implement a pose estimator using vision. </li>
+							<li> To implement a controller to land a UAV based on pose estimates. </li>
+							<li> To release our implementation as open source software. </li>
+						</ol>
+
 					</section>
 
 				</section>
@@ -161,7 +180,7 @@
 						<h3> Automated landing </h3>
 						<ul> 
 							<li> Hardware is hard.</li>
-							<li> Noisy data and sub-optimal flying conditions means we were unable to fully test our UAV landing. </li>
+							<li> Noisy sensor data and sub-optimal flying conditions means we were unable to fully test our UAV landing. </li>
 						</ul>
 					</section>
 				</section>
