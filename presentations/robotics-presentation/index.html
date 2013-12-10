@@ -71,7 +71,7 @@
 						<ul>
 							<li> Multicopter UAVs are gaining popularity due to:
 							<ul>
-								<li> ease of control </li>
+								<li> versatility of VTOL &amp ease of control </li>
 								<li> availability of cheap IMUs </li>
 								<li> the maker movement </li>
 							</ul>
@@ -79,10 +79,6 @@
 							<li> <b>Accurate</b> automated landing is essential to make these UAVs useful. </li>
 							<li> Part of a larger project to build an automated charging station to mitigate short flight time of multicopters. </li>
 						</ul>
-						<!-- Building a charging station that will 
-						let a UAV service a task indefinitely. -->
-						<!-- Requires UAV to land, charge and take off automatically -->
-						<!-- GPS landing is inaccurate. -->
 					</section>
 
 					<section>
@@ -145,9 +141,14 @@
 
 					<section>
 						<h3>Landing controller</h3>
-						<ul>
-							<li> Implemented basic proportional controller. </li>
-							<li> Relied upon ArduCopter autopilot for low level stabilisation and control. </li>
+						<img src="images/statediagram.png" style="padding: 10px; float: left;"/>
+						<ul style="display:block; margin:2em 0 0 12em;">
+							<li> Implemented proportional controller that overrode user control inputs, using ArduCopter's <em> loiter </em> mode to handle real time stabilisation of UAV. </li>
+							<li> Current state estimates from:
+							<ul>
+								<li> Barometric sensor for altitude </li>
+								<li> Pose estimates </li>
+							</li>
 						</ul>
 					</section>
 
@@ -180,7 +181,8 @@
 						<h3> Automated landing </h3>
 						<ul> 
 							<li> Hardware is hard.</li>
-							<li> Noisy sensor data and sub-optimal flying conditions means we were unable to fully test our UAV landing. </li>
+							<li> Noisy sensor data makes it difficult to handle state transitions when at low altitude. </li>
+							<li> Sub-optimal flying conditions made it difficult to test our UAV landing.</li>
 						</ul>
 					</section>
 				</section>
@@ -193,6 +195,7 @@
 							<li> Image quality </li>
 							<li> Field of view </li>
 							<li> Testing </li>
+							<li> Future Work </li>
 						</ul>
 					</section>
 
@@ -221,12 +224,14 @@
 					</section>
 
 					<section>
-						<h3> Future Directions </h3>
+						<h3> Future Work </h3>
 						<ol>
 							<li> Use higher quality optics. </li>
 							<li> Explore landing pad design. </li>
 							<li> Allow landing in darker scenarios. </li>
 							<li> Use more advanced control loops (PID instead of just P). </li>
+							<li> Rewrite roscopter in c++. </li>
+							<li> Integrate sonar sensor for more accurate altitude estimates. </li>
 						</ol>
 					</section>
 
