@@ -1,4 +1,4 @@
-dummy: milestone.pdf
+dummy: report.pdf
 
-milestone.pdf: milestone.tex
-	pdflatex milestone.tex
+report.pdf:  report.tex
+	pdflatex report.tex
