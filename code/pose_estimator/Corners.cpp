@@ -1,6 +1,8 @@
 #include "Corners.h"
 #include <cstdio>
 
+#define APPROX_POLY_PARAMETER 0.05
+
 using namespace std;
 
 inline float sqr(float x)
@@ -246,7 +248,11 @@ Mat_<double> detectCorners(
 		{
             continue;
         }
-        approxPolyDP(Mat(contours[i]), approx, arcLength(Mat(contours[i]), true)*0.03, true);
+        approxPolyDP(
+			Mat(contours[i]), 
+			approx, 
+			arcLength(Mat(contours[i]), true) * APPROX_POLY_PARAMETER, 
+			true);
         if (approx.size() == 4 &&
             fabs(contourArea(Mat(approx))) > 100 &&
             isContourConvex(Mat(approx)))
@@ -289,7 +295,7 @@ Mat_<double> detectCorners(
         approxPolyDP(
             Mat(contours[cIndex]),
             approx,
-            arcLength(Mat(contours[cIndex]), true) * 0.03,
+            arcLength(Mat(contours[cIndex]), true) * APPROX_POLY_PARAMETER,
             true);
         PolyArea = fabs(contourArea(Mat(approx)));
         Polygons[polygonIndex].Corners = approx;
