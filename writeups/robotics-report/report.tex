@@ -94,6 +94,30 @@ This approach requires accurate landing of the UAV onto a predefined area of the
 %% CONSTANTIN
 % Problem was solved in several papers in the early 21st century, using a gas powered helicopter and custom code. 
 
+The automated landing problem has been solved in the research literature of the
+early 2000s. Here we briefly describe the approaches taken by some of the most
+cited papers on this topic.
+
+Sharp, Shakernia, and Sastry \ref{sharp_et_al_2001} designed an approach for
+automatically landing an unmanned helicopter. Their landing target uses a
+simple two-color design made up of several squares. Onboard the helicopter,
+they use a pan-tilt-zoom camera and two embedded computers with Intel CPUs.
+They discuss the details of their approach to pose estimation, but omit the
+details of the helicopter controller. Using a real-time OS and optimized custom
+code, they are able to get their vision system to operate at a rate of 30 Hz.
+
+Our own approach in this project is modeled after that of Sharp et al. The main
+differences are that (1) we use cheap off-the-shelf hardware, rather than
+research-grade hardware; (2) our camera is stationary, it is not capable of
+panning or tilting; and (3) we use off-the-shelf software components such as
+ROS and OpenCV, rather than writing all of our code from scratch.
+
+Saripalli, Montgomery, and Sukhatme \ref{saripalli_et_al_2002} designed another
+approach for automatically landing an unmanned helicopter. They use a two-color
+H-shaped landing target.
+
+
+
 \section{Approach}
 
 \subsection{Architecture}
