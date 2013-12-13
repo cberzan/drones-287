@@ -217,7 +217,6 @@ Solve it using an SVD trick
 
 \subsection{Control}
 %% SUNIl
-
 In order to actually land our UAV using our pose estimates, it was necessary to implement a landing controller. Since this would need to run in real time (in order to adequately stabilise the UAV), we deferred real-time control to the \textit{loiter} mode provided by the ArduCopter autopilot. This takes care of real-time stabilisation for us and, additionally, attempts to keep the UAV in the same location using GPS. (They also offer a more basic stabilise mode which doesn't attempt to keep the craft to one location.)
 
 Using the roscopter library, we were able to override the radio control inputs that would typically be received from the user. Using these inputs, we could manipulate the throttle, yaw, pitch and roll of the UAV.
@@ -245,14 +244,20 @@ In \textit{LAND\_LOW}, we use a dead reckoning approach to the ground since we a
 \begin{figure*}[h]
     \centering
     \includegraphics{images/statediagram.png}
-    \caption{The state diagram of our landing controller.}
+    \caption{State diagram of our landing controller.}
     \label{fig:statediagram}
 \end{figure*}
 
 \subsection{Software Integration}
 %% SUNIL
+In order to integrate the three major components of software (roscopter, our pose estimator and our landing controller), we made extensive use of the publish and subscribe mechanism built into ROS. This allowed us to implement landing control in an event driven style - new control messages are generated upon receipt by the landing controller of new state information. This may include an updated pose estimate, an input from the user's radio control transmitter or new sensor data from the autopilot. Since the time taken to generate new control messages is considerably less than that to generate pose estimates, this allows us to generate control messages as frequently as we get new pose estimates. Figure \ref{fig:rosnodes} shows this setup.
 
-% A brief word on ROS + diagram showing the flow of messages?
+\begin{figure*}[h]
+    \centering
+    \includegraphics{images/rosnodes.png}
+    \caption{Setup of our ROS nodes.}
+    \label{fig:rosnodes}
+\end{figure*}
 
 \section{Results}
 
@@ -280,6 +285,9 @@ Pose estimator and roscopter running: 1.6 FPS
 
 %% SUNIL 
 % How did our controller do?
+
+\subsubsection{Transitions}
+
 % Field of view of camera and size of landing pad meant no accurate Z estimates
 % below ~ 2m.
 % Noisy sensor data = state transitions wer edifficult
