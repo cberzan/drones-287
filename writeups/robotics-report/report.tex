@@ -115,7 +115,7 @@ Our project was thus to:
 \begin{enumerate}
 \item{Implement a vision-based pose estimator.}
 \item{Integrate our pose estimates into a controller that would land a UAV.}
-\item{Demonstrate accurate autonomous landing using commodity electronics on a low cost quadrotor UAV.}
+\item{Demonstrate accurate autonomous landing using commodity electronics on a low cost quadrocopter UAV.}
 \item{Make our software and implementation details openly available.}
 \end{enumerate}
 
@@ -317,6 +317,8 @@ One of the significant impediments to our project was integrating working hardwa
 % Practically, this means we need to be at about 2 metres to get
 % pose estimates.
 
+% We could use a concentric landing pattern to mitigate this, or makae the landing pad smaller.
+
 % height	visible land area
 % 1 m	1.37 m x 0.77 m
 % 2 m	2.75 m x 1.54 m
@@ -333,9 +335,23 @@ One of the significant impediments to our project was integrating working hardwa
 
 \subsection{Weather}
 %% SUNIL
+The weather conditions became more limiting than we had initially imagined - in particular due to the short term nature of this project. Two factors worked against us and made testing difficult.
 
-% Loiter mode works well with little wind but struggles when there is heavy wind
-% This means that our landing controller oscillates wildly.
+\subsubsection{Temperature}
+As mentioned in the Motivation section, multicopter UAVs have a limited battery life. The underlying battery technology is affected by the cold weather which meant that flight times, even with the largest 5500 mAh batteries on hand, were limited to 5 or 6 minutes before needing replacement. This minimised the amount of testing we could do per charging cycle.
+
+Besides carrying a larger number of batteries out to the field, there is not much we can do to mitigate this.
+
+\subsubsection{Wind}
+Our basic proportional controller struggled when there were large amounts of wind present. This is because our controller doesn't operate quickly enough to react to changes in the UAVs state, relying upon the \textit{loiter} mode of the autopilot to keep the UAV in the same place. Since the \textit{loiter} mode relies upon GPS to give us an estimate of the UAVs location, when the location deviates by a large amount, it tries to bring it back to the GPS location - which relies upon the relative inaccuracy of GPS.
+
+This could be mitigated through better controller design. In particular: using a full Proportional-Integral-Derivative (PID) controller and by increasing the rate at which control messages are generated.
+
+\paragraph{PID Controller}
+Using a full PID controller will allow us to develop a more aggressive controller that is able to reduce the error (i.e. deviation from the centre of the landing pad) more quickly and in a way that is proportional to external noise (i.e. wind) - and not just the amount of noise.
+
+\paragraph{Control Rate}
+At the moment we gain pose-estimates at a slow rate (and provide control updates at the same rate) of approximately 1.6Hz. The GPS sensor included in the autopilot operates at 5Hz and it typically provides control updates at 10Hz. 10Hz is enough to provide real-time control of the quadrocopter UAV that we use and so increasing the performance of the pose estimator up to between 5 and 10Hz may be enough to better offset windy flying conditions.
 
 \section{Conclusion \& Future Directions}
 
