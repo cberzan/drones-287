@@ -2,8 +2,11 @@
 
 \usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
 \usepackage[cm]{fullpage}
+\usepackage{caption}
+\usepackage{float}
 \usepackage{graphicx} % support the \includegraphics command and options
 \usepackage{biblatex} % use biber command to regenerate references
+\usepackage{subcaption}
 
 \renewcommand{\bibfont}{\footnotesize}
 %\pagenumbering{gobble}
@@ -129,38 +132,60 @@ land.
 \section{Approach}
 
 \subsection{Architecture}
-%% CONSTANTIN
 
-\begin{figure*}[h]
+\begin{figure}[h!]
     \centering
-    \includegraphics[width=\textwidth]{images/architecture.png}
-    \caption{Architecture of our automated landing system for UAVs}
-    \label{fig:architecture}
-\end{figure*}
-
-\begin{figure*}[h]
-    \centering
-    \includegraphics[width=\textwidth]{images/hardware.jpg}
-    \caption{Our hardware stack installed on a quadcopter.}
+    \begin{subfigure}[b]{0.9\textwidth}
+        \includegraphics[width=\textwidth]{images/architecture.png}
+        \caption{
+            Architecture of our automated landing system. We use inexpensive
+            off-the-shelf hardware. The laptop and remote control are for
+            monitoring and emergency takeover by a human pilot. All the
+            computation is performed onboard the UAV.
+        }
+    \end{subfigure}
+    \\~\\
+    \begin{subfigure}[b]{0.9\textwidth}
+        \includegraphics[width=\textwidth]{images/hardware.jpg}
+        \caption{
+            Our hardware stack fully assembled. From bottom to top: batteries,
+            BeagleBone embedded computer, USB hub with Wi-Fi adapter, 3D
+            Robotics autopilot (APM) with embedded sensors, GPS module. The
+            webcam is on the left, and the radio for the remote control is on
+            the right.
+        }
+    \end{subfigure}
+    \caption{Hardware architecture and setup}
     \label{fig:hardware}
-\end{figure*}
+\end{figure}
 
-% Put in weight of hardware stack and estimated power consumption?
-% Estimated cost of system? Commodity hardware, etc.
+Our goal was to use inexpensive, off-the-shelf hardware, rather than expensive
+equipment that is only accessible to researchers. We used quadcopter components
+made by 3D Robotics, together with their ArduCopter autopilot (frequently
+referred to under its old name -- Ardu-Pilot Mega, or APM) and associated GPS
+module. This autopilot acts as a low-level controller that keeps the quadcopter
+stable. It runs an unmodified version of the open-source autopilot code
+provided by 3D Robotics.
 
-% Hardware
-% APM autopilot board
-% BeagleBone black
-% Logitech C920 Webcam (chosen for global shutter, to hopefully minimise motion blur)
-% Powered USB hub
-% EyePi wi-fi adaptor
+We augmented the quadcopter with a BeagleBone Black embedded computer, which
+uses a 1 GHz ARM CPU. (Since the ARM architecture is so different from x86,
+the 1 GHz figure should not be compared to the frequency of modern-day Intel
+CPUs, which are far more advanced, and expensive.) Using a powered USB hub, we
+connected the autopilot to the BeagleBone. We also connected the webcam and a
+Wi-Fi adapter this way.
 
-% Software + Libraries Used
-% ArduCopter autopilot software
-% ROS
-% Arm HF Linux
-% roscopter library
-% OpenCV
+% TODO:
+% Weight of hardware stack?
+% Estimated power consumption?
+% Estimated cost of system?
+
+On the BeagleBone, we installed a pre-built image of the Ubuntu 12.04
+distribution, obtained from {\tt armhf.com}. We installed pre-built packages
+for ROS groovy from the official ROS repositories. We compiled OpenCV 2.4.7 by
+hand. We also installed roscopter, a third-party piece of software that reads
+the state of the autopilot and makes it available via ROS, and also makes it
+possible to send controls to the autopilot.
+
 
 \subsection{Vision}
 %% NAHUSH 
