@@ -8,7 +8,7 @@
 \renewcommand{\bibfont}{\footnotesize}
 %\pagenumbering{gobble}
 \usepackage{hyperref}
-\addbibresource{bib/proposal.bib}
+\addbibresource{report.bib}
 
 \title{Accurate Vision-Based Landing For Multicopter UAVs}
 \subtitle{CS287: Project Report}
@@ -91,16 +91,14 @@ This approach requires accurate landing of the UAV onto a predefined area of the
 
 
 \section{Prior Work}
-%% CONSTANTIN
-% Problem was solved in several papers in the early 21st century, using a gas powered helicopter and custom code. 
 
-The automated landing problem has been solved in the research literature of the
-early 2000s. Here we briefly describe the approaches taken by some of the most
-cited papers on this topic.
+The automated landing problem has been investigated in the research literature
+of the early 2000s. Here we briefly describe the approaches taken by some of
+the most cited papers on this topic.
 
-Sharp, Shakernia, and Sastry \ref{sharp_et_al_2001} designed an approach for
+Sharp, Shakernia, and Sastry \cite{sharp_et_al_2001} designed an approach for
 automatically landing an unmanned helicopter. Their landing target uses a
-simple two-color design made up of several squares. Onboard the helicopter,
+simple monochromatic design made up of several squares. Onboard the helicopter,
 they use a pan-tilt-zoom camera and two embedded computers with Intel CPUs.
 They discuss the details of their approach to pose estimation, but omit the
 details of the helicopter controller. Using a real-time OS and optimized custom
@@ -112,10 +110,20 @@ research-grade hardware; (2) our camera is stationary, it is not capable of
 panning or tilting; and (3) we use off-the-shelf software components such as
 ROS and OpenCV, rather than writing all of our code from scratch.
 
-Saripalli, Montgomery, and Sukhatme \ref{saripalli_et_al_2002} designed another
-approach for automatically landing an unmanned helicopter. They use a two-color
-H-shaped landing target.
+Saripalli, Montgomery, and Sukhatme \cite{saripalli_et_al_2002} designed
+another approach for automatically landing an unmanned helicopter. They use a
+monochromatic H-shaped landing target. Their onboard vision system detects this
+landing target and outputs the helicopter's relative position with respect to
+it. This is sent wirelessly to a behavior-based controller running on a ground
+station, which then directs the helicopter to land on top of the target. They
+are able to run their controller at 10 Hz this way. They are also using a
+high-accuracy differential GPS system, and it is not clear how much their
+differential GPS and vision systems contribute to a successful landing.
 
+Garcia-Pardo, Sukhatme, and Montgomery \cite{garcia_pardo_et_al_2002} look at a
+more general problem, where there is no pre-specified landing target, and their
+helicopter has to search autonomously for a suitable clear area on which to
+land.
 
 
 \section{Approach}
@@ -299,5 +307,7 @@ Allow landing in darker scenarios.
 Use more advanced control loops (PID instead of just P).
 Rewrite roscopter in C++.
 Integrate sonar sensor for more accurate altitude estimates.
+
+\printbibliography
 
 \end{document}
