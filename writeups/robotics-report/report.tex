@@ -157,10 +157,29 @@ Solve it using an SVD trick
 \subsection{Control}
 %% SUNIl
 
-% Simple Proportional controller
-% Handed off real time control to 'Loiter' mode of the autopilot
+In order to actually land our UAV using our pose estimates, it was necessary to implement a landing controller. Since this would need to run in real time (in order to adequately stabilise the UAV), we deferred real-time control to the \textit{loiter} mode provided by the ArduCopter autopilot. This takes care of real-time stabilisation for us and, additionally, attempts to keep the UAV in the same location using GPS. (They also offer a more basic stabilise mode which doesn't attempt to keep the craft to one location.)
 
-% State estimates from barometric pressure and pose estimation
+Using the roscopter library, we were able to override the radio control inputs that would typically be received from the user. Using these inputs, we could manipulate the throttle, yaw, pitch and roll of the UAV.
+
+\subsubsection{State Machine}
+We designed a state machine with five states, beginning in a \textit{FLYING} mode and ending in \textit{POWER\_OFF}. Fig \ref{fig:statediagram} shows the transitions between the states. 
+
+\paragraph{FLYING}
+The \textit{FLYING} state represents when the UAV is not under our control, for instance, when the user is in manual control or has invoked another autopilot mode. Our controller listens to a specific channel of the radio input which represents three fixed values that are user selectable on the handheld transmitter. When the value of that channel changes to a predefined value, our controller takes control of the autopilot and transitions into \textit{SEEK\_HOME}.
+
+\paragraph{SEEK\_HOME}
+In \textit{SEEK\_HOME} mode, we use the built in \textit{return to launch} mode that ArduCopter implements - this navigates the UAV back to the launch location. Once above the launch location, the UAV should start receiving valid pose estimates.
+
+\paragraph{LAND\_HIGH}
+Our controller enters the \textit{LAND\_HIGH} mode when it starts receiving valid pose estimates. We use a simple proportional controller to calculate the appropriate control inputs based on the deviation from the centre of the landing station (in terms of x, y and yaw). These comprise the error terms in our controller.
+
+Our controller disregards the z deviation and descends at a fixed rate. The z deviation is, however, used as the best estimate of altitude (our tests, described in section SECTION, show that the calculated z value is extremely accurate). When the UAV reaches a predefined altitude (where we know pose estimates will no longer be possible, due to field of view limitations), our controller enters into the \textit{LAND\_LOW} state.
+
+\paragraph{LAND\_LOW}
+In \textit{LAND\_LOW}, we use a dead reckoning approach to the ground since we are no longer able to receive valid pose estimates. Our controller attempts to keep the UAV flying straight and level and descends at a fixed rate. It uses data from the barometric pressure sensor to determine when the UAV has reached the ground and then enters into the \textit{POWER\_OFF} state.
+
+\paragraph{POWER\_OFF}
+\textit{POWER\_OFF} retains control of the UAV but sets throttle to a low value to prevent it from flying.
 
 \begin{figure*}[h]
     \centering
