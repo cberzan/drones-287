@@ -224,6 +224,13 @@ coordinates as $C = -R^\top t$, and the yaw angle as
 $\alpha = \arctan(R_{21} / R_{11})$. (The roll and pitch angles can be computed
 similarly, but we do not require them in the control algorithm.)
 
+The approach above assumes a calibrated pinhole camera. For the pose estimates
+to be meaningful, our camera had to be calibrated first. We calibrated our
+camera using the {\tt camera\_calibration} tool provided in the OpenCV
+tutorials, plus some manual tuning. We used the resulting calibration matrix to
+convert the raw pixel coordinates into coordinates for a calibrated pinhole
+camera model, which we then fed into the equations above.
+
 
 \subsection{Control}
 %% SUNIl
