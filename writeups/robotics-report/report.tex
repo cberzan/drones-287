@@ -2,6 +2,7 @@
 
 \usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
 \usepackage[cm]{fullpage}
+\usepackage{amsmath}
 \usepackage{caption}
 \usepackage{float}
 \usepackage{graphicx} % support the \includegraphics command and options
@@ -202,13 +203,26 @@ possible to send controls to the autopilot.
 \end{figure*}
 
 \subsubsection{Pose Estimation}
-%% CONSTANTIN
 
-Input: 24 point correspondences
-Output: camera pose (x, y, z, roll, pitch, yaw)
-Have 48 equations (2 for each point pair)
-System of equations has 6 degrees of freedom
-Solve it using an SVD trick
+We define the origin of the world coordinate frame to be the center of the
+landing platform, such that all points on the landing platform have a Z
+coordinate of zero. The corner detector gives us image coordinates for the 24
+corners. Thus, we have a set of 24 point correspondences between world
+coordinates and image coordinates. Given this input, we want to compute the
+quadcopter's pose, i.e. the position and orientation of the camera in the world
+coordinate frame. To do this, we follow the approach of Sharp et al.
+\cite{sharp_et_al_2001}.
+
+% TODO: show math
+% Have 48 equations (2 for each point pair)
+% System of equations has 6 degrees of freedom
+
+The output from the pose estimator is a translation vector
+$t = \begin{bmatrix} t_x & t_y & t_z \end{bmatrix}^\top$
+and a 3x3 rotation matrix $R$. We compute the camera position in world
+coordinates as $C = -R^\top t$, and the yaw angle as
+$\alpha = \arctan(R_{21} / R_{11})$. (The roll and pitch angles can be computed
+similarly, but we do not require them in the control algorithm.)
 
 
 \subsection{Control}
