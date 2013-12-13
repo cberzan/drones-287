@@ -19,23 +19,57 @@
 \maketitle
 
 \begin{abstract}
-Multicopter UAVs have become increasingly popular over the last five years and are quickly becoming used for commercial purposes. However, they are hampered by their limited battery life. This class project is part of a larger project to build an automatic charging station for multicopters. Currently openly available automated landing algorithms rely on GPS to localise the UAV with respect to the landing station. We show that this approach is considerably inaccurate and implement a vision-based landing system which uses pose estimates to more accurately localise the UAV. 
+Multicopter UAVs have become increasingly popular over the last five years and are being considered for commercial purposes. However, they are hampered by their limited battery life. This class project is part of a larger project to build an automatic charging station for multicopters. Currently openly available automated landing algorithms rely on GPS to localise the UAV with respect to the landing station. We show that this approach is considerably inaccurate and implement a vision-based landing system which uses pose estimates to more accurately localise the UAV. 
 In order to land based on this data, we build a state machine and controller that interacts with the open source ArduCopter autopilot to bring a test quadcopter down to a landing pattern. While environmental conditions and hardware issues ultimately prevented us from realising a vision-based landing, we are confident that, in good conditions and with some slight modification, our system should be able to land with much greater accuracy than GPS.
 \end{abstract}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Motivation}
+In the recent past, multicopter UAVs (or drones, as they are colloquially known) have become increasingly popular. This has been well documented by both mainstream and technology media. Once the preserve of the military, several factors have led to multicopter UAVs being fabricated and flown by hobbyist pilots:
+\begin{description}
+\item[The Maker Movement]{Affordable 3D printing have made it easier to prototype and produce cheap multicopter airframes.}
+\item[Commodity Embedded Electronics]{A number of projects, beginning with the Arduino platform, have made well supported embedded computers available at low cost to the general public.}
+\item[Open Source Software]{There are a number of popular open source autopilot projects that have significantly lowered the barrier to entry to novice users.}
+\item[Smartphone IMUs]{As smartphones have grown in popularity, it has become possible to source low cost inertial measurement units which measurement of acceleration along several axes.}
+\item[Ease of Control]{Multicopter UAVs offer the vertial take off and landing versatility of a traditional rotorcraft but with increased ease of control.}
+\end{description}
+
+These factors allow UAVs to be bought off the shelf for less than a thousand dollars, which is several orders of magnitude less than the cheapest traditional UAV. As with any disruptive technology, there is growing interest in the potential commercial applications. 
+
+However, before these craft can be used reliably in a commercial setting, there are a number of shortfalls. This project aims to address two of these:
+\begin{enumerate}
+\item{Multicopter craft consume a lot of power. Battery life is limited to 30 minutes for the most efficient craft with large batteries.}
+\item{Autonomous landing relies on GPS for localisation. This has limited accuracy.}
+\end{enumerate}
+
+\subsection{Automated Charging}
+
+In a commercial context, UAVs become limited by their short battery life. If a user wishes to perform a mission that takes longer than the battery life of a UAV, they have to operate multiple UAVs and be response for battery handling (which typically involves removing a battery, plugging it into specialised equipment for at 30-60 minutes). This adds to the operational complexity and ultimately the cost for operating UAVs.
+
+% TODO: Add references
+One approach to mitigating the short battery life of a UAV is to have it land on a charging station. 
+
+\subsubsection{Inductive Charging}
+Several approaches have used inductive charging, where an oscillating magnetic field in the base of the charging station induces current in a coil on the UAV and charges the battery. While this approach allows for considerable inaccuracy in landing, it is approximately 20x slower than conductive charging and requires extra equipment on the UAV itself which impedes its aerodynamic efficiency.
+
+\subsubsection{Conductive Charging}
+A more traditional approach is to consider conductive charging. This is extremely efficient and offers very fast charge times. Additionally, it requires minimal modification to the airframe itself. However, contacts have to be positioned very accurately. As part of an ongoing Master's capstone project, we have designed a mechanically actuated charging station that uses an arm to bring a UAV into charging contacts (Fig \ref{fig:catia}). 
+
+This approach requires accurate landing of the UAV onto a predefined area of the charging station.
+
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=\textwidth]{images/catia.jpg}
+    \caption{Our design for a UAV charging station.}
+    \label{fig:catia}
+\end{figure*}
+
+
+\subsection{Accurate Landing}
+
 %% SUNIL
 %% What is the problem? Why does it matter?
 
-% Multicopters have become more popular because of-
-% 1) Versatility of VTOL & ease of control
-% 2) Availability of cheap IMUs
-% 3) The maker movement
 
-% The charging problem
-% Limited battery life of about 10-15 minutes. 
-% Can be mitigated by charging drones automatically and using several to service 
-% a user.
 
 % Delivery
 % The automated problem also becomes relevant for when UAVs are used for delivery
