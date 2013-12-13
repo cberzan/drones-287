@@ -31,7 +31,7 @@ In the recent past, multicopter UAVs (or drones, as they are colloquially known)
 \item[The Maker Movement]{Affordable 3D printing have made it easier to prototype and produce cheap multicopter airframes.}
 \item[Commodity Embedded Electronics]{A number of projects, beginning with the Arduino platform, have made well supported embedded computers available at low cost to the general public.}
 \item[Open Source Software]{There are a number of popular open source autopilot projects that have significantly lowered the barrier to entry to novice users.}
-\item[Smartphone IMUs]{As smartphones have grown in popularity, it has become possible to source low cost inertial measurement units which measurement of acceleration along several axes.}
+\item[Smartphone IMUs]{As smartphones have grown in popularity, it has become possible to source low cost inertial measurement units (IMUs) which measurement of acceleration along several axes.}
 \item[Ease of Control]{Multicopter UAVs offer the vertial take off and landing versatility of a traditional rotorcraft but with increased ease of control.}
 \end{description}
 
@@ -54,9 +54,9 @@ One approach to mitigating the short battery life of a UAV is to have it land on
 Several approaches have used inductive charging, where an oscillating magnetic field in the base of the charging station induces current in a coil on the UAV and charges the battery. While this approach allows for considerable inaccuracy in landing, it is approximately 20x slower than conductive charging and requires extra equipment on the UAV itself which impedes its aerodynamic efficiency.
 
 \subsubsection{Conductive Charging}
-A more traditional approach is to consider conductive charging. This is extremely efficient and offers very fast charge times. Additionally, it requires minimal modification to the airframe itself. However, contacts have to be positioned very accurately. As part of an ongoing Master's capstone project, we have designed a mechanically actuated charging station that uses an arm to bring a UAV into charging contacts (Fig \ref{fig:catia}). 
+A more traditional approach is to consider conductive charging. This is extremely efficient and offers very fast charge times. Additionally, it requires minimal modification to the airframe itself. However, contacts have to be positioned very accurately. As part of an ongoing Master's capstone project, we have designed a mechanically actuated charging station that uses an arm to bring a UAV into charging contacts (Figure \ref{fig:catia}). 
 
-This approach requires accurate landing of the UAV onto a predefined area of the charging station.
+This approach requires accurate landing of the UAV onto a predefined area of the charging station. Some inaccuracy can be tolerated by the mechanical arm but in order to minimise the physical size of the station, it is necessary to land with some accuracy. 
 
 \begin{figure*}[h]
     \centering
@@ -67,18 +67,40 @@ This approach requires accurate landing of the UAV onto a predefined area of the
 
 
 \subsection{Accurate Landing}
+The de facto method of state estimation for outdoor UAVs is through sensor fusion of IMU data, barometric pressure measurements, and GPS data. IMUs are used to provide estimates of the UAV's roll, pitch and yaw rates and barometric pressure estimates the UAVs altitude. GPS data is used to geographically localise the UAV. Our experiments showed that using the auto-landing functionality (in \textit{return to launch} mode) of our autopilot resulted in an accuracy of landing that tracks the known accuracy of GPS systems. 
 
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/marker.JPG}
+    \caption{Testing landing accuracy using GPS}
+    \label{fig:marker}
+\end{figure*}
 
-% Delivery
-% The automated problem also becomes relevant for when UAVs are used for delivery
-% 
+We experimentally gained 10 estimates for landing accuracy by drawing an X marker using yellow tape (Figure \ref{fig:marker}), arming the UAV at that location, flying it an arbitrary distance away and then invoking the \textit{return to launch} mode. We measured the straight line distance between the centre of the quadcopter and the centre of the marker. These results are shown in Table \ref{tbl:landing-data}, giving a mean accuracy of 195.33 centimetres and a standard deviation of 110.73 centimetres. 
 
-% Current solutions use GPS to localise, which tracks accuracy of GPS.
-% Vision based approaches yield considerably better accuracy but are not available
+\begin {table}
+  \centerline{
+  \begin{tabular}{ | c | c | }
+  \hline
+  Inches & Centimetres \\ 
+  \hline
+  22 & 55.88 \\ 
+  63 & 160.02 \\ 
+  39 & 99.06 \\ 
+  84.5 & 214.63 \\ 
+  25.5 & 64.77 \\ 
+  76 & 193.04 \\ 
+  158 & 401.32 \\ 
+  130.5 & 331.47 \\ 
+  76 & 193.04 \\ 
+  94.5 & 240.03 \\ 
+  \hline
+  \end{tabular}}
+   \caption{Distance of landing from home location using RTL}
+   \label{tbl:landing-data}
+\end {table}
 
-% Our project was to make such an implementation available that ran on 
-% commodity drones and hardware.
-
+Accurate landing is important for an automated charging station as described in the previous section. It is also important for many other applications of UAVs where it is necessary to land in and take off from constrained spaces. An example application is the use of UAVs as delivery vehicles to households. Many households may have limited clear space for the UAV to land. When using GPS, it is equally likely that the UAV will land on the household's roof as on their designed delivery point.
 
 \begin{figure*}[h]
     \centering
@@ -87,6 +109,15 @@ This approach requires accurate landing of the UAV onto a predefined area of the
     \label{fig:drone}
 \end{figure*}
 
+\subsection{Vision-Based Landing}
+By augmenting our autopilot with an additional computer and webcam, we can use computer vision techniques to gain a highly accurate estimate of the UAVs pose with respect to a landing pad of a known design.
+Our project was thus to:
+\begin{enumerate}
+\item{Implement a vision-based pose estimator.}
+\item{Integrate our pose estimates into a controller that would land a UAV.}
+\item{Demonstrate accurate autonomous landing using commodity electronics on a low cost quadrotor UAV.}
+\item{Make our software and implementation details openly available.}
+\end{enumerate}
 
 \section{Prior Work}
 
@@ -192,7 +223,7 @@ In order to actually land our UAV using our pose estimates, it was necessary to 
 Using the roscopter library, we were able to override the radio control inputs that would typically be received from the user. Using these inputs, we could manipulate the throttle, yaw, pitch and roll of the UAV.
 
 \subsubsection{State Machine}
-We designed a state machine with five states, beginning in a \textit{FLYING} mode and ending in \textit{POWER\_OFF}. Fig \ref{fig:statediagram} shows the transitions between the states. 
+We designed a state machine with five states, beginning in a \textit{FLYING} mode and ending in \textit{POWER\_OFF}. Figure \ref{fig:statediagram} shows the transitions between the states. 
 
 \paragraph{FLYING}
 The \textit{FLYING} state represents when the UAV is not under our control, for instance, when the user is in manual control or has invoked another autopilot mode. Our controller listens to a specific channel of the radio input which represents three fixed values that are user selectable on the handheld transmitter. When the value of that channel changes to a predefined value, our controller takes control of the autopilot and transitions into \textit{SEEK\_HOME}.
