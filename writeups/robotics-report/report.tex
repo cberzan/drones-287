@@ -6,7 +6,7 @@
 \usepackage{caption}
 \usepackage{float}
 \usepackage{graphicx} % support the \includegraphics command and options
-\usepackage{biblatex} % use biber command to regenerate references
+\usepackage[backend=biber]{biblatex} % use biber command to regenerate references
 \usepackage{subcaption}
 
 \renewcommand{\bibfont}{\footnotesize}
@@ -34,11 +34,11 @@ In order to land based on this data, we build a state machine and controller tha
 %% What is the problem? Why does it matter?
 In the recent past, multicopter UAVs (or drones, as they are colloquially known) have become increasingly popular. This has been well documented by both mainstream and technology media. Once the preserve of the military, several factors have led to multicopter UAVs being fabricated and flown by hobbyist pilots:
 \begin{description}
-\item[The Maker Movement]{Affordable 3D printing have made it easier to prototype and produce cheap multicopter airframes.}
+\item[The Maker Movement]{Affordable 3D printing has made it easier to prototype and produce cheap multicopter airframes.}
 \item[Commodity Embedded Electronics]{A number of projects, beginning with the Arduino platform, have made well supported embedded computers available at low cost to the general public.}
 \item[Open Source Software]{There are a number of popular open source autopilot projects that have significantly lowered the barrier to entry to novice users.}
-\item[Smartphone IMUs]{As smartphones have grown in popularity, it has become possible to source low cost inertial measurement units (IMUs) which measurement of acceleration along several axes.}
-\item[Ease of Control]{Multicopter UAVs offer the vertial take off and landing versatility of a traditional rotorcraft but with increased ease of control.}
+\item[Smartphone IMUs]{As smartphones have grown in popularity, it has become possible to source low cost inertial measurement units (IMUs) which measure acceleration along one or more axes.}
+\item[Ease of Control]{Multicopter UAVs offer the vertical take off and landing versatility of a traditional rotorcraft but with increased ease of control.}
 \end{description}
 
 These factors allow UAVs to be bought off the shelf for less than a thousand dollars, which is several orders of magnitude less than the cheapest traditional UAV. As with any disruptive technology, there is growing interest in the potential commercial applications. 
@@ -48,6 +48,8 @@ However, before these craft can be used reliably in a commercial setting, there 
 \item{Multicopter craft consume a lot of power. Battery life is limited to 30 minutes for the most efficient craft with large batteries.}
 \item{Autonomous landing relies on GPS for localisation. This has limited accuracy.}
 \end{enumerate}
+
+%% Describe GPS landing first and then describe how it is a stepping stone to automatic charging.
 
 \subsection{Automated Charging}
 
@@ -63,13 +65,6 @@ Several approaches have used inductive charging, where an oscillating magnetic f
 A more traditional approach is to consider conductive charging. This is extremely efficient and offers very fast charge times. Additionally, it requires minimal modification to the airframe itself. However, contacts have to be positioned very accurately. As part of an ongoing Master's capstone project, we have designed a mechanically actuated charging station that uses an arm to bring a UAV into charging contacts (Figure \ref{fig:catia}). 
 
 This approach requires accurate landing of the UAV onto a predefined area of the charging station. Some inaccuracy can be tolerated by the mechanical arm but in order to minimise the physical size of the station, it is necessary to land with some accuracy. 
-
-\begin{figure*}[h]
-    \centering
-    \includegraphics[width=\textwidth]{images/catia.jpg}
-    \caption{Our design for a UAV charging station.}
-    \label{fig:catia}
-\end{figure*}
 
 
 \subsection{Accurate Landing}
@@ -121,7 +116,7 @@ Our project was thus to:
 \begin{enumerate}
 \item{Implement a vision-based pose estimator.}
 \item{Integrate our pose estimates into a controller that would land a UAV.}
-\item{Demonstrate accurate autonomous landing using commodity electronics on a low cost quadrocopter UAV.}
+\item{Demonstrate accurate autonomous landing using commodity electronics on a low cost quadcopter UAV.}
 \item{Make our software and implementation details openly available.}
 \end{enumerate}
 
@@ -160,6 +155,7 @@ more general problem, where there is no pre-specified landing target, and their
 helicopter has to search autonomously for a suitable clear area on which to
 land.
 
+%% Add comment re: further work since (i.e. landing on an unstable surface / moving boat).
 
 \section{Approach}
 
@@ -268,6 +264,8 @@ camera model, which we then fed into the equations above.
 In order to actually land our UAV using our pose estimates, it was necessary to implement a landing controller. Since this would need to run in real time (in order to adequately stabilise the UAV), we deferred real-time control to the \textit{loiter} mode provided by the ArduCopter autopilot. This takes care of real-time stabilisation for us and, additionally, attempts to keep the UAV in the same location using GPS. (They also offer a more basic stabilise mode which doesn't attempt to keep the craft to one location.)
 
 Using the roscopter library, we were able to override the radio control inputs that would typically be received from the user. Using these inputs, we could manipulate the throttle, yaw, pitch and roll of the UAV.
+
+%% TODO: Describe how we control the UAV using PWM values for channels.
 
 \subsubsection{State Machine}
 We designed a state machine with five states, beginning in a \textit{FLYING} mode and ending in \textit{POWER\_OFF}. Figure \ref{fig:statediagram} shows the transitions between the states. 
@@ -473,7 +471,7 @@ This could be mitigated through better controller design. In particular: using a
 Using a full PID controller will allow us to develop a more aggressive controller that is able to reduce the error (i.e. deviation from the centre of the landing pad) more quickly and in a way that is proportional to external noise (i.e. wind) - and not just the amount of noise.
 
 \paragraph{Control Rate}
-At the moment we gain pose-estimates at a slow rate (and provide control updates at the same rate) of approximately 1.6Hz. The GPS sensor included in the autopilot operates at 5Hz and it typically provides control updates at 10Hz. 10Hz is enough to provide real-time control of the quadrocopter UAV that we use and so increasing the performance of the pose estimator up to between 5 and 10Hz may be enough to better offset windy flying conditions.
+At the moment we gain pose-estimates at a slow rate (and provide control updates at the same rate) of approximately 1.6Hz. The GPS sensor included in the autopilot operates at 5Hz and it typically provides control updates at 10Hz. 10Hz is enough to provide real-time control of the quadcopter UAV that we use and so increasing the performance of the pose estimator up to between 5 and 10Hz may be enough to better offset windy flying conditions.
 
 \section{Conclusion \& Future Directions}
 
