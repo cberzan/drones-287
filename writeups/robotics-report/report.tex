@@ -19,6 +19,8 @@
 \author{Constantin Berzan, Sunil Shah}
 \date{} 
 
+% TODO: say our code is open source at <url>
+
 \begin{document}
 \maketitle
 
@@ -358,8 +360,28 @@ libraries.
 One of the significant impediments to our project was integrating working hardware. In this section, we describe the issues we had and how they might be mitigated in the future.
 
 \subsection{Integration of Hardware}
-%% CONSTANTIN
-% A brief note on the hardware travails we had.
+
+We spent an unexpectedly large amount of time dealing with hardware issues. The
+first two USB hubs we tried did not work reliably with the BeagleBone, failing
+to be recognized if they were plugged in at boot time. The first Wi-Fi adapter
+we tried did not support ad-hoc networking, despite the manufacturer's claims
+to the contrary. In addition, the hastily written documentation for roscopter
+mentioned the {\tt --rate} parameter instead of {\tt --baud-rate}, leading to
+baffling failures to communicate with the APM, until we dug into this
+third-party code and found the problem.\footnote{We have released a corrected
+and somewhat cleaned-up version of roscopter at {\tt
+https://github.com/cberzan/roscopter}.}
+
+Another issue was that our webcam tried to automatically adjust exposure and
+focus, which led to unfocused or over-exposed images in the field. After
+extensive trial-and-error, we figured out how to tell the hardware to keep the
+exposure and focus at fixed values, but this required that we run an experiment
+to determine these values each time we went to fly our quadcopter.
+
+Our main lesson from this experience is that we should not underestimate the
+amount of time it takes to assemble and validate a new hardware platform for
+running experiments. It is doubtlessly much quicker to get started with a
+platform that others have already validated, or to use a software simulation.
 
 \subsection{Image Quality}
 %% NAHUSH
