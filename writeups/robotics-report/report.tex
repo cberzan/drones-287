@@ -30,12 +30,14 @@ In order to land based on this data, we build a state machine and controller tha
 \end{abstract}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Motivation}
+%% SUNIL
+%% What is the problem? Why does it matter?
 In the recent past, multicopter UAVs (or drones, as they are colloquially known) have become increasingly popular. This has been well documented by both mainstream and technology media. Once the preserve of the military, several factors have led to multicopter UAVs being fabricated and flown by hobbyist pilots:
 \begin{description}
 \item[The Maker Movement]{Affordable 3D printing have made it easier to prototype and produce cheap multicopter airframes.}
 \item[Commodity Embedded Electronics]{A number of projects, beginning with the Arduino platform, have made well supported embedded computers available at low cost to the general public.}
 \item[Open Source Software]{There are a number of popular open source autopilot projects that have significantly lowered the barrier to entry to novice users.}
-\item[Smartphone IMUs]{As smartphones have grown in popularity, it has become possible to source low cost inertial measurement units which measurement of acceleration along several axes.}
+\item[Smartphone IMUs]{As smartphones have grown in popularity, it has become possible to source low cost inertial measurement units (IMUs) which measurement of acceleration along several axes.}
 \item[Ease of Control]{Multicopter UAVs offer the vertial take off and landing versatility of a traditional rotorcraft but with increased ease of control.}
 \end{description}
 
@@ -58,9 +60,9 @@ One approach to mitigating the short battery life of a UAV is to have it land on
 Several approaches have used inductive charging, where an oscillating magnetic field in the base of the charging station induces current in a coil on the UAV and charges the battery. While this approach allows for considerable inaccuracy in landing, it is approximately 20x slower than conductive charging and requires extra equipment on the UAV itself which impedes its aerodynamic efficiency.
 
 \subsubsection{Conductive Charging}
-A more traditional approach is to consider conductive charging. This is extremely efficient and offers very fast charge times. Additionally, it requires minimal modification to the airframe itself. However, contacts have to be positioned very accurately. As part of an ongoing Master's capstone project, we have designed a mechanically actuated charging station that uses an arm to bring a UAV into charging contacts (Fig \ref{fig:catia}). 
+A more traditional approach is to consider conductive charging. This is extremely efficient and offers very fast charge times. Additionally, it requires minimal modification to the airframe itself. However, contacts have to be positioned very accurately. As part of an ongoing Master's capstone project, we have designed a mechanically actuated charging station that uses an arm to bring a UAV into charging contacts (Figure \ref{fig:catia}). 
 
-This approach requires accurate landing of the UAV onto a predefined area of the charging station.
+This approach requires accurate landing of the UAV onto a predefined area of the charging station. Some inaccuracy can be tolerated by the mechanical arm but in order to minimise the physical size of the station, it is necessary to land with some accuracy. 
 
 \begin{figure*}[h]
     \centering
@@ -71,22 +73,40 @@ This approach requires accurate landing of the UAV onto a predefined area of the
 
 
 \subsection{Accurate Landing}
+The de facto method of state estimation for outdoor UAVs is through sensor fusion of IMU data, barometric pressure measurements, and GPS data. IMUs are used to provide estimates of the UAV's roll, pitch and yaw rates and barometric pressure estimates the UAVs altitude. GPS data is used to geographically localise the UAV. Our experiments showed that using the auto-landing functionality (in \textit{return to launch} mode) of our autopilot resulted in an accuracy of landing that tracks the known accuracy of GPS systems. 
 
-%% SUNIL
-%% What is the problem? Why does it matter?
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/marker.JPG}
+    \caption{Testing landing accuracy using GPS}
+    \label{fig:marker}
+\end{figure*}
 
+We experimentally gained 10 estimates for landing accuracy by drawing an X marker using yellow tape (Figure \ref{fig:marker}), arming the UAV at that location, flying it an arbitrary distance away and then invoking the \textit{return to launch} mode. We measured the straight line distance between the centre of the quadcopter and the centre of the marker. These results are shown in Table \ref{tbl:landing-data}, giving a mean accuracy of 195.33 centimetres and a standard deviation of 110.73 centimetres. 
 
+\begin {table}
+  \centerline{
+  \begin{tabular}{ | c | c | }
+  \hline
+  Inches & Centimetres \\ 
+  \hline
+  22 & 55.88 \\ 
+  63 & 160.02 \\ 
+  39 & 99.06 \\ 
+  84.5 & 214.63 \\ 
+  25.5 & 64.77 \\ 
+  76 & 193.04 \\ 
+  158 & 401.32 \\ 
+  130.5 & 331.47 \\ 
+  76 & 193.04 \\ 
+  94.5 & 240.03 \\ 
+  \hline
+  \end{tabular}}
+   \caption{Distance of landing from home location using RTL}
+   \label{tbl:landing-data}
+\end {table}
 
-% Delivery
-% The automated problem also becomes relevant for when UAVs are used for delivery
-% 
-
-% Current solutions use GPS to localise, which tracks accuracy of GPS.
-% Vision based approaches yield considerably better accuracy but are not available
-
-% Our project was to make such an implementation available that ran on 
-% commodity drones and hardware.
-
+Accurate landing is important for an automated charging station as described in the previous section. It is also important for many other applications of UAVs where it is necessary to land in and take off from constrained spaces. An example application is the use of UAVs as delivery vehicles to households. Many households may have limited clear space for the UAV to land. When using GPS, it is equally likely that the UAV will land on the household's roof as on their designed delivery point.
 
 \begin{figure*}[h]
     \centering
@@ -95,6 +115,15 @@ This approach requires accurate landing of the UAV onto a predefined area of the
     \label{fig:drone}
 \end{figure*}
 
+\subsection{Vision-Based Landing}
+By augmenting our autopilot with an additional computer and webcam, we can use computer vision techniques to gain a highly accurate estimate of the UAVs pose with respect to a landing pad of a known design.
+Our project was thus to:
+\begin{enumerate}
+\item{Implement a vision-based pose estimator.}
+\item{Integrate our pose estimates into a controller that would land a UAV.}
+\item{Demonstrate accurate autonomous landing using commodity electronics on a low cost quadrocopter UAV.}
+\item{Make our software and implementation details openly available.}
+\end{enumerate}
 
 \section{Prior Work}
 
@@ -236,13 +265,12 @@ camera model, which we then fed into the equations above.
 
 \subsection{Control}
 %% SUNIl
-
 In order to actually land our UAV using our pose estimates, it was necessary to implement a landing controller. Since this would need to run in real time (in order to adequately stabilise the UAV), we deferred real-time control to the \textit{loiter} mode provided by the ArduCopter autopilot. This takes care of real-time stabilisation for us and, additionally, attempts to keep the UAV in the same location using GPS. (They also offer a more basic stabilise mode which doesn't attempt to keep the craft to one location.)
 
 Using the roscopter library, we were able to override the radio control inputs that would typically be received from the user. Using these inputs, we could manipulate the throttle, yaw, pitch and roll of the UAV.
 
 \subsubsection{State Machine}
-We designed a state machine with five states, beginning in a \textit{FLYING} mode and ending in \textit{POWER\_OFF}. Fig \ref{fig:statediagram} shows the transitions between the states. 
+We designed a state machine with five states, beginning in a \textit{FLYING} mode and ending in \textit{POWER\_OFF}. Figure \ref{fig:statediagram} shows the transitions between the states. 
 
 \paragraph{FLYING}
 The \textit{FLYING} state represents when the UAV is not under our control, for instance, when the user is in manual control or has invoked another autopilot mode. Our controller listens to a specific channel of the radio input which represents three fixed values that are user selectable on the handheld transmitter. When the value of that channel changes to a predefined value, our controller takes control of the autopilot and transitions into \textit{SEEK\_HOME}.
@@ -264,14 +292,20 @@ In \textit{LAND\_LOW}, we use a dead reckoning approach to the ground since we a
 \begin{figure*}[h]
     \centering
     \includegraphics{images/statediagram.png}
-    \caption{The state diagram of our landing controller.}
+    \caption{State diagram of our landing controller.}
     \label{fig:statediagram}
 \end{figure*}
 
 \subsection{Software Integration}
 %% SUNIL
+In order to integrate the three major components of software (roscopter, our pose estimator and our landing controller), we made extensive use of the publish and subscribe mechanism built into ROS. This allowed us to implement landing control in an event driven style - new control messages are generated upon receipt by the landing controller of new state information. This may include an updated pose estimate, an input from the user's radio control transmitter or new sensor data from the autopilot. Since the time taken to generate new control messages is considerably less than that to generate pose estimates, this allows us to generate control messages as frequently as we get new pose estimates. Figure \ref{fig:rosnodes} shows this setup.
 
-% A brief word on ROS + diagram showing the flow of messages?
+\begin{figure*}[h]
+    \centering
+    \includegraphics{images/rosnodes.png}
+    \caption{Setup of our ROS nodes.}
+    \label{fig:rosnodes}
+\end{figure*}
 
 \section{Results}
 
@@ -350,8 +384,12 @@ libraries.
 
 
 \subsection{Control}
+
 %% SUNIL 
 % How did our controller do?
+
+\subsubsection{Transitions}
+
 % Field of view of camera and size of landing pad meant no accurate Z estimates
 % below ~ 2m.
 % Noisy sensor data = state transitions wer edifficult
@@ -401,6 +439,8 @@ platform that others have already validated, or to use a software simulation.
 % Practically, this means we need to be at about 2 metres to get
 % pose estimates.
 
+% We could use a concentric landing pattern to mitigate this, or makae the landing pad smaller.
+
 % height	visible land area
 % 1 m	1.37 m x 0.77 m
 % 2 m	2.75 m x 1.54 m
@@ -417,9 +457,23 @@ platform that others have already validated, or to use a software simulation.
 
 \subsection{Weather}
 %% SUNIL
+The weather conditions became more limiting than we had initially imagined - in particular due to the short term nature of this project. Two factors worked against us and made testing difficult.
 
-% Loiter mode works well with little wind but struggles when there is heavy wind
-% This means that our landing controller oscillates wildly.
+\subsubsection{Temperature}
+As mentioned in the Motivation section, multicopter UAVs have a limited battery life. The underlying battery technology is affected by the cold weather which meant that flight times, even with the largest 5500 mAh batteries on hand, were limited to 5 or 6 minutes before needing replacement. This minimised the amount of testing we could do per charging cycle.
+
+Besides carrying a larger number of batteries out to the field, there is not much we can do to mitigate this.
+
+\subsubsection{Wind}
+Our basic proportional controller struggled when there were large amounts of wind present. This is because our controller doesn't operate quickly enough to react to changes in the UAVs state, relying upon the \textit{loiter} mode of the autopilot to keep the UAV in the same place. Since the \textit{loiter} mode relies upon GPS to give us an estimate of the UAVs location, when the location deviates by a large amount, it tries to bring it back to the GPS location - which relies upon the relative inaccuracy of GPS.
+
+This could be mitigated through better controller design. In particular: using a full Proportional-Integral-Derivative (PID) controller and by increasing the rate at which control messages are generated.
+
+\paragraph{PID Controller}
+Using a full PID controller will allow us to develop a more aggressive controller that is able to reduce the error (i.e. deviation from the centre of the landing pad) more quickly and in a way that is proportional to external noise (i.e. wind) - and not just the amount of noise.
+
+\paragraph{Control Rate}
+At the moment we gain pose-estimates at a slow rate (and provide control updates at the same rate) of approximately 1.6Hz. The GPS sensor included in the autopilot operates at 5Hz and it typically provides control updates at 10Hz. 10Hz is enough to provide real-time control of the quadrocopter UAV that we use and so increasing the performance of the pose estimator up to between 5 and 10Hz may be enough to better offset windy flying conditions.
 
 \section{Conclusion \& Future Directions}
 
