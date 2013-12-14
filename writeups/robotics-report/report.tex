@@ -274,14 +274,42 @@ In \textit{LAND\_LOW}, we use a dead reckoning approach to the ground since we a
 \section{Results}
 
 \subsection{Pose Estimation Accuracy}
-%% CONSTANTIN
 
-% true height	z mean	z std	x std	y std	yaw std
-% 88 cm	89.3 cm	0.05 cm	0.43 cm	0.39 cm	0.12 °
-% 120 cm	121.1 cm	0.08 cm	1.16 cm	1.06 cm	0.12 °
-% 170 cm	172.0 cm	0.18 cm	2.74 cm	2.17 cm	0.07 °
-% 226 cm	229.0 cm	0.54 cm	6.51 cm	6.05 cm	0.34 °
+We tested the accuracy of our pose estimator in the lab, by holding the camera
+above the landing pad, and comparing the true measured height to the height
+reported by the pose estimator. We also measured the standard deviation in our
+pose estimate, by taking multiple measurements of the same scene. We compared
+the standard deviation on x and y to the lower bound given by the dimensions on
+the ground plane that correspond to one pixel in a 640x480 image at a given
+height. Table \ref{tab:pose-accu} shows these results. There is a small (1.4\%
+relative) systematic overestimation of the true height. This can be corrected
+by doing more precise calibration. The height estimate is very stable at these
+heights (small standard deviation). The x and y estimates are also fairly
+accurate, although the error in these estimates is an order of magnitude
+greater than the lower bound. This is consistent with the fact that there is
+some noise in the corner detection, and the pose estimator finds an approximate
+solution. In summary, this experiment suggests that our pose estimates should
+be good enough to reliably land our quadcopter. If individual measurements are
+too noisy, it is possible to get better pose estimates using a Kalman filter,
+although that requires having a model of the dynamics and controls of the
+system.
 
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{c|cc|cc|cc|c}
+        true height & z mean    & z std     & x bound   & x std     & y bound   & y std     & yaw std \\
+        \hline
+         88 cm      & 89.3 cm   & 0.05 cm   & 0.19 cm   & 0.43 cm   & 0.14 cm   & 0.39 cm   & 0.12 $^{\circ}$ \\
+        120 cm      & 121.1 cm  & 0.08 cm   & 0.26 cm   & 1.16 cm   & 0.19 cm   & 1.06 cm   & 0.12 $^{\circ}$ \\
+        170 cm      & 172.0 cm  & 0.18 cm   & 0.37 cm   & 2.74 cm   & 0.27 cm   & 2.17 cm   & 0.07 $^{\circ}$ \\
+        226 cm      & 229.0 cm  & 0.54 cm   & 0.49 cm   & 6.51 cm   & 0.36 cm   & 6.05 cm   & 0.34 $^{\circ}$ \\
+    \end{tabular}
+    \caption{
+        Accuracy of our pose estimates. ``x bound'' and ``y bound'' are lower
+        bounds for the error on x and y, given by the limited image resolution.
+    }
+    \label{tab:pose-accu}
+\end{table}
 
 \subsection{Performance}
 %% CONSTANTIN
