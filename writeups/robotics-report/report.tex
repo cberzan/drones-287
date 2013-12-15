@@ -282,7 +282,7 @@ In \textit{SEEK\_HOME} mode, we use the built in \textit{return to launch} mode 
 \paragraph{LAND\_HIGH}
 Our controller enters the \textit{LAND\_HIGH} mode when it starts receiving valid pose estimates. We use a simple proportional controller to calculate the appropriate control inputs based on the deviation from the centre of the landing station (in terms of x, y and yaw). These comprise the error terms in our controller.
 
-Our controller disregards the z deviation and descends at a fixed rate. The z deviation is, however, used as the best estimate of altitude (our tests, described in section SECTION, show that the calculated z value is extremely accurate). When the UAV reaches a predefined altitude (where we know pose estimates will no longer be possible, due to field of view limitations), our controller enters into the \textit{LAND\_LOW} state.
+Our controller disregards the z deviation and descends at a fixed rate. The z deviation is, however, used as the best estimate of altitude (our tests, described in section \ref{sec:accuracy}, show that the calculated z value is extremely accurate). When the UAV reaches a predefined altitude (where we know pose estimates will no longer be possible, due to field of view limitations), our controller enters into the \textit{LAND\_LOW} state.
 
 \paragraph{LAND\_LOW}
 In \textit{LAND\_LOW}, we use a dead reckoning approach to the ground since we are no longer able to receive valid pose estimates. Our controller attempts to keep the UAV flying straight and level and descends at a fixed rate. It uses data from the barometric pressure sensor to determine when the UAV has reached the ground and then enters into the \textit{POWER\_OFF} state.
@@ -311,6 +311,7 @@ In order to integrate the three major components of software (roscopter, our pos
 \section{Results}
 
 \subsection{Pose Estimation Accuracy}
+\label{sec:accuracy}
 
 We tested the accuracy of our pose estimator in the lab, by holding the camera
 above the landing pad, and comparing the true measured height to the height
@@ -384,16 +385,11 @@ libraries.
 \end{table}
 
 
-\subsection{Control}
+\subsection{Automated Landing}
 
 %% SUNIL 
-% How did our controller do?
+We faced a number of challenges that ultimately prevented us demonstrating a landing using our pose estimator. These are described in the next section. 
 
-\subsubsection{Transitions}
-
-% Field of view of camera and size of landing pad meant no accurate Z estimates
-% below ~ 2m.
-% Noisy sensor data = state transitions wer edifficult
 
 \section{Challenges}
 One of the significant impediments to our project was integrating working hardware. In this section, we describe the issues we had and how they might be mitigated in the future.
@@ -491,6 +487,14 @@ Using a full PID controller will allow us to develop a more aggressive controlle
 
 \paragraph{Control Rate}
 At the moment we gain pose-estimates at a slow rate (and provide control updates at the same rate) of approximately 1.6Hz. The GPS sensor used by the autopilot operates at 5Hz and is used to provide control updates at 10Hz. This is enough to control the quadcopter in real-time; increasing the performance of the pose estimator up to between 5 and 10Hz may be enough to better offset windy flying conditions.
+
+\subsection{Noisy Sensor Data}
+While the pose estimates provided highly accurate information about the location of the UAV, the field of view limitations meant that once the landing pattern moved out of sight, we were reliant on secondary sensors. In particular, we used barometric pressure to transition between our \textit{LAND\_HIGH} state and successive states. 
+
+Barometric pressure sensors provide reasonably accurate estimates of altitude over a large range but drifts significantly when maintaining a steady altitude. This made transition into our \textit{LAND\_LOW} state unpredictable.
+
+By better designing the landing pad, we can mitigate this by relying purely upon pose estimates for accurate altitude estimates. It may also be possible to use sonar - we were unable to get a new sonar sensor in time to test this out.
+
 
 \section{Conclusion \& Future Directions}
 
