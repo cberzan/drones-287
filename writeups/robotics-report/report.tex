@@ -217,10 +217,34 @@ possible to send controls to the autopilot.
 
 \subsection{Vision}
 %% NAHUSH 
-% Describe the vision approach we took
+Our vision-based approach comprises of detecting corners of the squares on the 
+landing platform and estimating the relative camera pose (position and orientation).
 
 \subsubsection{Corner Detection}
 %% NAHUSH
+Thresholding and other chromatic approaches are largely dependent on the ambient light
+and hence cannot be reliably used for accurate corner detection. Our approach is based
+on detecting contours in the image. Following are the stages in our corner detection 
+algorithm:
+
+\begin{enumerate}
+\item{Reduce noise in the image using a 3x3 median filter.}
+\item{Detect edges using canny edge detector.}
+\item{Identify contours and establish a tree-structured hierarchy among them.}
+\item{Discard contours which are not four-sided convex polygons and which have an area
+	less than an experimentally determined threshold value.}
+\item{Using the contour hierarchy, determine a contour which contains 6 other contours.
+	This contour represents the boundary of our landing platform. Store coordinates of
+	the corners of these 6 inner contours. Move on to the next frame if we cannot detect 
+	such a contour pattern.}
+\item{Label the largest of the 6 polygons as 'A' and the farthest one from 'A' as 'D'.
+	Label polygons as 'B', 'C', 'E' and 'F' based on orientations and distances relative
+	to the vector formed by joining centers of 'A' and 'D' (vector DA) as shown in 
+	Figure \ref{fig:corners}.}
+\item{For each polygon, label corners in the anti-clockwise manner (Figure \ref{fig:corners})
+	starting with the corner that belongs to the diagonal aligned with vector DA and that is 
+	farther from D's center.}
+\end{enumerate}
 
 \begin{figure*}[h]
     \centering
@@ -228,6 +252,9 @@ possible to send controls to the autopilot.
     \caption{Corner detection in action.}
     \label{fig:corners}
 \end{figure*}
+
+Note that we look for four-sided polygons and not specifically for squares, since they
+will not appear as squares under perspective projection.
 
 \subsubsection{Pose Estimation}
 
@@ -421,7 +448,6 @@ platform that others have already validated, or to use a software simulation.
 
 \subsection{Image Quality}
 %% NAHUSH
-% Mention the issue with motion blur up in the air and possible solutions (better camera with more fine grained control)
 
 \begin{figure*}[h]
     \centering
@@ -430,21 +456,14 @@ platform that others have already validated, or to use a software simulation.
     \label{fig:badimage}
 \end{figure*}
 
+Since the multicopter is not inherently stable, images captured by the camera 
+could be shaky (Figure \ref{fig:badimage}). 
+Corner detection and hence pose estimation might not work on such blurry images. 
+One of the possible ways of dealing with motion blur is using a better camera 
+with more fine grained control.
+
 \subsection{Field of View}
 %% NAHUSH
-
-% Drone needs to be at 1 metre to see the landing pad.
-% Practically, this means we need to be at about 2 metres to get
-% pose estimates.
-
-% We could use a concentric landing pattern to mitigate this, or makae the landing pad smaller.
-
-% height	visible land area
-% 1 m	1.37 m x 0.77 m
-% 2 m	2.75 m x 1.54 m
-% 4 m	5.50 m x 3.07 m
-% 8 m	11.0 m x 6.14 m
-% 16 m	22.0 m x 12.3 m
 
 \begin{figure*}[h]
     \centering
@@ -452,6 +471,31 @@ platform that others have already validated, or to use a software simulation.
     \caption{Field of view of our webcam.}
     \label{fig:fov}
 \end{figure*}
+
+The landing platform must entirely lie in the camera's field of view for the drone 
+to get pose estimates. With our current setup, the drone needs to be at a height of 
+at least 1 meter to be able to see the landing platform completely. 
+Table \ref{tbl:visible-height} shows the visible landing area corresponding to the 
+drone's height from the ground.
+
+\begin {table}[h!]
+  \centerline{
+  \begin{tabular}{ | c | c | }
+  \hline
+  Height & Visible Landing Area \\ 
+  \hline
+  1 m & 1.37 m x 0.77 m \\
+  2 m & 2.75 m x 1.54 m \\
+  4 m & 5.50 m x 3.07 m \\
+  8 m & 11.0 m x 6.14 m \\
+  16 m & 22.0 m x 12.3 m \\ 
+  \hline
+  \end{tabular}}
+   \caption{Visible landing area from different heights}
+   \label{tbl:visible-height}
+\end {table}
+
+We could make the landing pad smaller or use a concentric landing pattern to mitigate this issue.
 
 \subsection{Weather}
 %% SUNIL
