@@ -471,11 +471,12 @@ drone's height from the ground.
    \label{tbl:visible-landing-area}
 \end {table}
 
-We could make the landing pad smaller or use a concentric landing pattern to mitigate this issue.
+Since this field of view is measured with the camera centred above the landing pad, at 1 meter, we only generate pose estimates if the UAV is centred. In reality, it is not and so we typically lose pose estimates below approximately 2 meters. To mitigate this issue, we might reduce the size of the landing pad or explore using a concentric series of landing patterns.
 
 \subsection{Weather}
 %% SUNIL
 The weather conditions became more limiting than we had initially imagined - in particular due to the short term nature of this project. 
+
 \subsubsection{Temperature}
 As mentioned in the Motivation section, multicopter UAVs have a limited battery life. The underlying battery technology is affected by the cold weather which meant that flight times, even with the largest 5500 mAh batteries on hand, were limited to 5 or 6 minutes. This limited the amount of testing per charge cycle.
 Besides having a greater stock of batteries, there is little we can do to pre-empt this.
