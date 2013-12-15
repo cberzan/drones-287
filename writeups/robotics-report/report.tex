@@ -475,23 +475,21 @@ We could make the landing pad smaller or use a concentric landing pattern to mit
 
 \subsection{Weather}
 %% SUNIL
-The weather conditions became more limiting than we had initially imagined - in particular due to the short term nature of this project. Two factors worked against us and made testing difficult.
-
+The weather conditions became more limiting than we had initially imagined - in particular due to the short term nature of this project. 
 \subsubsection{Temperature}
-As mentioned in the Motivation section, multicopter UAVs have a limited battery life. The underlying battery technology is affected by the cold weather which meant that flight times, even with the largest 5500 mAh batteries on hand, were limited to 5 or 6 minutes before needing replacement. This minimised the amount of testing we could do per charging cycle.
-
-Besides carrying a larger number of batteries out to the field, there is not much we can do to mitigate this.
+As mentioned in the Motivation section, multicopter UAVs have a limited battery life. The underlying battery technology is affected by the cold weather which meant that flight times, even with the largest 5500 mAh batteries on hand, were limited to 5 or 6 minutes. This limited the amount of testing per charge cycle.
+Besides having a greater stock of batteries, there is little we can do to pre-empt this.
 
 \subsubsection{Wind}
-Our basic proportional controller struggled when there were large amounts of wind present. This is because our controller doesn't operate quickly enough to react to changes in the UAVs state, relying upon the \textit{loiter} mode of the autopilot to keep the UAV in the same place. Since the \textit{loiter} mode relies upon GPS to give us an estimate of the UAVs location, when the location deviates by a large amount, it tries to bring it back to the GPS location - which relies upon the relative inaccuracy of GPS.
+Our proportional controller struggled when there were large amounts of wind present. This is because it could not operate quickly enough to react to rapid changes in state, relying upon the \textit{loiter} mode of the autopilot to keep the UAV in the same place. The \textit{loiter} mode relies upon GPS to give us an estimate of the UAVs location and when the location deviates by a large amount, it tries to bring it back to the GPS location. As we've established, GPS is relatively inaccurate and so this causes a significant amount of drift.
 
-This could be mitigated through better controller design. In particular: using a full Proportional-Integral-Derivative (PID) controller and by increasing the rate at which control messages are generated.
+This could be mitigated through better controller design. 
 
 \paragraph{PID Controller}
 Using a full PID controller will allow us to develop a more aggressive controller that is able to reduce the error (i.e. deviation from the centre of the landing pad) more quickly and in a way that is proportional to external noise (i.e. wind) - and not just the amount of noise.
 
 \paragraph{Control Rate}
-At the moment we gain pose-estimates at a slow rate (and provide control updates at the same rate) of approximately 1.6Hz. The GPS sensor included in the autopilot operates at 5Hz and it typically provides control updates at 10Hz. 10Hz is enough to provide real-time control of the quadcopter UAV that we use and so increasing the performance of the pose estimator up to between 5 and 10Hz may be enough to better offset windy flying conditions.
+At the moment we gain pose-estimates at a slow rate (and provide control updates at the same rate) of approximately 1.6Hz. The GPS sensor used by the autopilot operates at 5Hz and is used to provide control updates at 10Hz. This is enough to control the quadcopter in real-time; increasing the performance of the pose estimator up to between 5 and 10Hz may be enough to better offset windy flying conditions.
 
 \section{Conclusion \& Future Directions}
 
