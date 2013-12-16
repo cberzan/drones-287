@@ -22,8 +22,6 @@
 \author{Constantin Berzan, Sunil Shah}
 \date{}
 
-% TODO: say our code is open source at <url>
-
 \begin{document}
 \maketitle
 
@@ -47,84 +45,42 @@ land with much greater accuracy than GPS.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Motivation}
 
-In the recent past, multicopter UAVs (or drones, as they are colloquially
-known) have become increasingly popular. This has been well documented by both
-mainstream and technology media. Once the preserve of the military, several
-factors have led to multicopter UAVs being fabricated and flown by hobbyist
-pilots:
+Multicopter UAVs, colloquially known as \textit{drones}, have become
+increasingly popular in recent years. This is thanks, in part, to the
+appearance of affordable prototyping tools (such as the Arduino platform and 3D
+printers), affordable sensors (such as the accelerometers used in smartphones),
+and open-source autopilot software (such as Ardu-Copter by 3D Robotics). Today,
+a hobbyist can buy an off-the-shelf UAV for less than a thousand US dollars,
+and get it to fly in only a few hours, using the provided autopilot software.
 
-\begin{description}
-\item[The Maker Movement]{Affordable 3D printing has made it easier to
-prototype and produce cheap multicopter airframes.}
-\item[Commodity Embedded Electronics]{A number of projects, beginning with the
-Arduino platform, have made well supported embedded computers available at low
-cost to the general public.}
-\item[Open Source Software]{There are a number of popular open source autopilot
-projects that have significantly lowered the barrier to entry to novice users.}
-\item[Smartphone IMUs]{As smartphones have grown in popularity, it has become
-possible to source low cost inertial measurement units (IMUs) which measure
-acceleration along one or more axes.}
-\item[Ease of Control]{Multicopter UAVs offer the vertical take off and landing
-versatility of a traditional rotorcraft but with increased ease of control.}
-\end{description}
+There is increasing interest in commercial applications of UAVs, such as farm
+monitoring and package delivery. For these applications to become a reality,
+the UAVs' operation has to be entirely autonomous, from takeoff to landing. The
+only approach to autonomous landing for which software is publicly available
+today is based on GPS. The UAV records its takeoff location, and then navigates
+back to that location in order to land.
 
-These factors allow UAVs to be bought off the shelf for less than a thousand
-dollars, which is several orders of magnitude less than the cheapest
-traditional UAV. As with any disruptive technology, there is growing interest
-in the potential commercial applications.
+What is the accuracy of GPS-based landing? To find out, we ran the following
+experiment 10 times: We placed a marker on the ground, placed the UAV on top of
+it, flew it an arbitrary distance away, and then landed it automatically using
+Ardu-Copter's \textit{return-to-launch} mode. We measured the straight-line
+distance from the marker to the location where the UAV actually landed. We
+obtained a mean of 195.33 cm and a standard deviation of 110.73 cm. While this
+might be sufficient when landing in an uninhabited field, it is certainly not
+sufficient for landing in an inhabited area (for package delivery) or for
+landing on a charging station (for farm monitoring).
 
-However, before these craft can be used reliably in a commercial setting, there
-are a number of shortfalls. In particular, accuracy of landing remains limited
-because of a reliance on GPS to localise the UAV. Our project aims to address
-this particular problem.
+The goal of our project was to improve the accuracy of automated landing by
+equipping the UAV with a camera, and using computer-vision techniques to guide
+the UAV towards landing on a predefined marker. We made significant progress
+towards this goal, although we were not yet able to demonstrate autonomous
+landing in action. This report documents our progress, the challenges we faced,
+and the next steps we plan to take.
 
+This work is part of an ongoing project to build an automated charging station
+for UAVs. Our code is available online under an open-source
+license.\footnote{{\tt https://github.com/cberzan/drones-287}}
 
-\subsection{Landing With GPS}
-The de facto method of state estimation for outdoor UAVs is through sensor
-fusion of IMU data, barometric pressure measurements, and GPS data. IMUs are
-used to provide estimates of the UAV's roll, pitch and yaw rates and barometric
-pressure estimates the UAVs altitude. GPS data is used to geographically
-localise the UAV. Our experiments showed that using the auto-landing
-functionality (in \textit{return to launch} mode) of our autopilot resulted in
-an accuracy of landing that tracks the known accuracy of GPS systems.
-
-We experimentally gained 10 estimates for landing accuracy by drawing an X
-marker using yellow tape, arming the UAV at that location, flying it an
-arbitrary distance away and then invoking the \textit{return to launch} mode.
-We measured the straight line distance between the centre of the quadcopter and
-the centre of the marker. These results gave a mean accuracy of 195.33
-centimetres and a standard deviation of 110.73 centimetres.
-
-\subsection{Accurate Landing}
-
-Accurate landing is important for many applications of UAVs where it is
-necessary to land in and take off from constrained spaces. An example
-application is the use of UAVs as delivery vehicles to households. Many
-households may have limited clear space for the UAV to land. When using GPS, it
-is equally likely that the UAV will land on the household's roof as on their
-designated delivery point.
-
-Accurate landing capability will also be an integral part of a larger project
-to build a multicopter charging station. Multicopters are limited by their
-battery life and current charging solutions require human intervention - which
-limits their usefulness as fully autonomous robots.  With an accurate landing,
-it becomes feasible to build an automatic conductive charger which can recharge
-a UAV's battery quickly.
-
-\subsection{Vision-Based Landing}
-
-By augmenting our autopilot with an additional computer and webcam, we can use
-computer vision techniques to gain a highly accurate estimate of the UAVs pose
-with respect to a landing pad of a known design.
-Our project was thus to:
-
-\begin{enumerate}
-\item{Implement a vision-based pose estimator.}
-\item{Integrate our pose estimates into a controller that would land a UAV.}
-\item{Demonstrate accurate autonomous landing using commodity electronics on a
-low cost quadcopter UAV.}
-\item{Make our software and implementation details openly available.}
-\end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Prior Work}
