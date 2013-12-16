@@ -155,40 +155,39 @@ several ROS nodes passing messages to one another. This is illustrated in
 figure \ref{fig:rosnodes}.
 
 
-\subsection{Vision}
+\subsection{Corner Detection}
 
-Our vision-based approach comprises of detecting corners of the squares on the
-landing platform and estimating the relative camera pose (position and orientation).
-
-\subsubsection{Corner Detection}
-Thresholding and other chromatic approaches are largely dependent on the ambient light
-and hence cannot be reliably used for accurate corner detection. Our approach is based
-on detecting contours in the image. Following are the stages in our corner detection
-algorithm:
+As a first step, we detect the corners of the landing platform in an image (see
+Figure \ref{fig:corners}):
 
 \begin{enumerate}
-\item{Reduce noise in the image using a 3x3 median filter.}
-\item{Detect edges using canny edge detector.}
-\item{Identify contours and establish a tree-structured hierarchy among them.}
-\item{Discard contours which are not four-sided convex polygons and which have an area
-	less than an experimentally determined threshold value.}
-\item{Using the contour hierarchy, determine a contour which contains 6 other contours.
-	This contour represents the boundary of our landing platform. Store coordinates of
-	the corners of these 6 inner contours. Move on to the next frame if we cannot detect
-	such a contour pattern.}
-\item{Label the largest of the 6 polygons as 'A' and the farthest one from 'A' as 'D'.
-	Label polygons as 'B', 'C', 'E' and 'F' based on orientations and distances relative
-	to the vector formed by joining centers of 'A' and 'D' (vector DA) as shown in
-	Figure \ref{fig:corners}.}
-\item{For each polygon, label corners in the anti-clockwise manner (Figure \ref{fig:corners})
-	starting with the corner that belongs to the diagonal aligned with vector DA and that is
-	farther from D's center.}
+\setlength{\itemsep}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\parsep}{0pt}
+\item{
+    Denoise the image using a 3x3 median filter, and pass it through the Canny
+    edge detector.}
+\item{
+    Identify contours and establish a tree-structured hierarchy among them.}
+\item{
+    Discard contours which are not four-sided convex polygons and which have an
+    area less than an experimentally determined threshold value.  We look for
+    four-sided polygons and not specifically for squares, since they will not
+    appear as squares under perspective projection.}
+\item{
+    Using the contour hierarchy, determine a contour which contains 6 other
+    contours. This contour represents the boundary of our landing platform.
+    Store coordinates of the corners of these 6 inner contours.}
+\item{
+    Label the largest of the 6 polygons as 'A' and the farthest one from 'A' as
+    'D'. Label polygons as 'B', 'C', 'E' and 'F' based on their orientation and
+    distance relative to the vector formed by joining centers of 'A' and 'D'.}
+\item{
+    For each polygon, label corners in anti-clockwise order.}
 \end{enumerate}
 
-Note that we look for four-sided polygons and not specifically for squares, since they
-will not appear as squares under perspective projection.
 
-\subsubsection{Pose Estimation}
+\subsection{Pose Estimation}
 
 We define the origin of the world coordinate frame to be the center of the
 landing platform, such that all points on the landing platform have a Z
