@@ -43,7 +43,7 @@ land with much greater accuracy than GPS.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Motivation}
+\section{Introduction}
 
 Multicopter UAVs, colloquially known as \textit{drones}, have become
 increasingly popular in recent years. This is thanks, in part, to the
@@ -60,22 +60,22 @@ only approach to autonomous landing for which software is publicly available
 today is based on GPS. The UAV records its takeoff location, and then navigates
 back to that location in order to land.
 
-What is the accuracy of GPS-based landing? To find out, we ran the following
-experiment 10 times: We placed a marker on the ground, placed the UAV on top of
-it, flew it an arbitrary distance away, and then landed it automatically using
-Ardu-Copter's \textit{return-to-launch} mode. We measured the straight-line
-distance from the marker to the location where the UAV actually landed. We
-obtained a mean of 195.33 cm and a standard deviation of 110.73 cm. While this
-might be sufficient when landing in an uninhabited field, it is certainly not
-sufficient for landing in an inhabited area (for package delivery) or for
-landing on a charging station (for farm monitoring).
+{\bf What is the accuracy of GPS-based landing?} To find out, we ran the
+following experiment 10 times: We placed a marker on the ground, placed the UAV
+on top of it, flew it an arbitrary distance away, and then landed it
+automatically using Ardu-Copter's \textit{return-to-launch} mode. We measured
+the straight-line distance from the marker to the location where the UAV
+actually landed. We obtained a mean of 195.33 cm and a standard deviation of
+110.73 cm. While this might be sufficient when landing in an uninhabited field,
+it is certainly not sufficient for landing in an inhabited area (for package
+delivery) or for landing on a charging station (for farm monitoring).
 
-The goal of our project was to improve the accuracy of automated landing by
-equipping the UAV with a camera, and using computer-vision techniques to guide
-the UAV towards landing on a predefined marker. We made significant progress
-towards this goal, although we were not yet able to demonstrate autonomous
-landing in action. This report documents our progress, the challenges we faced,
-and the next steps we plan to take.
+{\bf The goal of our project} was to improve the accuracy of automated landing
+by equipping the UAV with a camera, and using computer-vision techniques to
+guide the UAV towards landing on a predefined marker. We made significant
+progress towards this goal, although we were not yet able to demonstrate
+autonomous landing in action. This report documents our progress, the
+challenges we faced, and the next steps we plan to take.
 
 This work is part of an ongoing project to build an automated charging station
 for UAVs. Our code is available online under an open-source
