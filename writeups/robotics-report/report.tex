@@ -40,7 +40,7 @@ Multicopter UAVs, colloquially known as \textit{drones}, have become
 increasingly popular in recent years. This is thanks, in part, to the
 appearance of affordable prototyping tools (such as the Arduino platform and 3D
 printers), affordable sensors (such as the accelerometers used in smartphones),
-and open-source autopilot software (such as Ardu-Copter by 3D Robotics). Today,
+and open-source autopilot software (such as ArduCopter by 3D Robotics). Today,
 a hobbyist can buy an off-the-shelf UAV for less than a thousand US dollars,
 and get it to fly in only a few hours, using the provided autopilot software.
 
@@ -54,7 +54,7 @@ back to that location in order to land.
 {\bf What is the accuracy of GPS-based landing?} To find out, we ran the
 following experiment 10 times: We placed a marker on the ground, placed the UAV
 on top of it, flew it an arbitrary distance away, and then landed it
-automatically using Ardu-Copter's \textit{return-to-launch} mode. We measured
+automatically using ArduCopter's \textit{return-to-launch} mode. We measured
 the straight-line distance from the marker to the location where the UAV
 actually landed. We obtained a mean of 195.33 cm and a standard deviation of
 110.73 cm. While this might be sufficient when landing in an uninhabited field,
@@ -118,7 +118,7 @@ land.
 Our goal was to use inexpensive, off-the-shelf hardware, rather than expensive
 equipment that is only accessible to researchers. We used quadcopter components
 made by 3D Robotics, together with their ArduCopter autopilot (frequently
-referred to under its old name -- Ardu-Pilot Mega, or APM) and associated GPS
+referred to under its old name, ArduPilot Mega or APM) and associated GPS
 module. This autopilot acts as a low-level controller that keeps the quadcopter
 stable. It runs an unmodified version of the open-source autopilot code
 provided by 3D Robotics.
