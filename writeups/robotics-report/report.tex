@@ -44,11 +44,11 @@ and open-source autopilot software (such as ArduCopter by 3D Robotics). Today,
 a hobbyist can buy an off-the-shelf UAV for less than a thousand US dollars,
 and get it to fly in only a few hours, using the provided autopilot software.
 
-There is increasing interest in commercial applications of UAVs, such as 
-precision agriculture and package delivery. For these applications to become a 
-reality, the UAVs' operation has to be entirely autonomous, from takeoff to 
-landing. The only approach to autonomous landing for which software is publicly 
-available today is based on GPS. The UAV records its takeoff location, and then 
+There is increasing interest in commercial applications of UAVs, such as
+precision agriculture and package delivery. For these applications to become a
+reality, the UAVs' operation has to be entirely autonomous, from takeoff to
+landing. The only approach to autonomous landing for which software is publicly
+available today is based on GPS. The UAV records its takeoff location, and then
 navigates back to that location in order to land.
 
 {\bf What is the accuracy of GPS-based landing?} To find out, we ran the
@@ -230,7 +230,7 @@ as x, y, z, and yaw deviations. The controller descends at a fixed rate, using
 the z deviation only as an estimate of the altitude.) When the UAV reaches a
 predefined altitude (where pose estimates are no longer possible, due to
 limited field of view), our controller enters the \textit{LAND\_LOW} state, and
-descends slowly by dead reckoning. When the barometric pressure sensor indicates 
+descends slowly by dead reckoning. When the barometric pressure sensor indicates
 that the UAV has reached the ground, the controller switches into the
 \textit{POWER\_OFF} state.
 
