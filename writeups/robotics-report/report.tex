@@ -133,32 +133,6 @@ land.
 
 \subsection{Architecture}
 
-\begin{figure}[h!]
-    \centering
-    \begin{subfigure}[b]{0.9\textwidth}
-        \includegraphics[width=\textwidth]{images/architecture.png}
-        \caption{
-            Architecture of our automated landing system. We use inexpensive
-            off-the-shelf hardware. The laptop and remote control are for
-            monitoring and emergency takeover by a human pilot. All the
-            computation is performed onboard the UAV.
-        }
-    \end{subfigure}
-    \\~\\
-    \begin{subfigure}[b]{0.9\textwidth}
-        \includegraphics[width=\textwidth]{images/hardware.jpg}
-        \caption{
-            Our hardware stack fully assembled. From bottom to top: batteries,
-            BeagleBone embedded computer, USB hub with Wi-Fi adapter, 3D
-            Robotics autopilot (APM) with embedded sensors, GPS module. The
-            webcam is on the left, and the radio for the remote control is on
-            the right.
-        }
-    \end{subfigure}
-    \caption{Hardware architecture and setup.}
-    \label{fig:hardware}
-\end{figure}
-
 Our goal was to use inexpensive, off-the-shelf hardware, rather than expensive
 equipment that is only accessible to researchers. We used quadcopter components
 made by 3D Robotics, together with their ArduCopter autopilot (frequently
@@ -217,13 +191,6 @@ algorithm:
 	starting with the corner that belongs to the diagonal aligned with vector DA and that is 
 	farther from D's center.}
 \end{enumerate}
-
-\begin{figure*}[h]
-    \centering
-    \includegraphics[width=\textwidth]{images/corners.png}
-    \caption{Corner detection in action.}
-    \label{fig:corners}
-\end{figure*}
 
 Note that we look for four-sided polygons and not specifically for squares, since they
 will not appear as squares under perspective projection.
@@ -286,23 +253,9 @@ In \textit{LAND\_LOW}, we use a dead reckoning approach to the ground since we a
 \paragraph{POWER\_OFF}
 \textit{POWER\_OFF} retains control of the UAV but sets throttle to a low value to prevent it from flying.
 
-\begin{figure*}[h]
-    \centering
-    \includegraphics{images/statediagram.png}
-    \caption{State diagram of our landing controller.}
-    \label{fig:statediagram}
-\end{figure*}
-
 \subsection{Software Integration}
 %% SUNIL
 In order to integrate the three major components of software (roscopter, our pose estimator and our landing controller), we made extensive use of the publish and subscribe mechanism built into ROS. This allowed us to implement landing control in an event driven style - new control messages are generated upon receipt by the landing controller of new state information. This may include an updated pose estimate, an input from the user's radio control transmitter or new sensor data from the autopilot. Since the time taken to generate new control messages is considerably less than that to generate pose estimates, this allows us to generate control messages as frequently as we get new pose estimates. Figure \ref{fig:rosnodes} shows this setup.
-
-\begin{figure*}[h]
-    \centering
-    \includegraphics{images/rosnodes.png}
-    \caption{Setup of our ROS nodes.}
-    \label{fig:rosnodes}
-\end{figure*}
 
 \section{Results}
 
@@ -417,13 +370,6 @@ platform that others have already validated, or to use a software simulation.
 \subsection{Image Quality}
 %% NAHUSH
 
-\begin{figure*}[h]
-    \centering
-    \includegraphics[width=\textwidth]{images/badimage.jpg}
-    \caption{An example of a bad image.}
-    \label{fig:badimage}
-\end{figure*}
-
 Since the multicopter is not inherently stable, images captured by the camera 
 could be shaky (Figure \ref{fig:badimage}). 
 Corner detection and hence pose estimation might not work on such blurry images. 
@@ -495,5 +441,60 @@ Further work will involve a redesigned landing pad and a more featured controlle
 % Future work is adequately alluded to in the 'Challenges' section.
 
 \printbibliography
+
+% Figures moved here because we need to put them together to save space.
+
+\clearpage
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\textwidth]{images/architecture.png}
+\caption{
+    Architecture of our automated landing system. We use inexpensive
+    off-the-shelf hardware. The laptop and remote control are for
+    monitoring and emergency takeover by a human pilot. All the
+    computation is performed onboard the UAV.
+}
+\label{fig:hardware-arch}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.85\textwidth]{images/hardware.jpg}
+\caption{
+    Our hardware stack fully assembled. From bottom to top: batteries,
+    BeagleBone embedded computer, USB hub with Wi-Fi adapter, 3D
+    Robotics autopilot (APM) with embedded sensors, GPS module. The
+    webcam is on the left, and the radio for the remote control is on
+    the right.
+}
+\label{fig:hardware-photo}
+\end{figure}
+
+\begin{figure*}[h]
+    \centering
+    \includegraphics[width=\textwidth]{images/corners.png}
+    \caption{Corner detection in action.}
+    \label{fig:corners}
+\end{figure*}
+
+\begin{figure}
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{images/statediagram.png}
+        \caption{State diagram of our landing controller.}
+        \label{fig:statediagram}
+    \end{minipage}% this comment necessary, otherwise extra newline treated as space
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.9\linewidth]{images/rosnodes.png}
+        \caption{Setup of our ROS nodes.}
+        \label{fig:rosnodes}
+        \vspace{2cm}
+        \includegraphics[width=0.9\linewidth]{images/badimage.jpg}
+        \caption{An example of a bad image.}
+        \label{fig:badimage}
+    \end{minipage}
+\end{figure}
 
 \end{document}
