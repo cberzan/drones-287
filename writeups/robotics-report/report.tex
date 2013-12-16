@@ -362,20 +362,26 @@ significant drift in \textit{loiter} mode.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conclusion and Future Directions}
+\section{Future Work and Conclusion}
+
+To improve the field of view at low heights, we are considering a modified
+design for the landing platform. It is also possible to use a fish-eye lens to
+get a wider field of view. We are also working on a full PID controller, which
+would provide more aggressive control in windy conditions. It is also critical
+to optimize our code and hardware stack so that we can get pose estimates at a
+higher frequency.
 
 Although we were unable to demonstrate an accurate landing using vision, we
-were able to make significant progress towards this goal. In particular, we
-implemented and made openly available code which uses a known landing pattern
-to localise a UAV very accurately. We also integrated this with a simple
-controller that will work under stable conditions but requires extra work to be
-robust enough for real-world use.
+made significant progress towards this goal. We demonstrated accurate pose
+estimation using a known landing target, and made our code available online.
+Although a proof-of-concept demonstration is within reach, our system requires
+significant testing before it can be used as an off-the-shelf component.
 
-Further work will involve a redesigned landing pad and a more featured controller.
 
-% Future work is adequately alluded to in the 'Challenges' section.
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \printbibliography
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Figures moved here because we need to put them together to save space.
 
