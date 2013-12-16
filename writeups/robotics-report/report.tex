@@ -185,11 +185,8 @@ corners. Thus, we have a set of 24 point correspondences between world
 coordinates and image coordinates. Given this input, we want to compute the
 quadcopter's pose, i.e. the position and orientation of the camera in the world
 coordinate frame. To do this, we follow the approach of Sharp et al.
-\cite{sharp_et_al_2001}.
-
-% TODO: show math
-% Have 48 equations (2 for each point pair)
-% System of equations has 6 degrees of freedom
+\cite{sharp_et_al_2001}, whose details we omit here for brevity. We use SVD to
+approximately solve a linear system of 48 equations with 6 degrees of freedom.
 
 The output from the pose estimator is a translation vector
 $t = \begin{bmatrix} t_x & t_y & t_z \end{bmatrix}^\top$
