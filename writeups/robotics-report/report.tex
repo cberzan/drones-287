@@ -20,7 +20,7 @@
 \title{Accurate Vision-Based Landing For Multicopter UAVs}
 \subtitle{CS287: Project Report}
 \author{Constantin Berzan, Sunil Shah}
-\date{} 
+\date{}
 
 % TODO: say our code is open source at <url>
 
@@ -28,48 +28,90 @@
 \maketitle
 
 \begin{abstract}
-Multicopter UAVs have become increasingly popular over the last five years and are being considered for commercial purposes. However, they are hampered by their limited battery life. This class project is part of a larger project to build an automatic charging station for multicopters. Currently openly available automated landing algorithms rely on GPS to localise the UAV with respect to the landing station. We show that this approach is considerably inaccurate and implement a vision-based landing system which uses pose estimates to more accurately localise the UAV. 
-In order to land based on this data, we build a state machine and controller that interacts with the open source ArduCopter autopilot to bring a test quadcopter down to a landing pattern. While environmental conditions and hardware issues ultimately prevented us from realising a vision-based landing, we are confident that, in good conditions and with some slight modification, our system should be able to land with much greater accuracy than GPS.
+Multicopter UAVs have become increasingly popular over the last five years and
+are being considered for commercial purposes. However, they are hampered by
+their limited battery life. This class project is part of a larger project to
+build an automatic charging station for multicopters. Currently openly
+available automated landing algorithms rely on GPS to localise the UAV with
+respect to the landing station. We show that this approach is considerably
+inaccurate and implement a vision-based landing system which uses pose
+estimates to more accurately localise the UAV.  In order to land based on this
+data, we build a state machine and controller that interacts with the open
+source ArduCopter autopilot to bring a test quadcopter down to a landing
+pattern. While environmental conditions and hardware issues ultimately
+prevented us from realising a vision-based landing, we are confident that, in
+good conditions and with some slight modification, our system should be able to
+land with much greater accuracy than GPS.
 \end{abstract}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Motivation}
-%% SUNIL
-%% What is the problem? Why does it matter?
-In the recent past, multicopter UAVs (or drones, as they are colloquially known) have become increasingly popular. This has been well documented by both mainstream and technology media. Once the preserve of the military, several factors have led to multicopter UAVs being fabricated and flown by hobbyist pilots:
+
+In the recent past, multicopter UAVs (or drones, as they are colloquially
+known) have become increasingly popular. This has been well documented by both
+mainstream and technology media. Once the preserve of the military, several
+factors have led to multicopter UAVs being fabricated and flown by hobbyist
+pilots:
+
 \begin{description}
-\item[The Maker Movement]{Affordable 3D printing has made it easier to prototype and produce cheap multicopter airframes.}
-\item[Commodity Embedded Electronics]{A number of projects, beginning with the Arduino platform, have made well supported embedded computers available at low cost to the general public.}
-\item[Open Source Software]{There are a number of popular open source autopilot projects that have significantly lowered the barrier to entry to novice users.}
-\item[Smartphone IMUs]{As smartphones have grown in popularity, it has become possible to source low cost inertial measurement units (IMUs) which measure acceleration along one or more axes.}
-\item[Ease of Control]{Multicopter UAVs offer the vertical take off and landing versatility of a traditional rotorcraft but with increased ease of control.}
+\item[The Maker Movement]{Affordable 3D printing has made it easier to
+prototype and produce cheap multicopter airframes.}
+\item[Commodity Embedded Electronics]{A number of projects, beginning with the
+Arduino platform, have made well supported embedded computers available at low
+cost to the general public.}
+\item[Open Source Software]{There are a number of popular open source autopilot
+projects that have significantly lowered the barrier to entry to novice users.}
+\item[Smartphone IMUs]{As smartphones have grown in popularity, it has become
+possible to source low cost inertial measurement units (IMUs) which measure
+acceleration along one or more axes.}
+\item[Ease of Control]{Multicopter UAVs offer the vertical take off and landing
+versatility of a traditional rotorcraft but with increased ease of control.}
 \end{description}
 
-These factors allow UAVs to be bought off the shelf for less than a thousand dollars, which is several orders of magnitude less than the cheapest traditional UAV. As with any disruptive technology, there is growing interest in the potential commercial applications. 
+These factors allow UAVs to be bought off the shelf for less than a thousand
+dollars, which is several orders of magnitude less than the cheapest
+traditional UAV. As with any disruptive technology, there is growing interest
+in the potential commercial applications.
 
-However, before these craft can be used reliably in a commercial setting, there are a number of shortfalls. In particular, accuracy of landing remains limited because of a reliance on GPS to localise the UAV. Our project aims to address this particular problem.
+However, before these craft can be used reliably in a commercial setting, there
+are a number of shortfalls. In particular, accuracy of landing remains limited
+because of a reliance on GPS to localise the UAV. Our project aims to address
+this particular problem.
 
 
 \subsection{Landing With GPS}
-The de facto method of state estimation for outdoor UAVs is through sensor fusion of IMU data, barometric pressure measurements, and GPS data. IMUs are used to provide estimates of the UAV's roll, pitch and yaw rates and barometric pressure estimates the UAVs altitude. GPS data is used to geographically localise the UAV. Our experiments showed that using the auto-landing functionality (in \textit{return to launch} mode) of our autopilot resulted in an accuracy of landing that tracks the known accuracy of GPS systems. 
+The de facto method of state estimation for outdoor UAVs is through sensor
+fusion of IMU data, barometric pressure measurements, and GPS data. IMUs are
+used to provide estimates of the UAV's roll, pitch and yaw rates and barometric
+pressure estimates the UAVs altitude. GPS data is used to geographically
+localise the UAV. Our experiments showed that using the auto-landing
+functionality (in \textit{return to launch} mode) of our autopilot resulted in
+an accuracy of landing that tracks the known accuracy of GPS systems.
 
-We experimentally gained 10 estimates for landing accuracy by drawing an X marker using yellow tape, arming the UAV at that location, flying it an arbitrary distance away and then invoking the \textit{return to launch} mode. We measured the straight line distance between the centre of the quadcopter and the centre of the marker. These results are shown in Table \ref{tbl:landing-data}, giving a mean accuracy of 195.33 centimetres and a standard deviation of 110.73 centimetres. 
+We experimentally gained 10 estimates for landing accuracy by drawing an X
+marker using yellow tape, arming the UAV at that location, flying it an
+arbitrary distance away and then invoking the \textit{return to launch} mode.
+We measured the straight line distance between the centre of the quadcopter and
+the centre of the marker. These results are shown in Table
+\ref{tbl:landing-data}, giving a mean accuracy of 195.33 centimetres and a
+standard deviation of 110.73 centimetres.
 
 \begin {table}
   \centerline{
   \begin{tabular}{ | c | c | }
   \hline
-  Inches & Centimetres \\ 
+  Inches & Centimetres \\
   \hline
-  22 & 55.88 \\ 
-  63 & 160.02 \\ 
-  39 & 99.06 \\ 
-  84.5 & 214.63 \\ 
-  25.5 & 64.77 \\ 
-  76 & 193.04 \\ 
-  158 & 401.32 \\ 
-  130.5 & 331.47 \\ 
-  76 & 193.04 \\ 
-  94.5 & 240.03 \\ 
+  22 & 55.88 \\
+  63 & 160.02 \\
+  39 & 99.06 \\
+  84.5 & 214.63 \\
+  25.5 & 64.77 \\
+  76 & 193.04 \\
+  158 & 401.32 \\
+  130.5 & 331.47 \\
+  76 & 193.04 \\
+  94.5 & 240.03 \\
   \hline
   \end{tabular}}
    \caption{Distance of landing from home location using RTL}
@@ -78,20 +120,36 @@ We experimentally gained 10 estimates for landing accuracy by drawing an X marke
 
 \subsection{Accurate Landing}
 
-Accurate landing is important for many applications of UAVs where it is necessary to land in and take off from constrained spaces. An example application is the use of UAVs as delivery vehicles to households. Many households may have limited clear space for the UAV to land. When using GPS, it is equally likely that the UAV will land on the household's roof as on their designated delivery point.
+Accurate landing is important for many applications of UAVs where it is
+necessary to land in and take off from constrained spaces. An example
+application is the use of UAVs as delivery vehicles to households. Many
+households may have limited clear space for the UAV to land. When using GPS, it
+is equally likely that the UAV will land on the household's roof as on their
+designated delivery point.
 
-Accurate landing capability will also be an integral part of a larger project to build a multicopter charging station. Multicopters are limited by their battery life and current charging solutions require human intervention - which limits their usefulness as fully autonomous robots.  With an accurate landing, it becomes feasible to build an automatic conductive charger which can recharge a UAV's battery quickly.
+Accurate landing capability will also be an integral part of a larger project
+to build a multicopter charging station. Multicopters are limited by their
+battery life and current charging solutions require human intervention - which
+limits their usefulness as fully autonomous robots.  With an accurate landing,
+it becomes feasible to build an automatic conductive charger which can recharge
+a UAV's battery quickly.
 
 \subsection{Vision-Based Landing}
-By augmenting our autopilot with an additional computer and webcam, we can use computer vision techniques to gain a highly accurate estimate of the UAVs pose with respect to a landing pad of a known design.
+
+By augmenting our autopilot with an additional computer and webcam, we can use
+computer vision techniques to gain a highly accurate estimate of the UAVs pose
+with respect to a landing pad of a known design.
 Our project was thus to:
+
 \begin{enumerate}
 \item{Implement a vision-based pose estimator.}
 \item{Integrate our pose estimates into a controller that would land a UAV.}
-\item{Demonstrate accurate autonomous landing using commodity electronics on a low cost quadcopter UAV.}
+\item{Demonstrate accurate autonomous landing using commodity electronics on a
+low cost quadcopter UAV.}
 \item{Make our software and implementation details openly available.}
 \end{enumerate}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Prior Work}
 
 The automated landing problem has been investigated in the research literature
@@ -129,6 +187,7 @@ land.
 
 %% Add comment re: further work since (i.e. landing on an unstable surface / moving boat).
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Approach}
 
 \subsection{Architecture}
@@ -162,15 +221,14 @@ possible to send controls to the autopilot.
 
 
 \subsection{Vision}
-%% NAHUSH 
-Our vision-based approach comprises of detecting corners of the squares on the 
+
+Our vision-based approach comprises of detecting corners of the squares on the
 landing platform and estimating the relative camera pose (position and orientation).
 
 \subsubsection{Corner Detection}
-%% NAHUSH
 Thresholding and other chromatic approaches are largely dependent on the ambient light
 and hence cannot be reliably used for accurate corner detection. Our approach is based
-on detecting contours in the image. Following are the stages in our corner detection 
+on detecting contours in the image. Following are the stages in our corner detection
 algorithm:
 
 \begin{enumerate}
@@ -181,14 +239,14 @@ algorithm:
 	less than an experimentally determined threshold value.}
 \item{Using the contour hierarchy, determine a contour which contains 6 other contours.
 	This contour represents the boundary of our landing platform. Store coordinates of
-	the corners of these 6 inner contours. Move on to the next frame if we cannot detect 
+	the corners of these 6 inner contours. Move on to the next frame if we cannot detect
 	such a contour pattern.}
 \item{Label the largest of the 6 polygons as 'A' and the farthest one from 'A' as 'D'.
 	Label polygons as 'B', 'C', 'E' and 'F' based on orientations and distances relative
-	to the vector formed by joining centers of 'A' and 'D' (vector DA) as shown in 
+	to the vector formed by joining centers of 'A' and 'D' (vector DA) as shown in
 	Figure \ref{fig:corners}.}
 \item{For each polygon, label corners in the anti-clockwise manner (Figure \ref{fig:corners})
-	starting with the corner that belongs to the diagonal aligned with vector DA and that is 
+	starting with the corner that belongs to the diagonal aligned with vector DA and that is
 	farther from D's center.}
 \end{enumerate}
 
@@ -226,37 +284,81 @@ camera model, which we then fed into the equations above.
 
 
 \subsection{Control}
-%% SUNIl
-In order to actually land our UAV using our pose estimates, it was necessary to implement a landing controller. Since this would need to run in real time (in order to adequately stabilise the UAV), we deferred real-time control to the \textit{loiter} mode provided by the ArduCopter autopilot. This takes care of real-time stabilisation for us and, additionally, attempts to keep the UAV in the same location using GPS. (They also offer a more basic stabilise mode which doesn't attempt to keep the craft to one location.)
 
-Using the roscopter library, we were able to override the radio control inputs that would typically be received from the user. Using these inputs, we could manipulate the throttle, yaw, pitch and roll of the UAV.
+In order to actually land our UAV using our pose estimates, it was necessary to
+implement a landing controller. Since this would need to run in real time (in
+order to adequately stabilise the UAV), we deferred real-time control to the
+\textit{loiter} mode provided by the ArduCopter autopilot. This takes care of
+real-time stabilisation for us and, additionally, attempts to keep the UAV in
+the same location using GPS. (They also offer a more basic stabilise mode which
+doesn't attempt to keep the craft to one location.)
+
+Using the roscopter library, we were able to override the radio control inputs
+that would typically be received from the user. Using these inputs, we could
+manipulate the throttle, yaw, pitch and roll of the UAV.
 
 %% TODO: Describe how we control the UAV using PWM values for channels.
 
 \subsubsection{State Machine}
-We designed a state machine with five states, beginning in a \textit{FLYING} mode and ending in \textit{POWER\_OFF}. Figure \ref{fig:statediagram} shows the transitions between the states. 
+
+We designed a state machine with five states, beginning in a \textit{FLYING}
+mode and ending in \textit{POWER\_OFF}. Figure \ref{fig:statediagram} shows the
+transitions between the states.
 
 \paragraph{FLYING}
-The \textit{FLYING} state represents when the UAV is not under our control, for instance, when the user is in manual control or has invoked another autopilot mode. Our controller listens to a specific channel of the radio input which represents three fixed values that are user selectable on the handheld transmitter. When the value of that channel changes to a predefined value, our controller takes control of the autopilot and transitions into \textit{SEEK\_HOME}.
+The \textit{FLYING} state represents when the UAV is not under our control, for
+instance, when the user is in manual control or has invoked another autopilot
+mode. Our controller listens to a specific channel of the radio input which
+represents three fixed values that are user selectable on the handheld
+transmitter. When the value of that channel changes to a predefined value, our
+controller takes control of the autopilot and transitions into
+\textit{SEEK\_HOME}.
 
 \paragraph{SEEK\_HOME}
-In \textit{SEEK\_HOME} mode, we use the built in \textit{return to launch} mode that ArduCopter implements - this navigates the UAV back to the launch location. Once above the launch location, the UAV should start receiving valid pose estimates.
+In \textit{SEEK\_HOME} mode, we use the built in \textit{return to launch} mode
+that ArduCopter implements - this navigates the UAV back to the launch
+location. Once above the launch location, the UAV should start receiving valid
+pose estimates.
 
 \paragraph{LAND\_HIGH}
-Our controller enters the \textit{LAND\_HIGH} mode when it starts receiving valid pose estimates. We use a simple proportional controller to calculate the appropriate control inputs based on the deviation from the centre of the landing station (in terms of x, y and yaw). These comprise the error terms in our controller.
+Our controller enters the \textit{LAND\_HIGH} mode when it starts receiving
+valid pose estimates. We use a simple proportional controller to calculate the
+appropriate control inputs based on the deviation from the centre of the
+landing station (in terms of x, y and yaw). These comprise the error terms in
+our controller.
 
-Our controller disregards the z deviation and descends at a fixed rate. The z deviation is, however, used as the best estimate of altitude (our tests, described in section \ref{sec:accuracy}, show that the calculated z value is extremely accurate). When the UAV reaches a predefined altitude (where we know pose estimates will no longer be possible, due to field of view limitations), our controller enters into the \textit{LAND\_LOW} state.
+Our controller disregards the z deviation and descends at a fixed rate. The z
+deviation is, however, used as the best estimate of altitude (our tests,
+described in section \ref{sec:accuracy}, show that the calculated z value is
+extremely accurate). When the UAV reaches a predefined altitude (where we know
+pose estimates will no longer be possible, due to field of view limitations),
+our controller enters into the \textit{LAND\_LOW} state.
 
 \paragraph{LAND\_LOW}
-In \textit{LAND\_LOW}, we use a dead reckoning approach to the ground since we are no longer able to receive valid pose estimates. Our controller attempts to keep the UAV flying straight and level and descends at a fixed rate. It uses data from the barometric pressure sensor to determine when the UAV has reached the ground and then enters into the \textit{POWER\_OFF} state.
+In \textit{LAND\_LOW}, we use a dead reckoning approach to the ground since we
+are no longer able to receive valid pose estimates. Our controller attempts to
+keep the UAV flying straight and level and descends at a fixed rate. It uses
+data from the barometric pressure sensor to determine when the UAV has reached
+the ground and then enters into the \textit{POWER\_OFF} state.
 
 \paragraph{POWER\_OFF}
-\textit{POWER\_OFF} retains control of the UAV but sets throttle to a low value to prevent it from flying.
+\textit{POWER\_OFF} retains control of the UAV but sets throttle to a low value
+to prevent it from flying.
 
 \subsection{Software Integration}
-%% SUNIL
-In order to integrate the three major components of software (roscopter, our pose estimator and our landing controller), we made extensive use of the publish and subscribe mechanism built into ROS. This allowed us to implement landing control in an event driven style - new control messages are generated upon receipt by the landing controller of new state information. This may include an updated pose estimate, an input from the user's radio control transmitter or new sensor data from the autopilot. Since the time taken to generate new control messages is considerably less than that to generate pose estimates, this allows us to generate control messages as frequently as we get new pose estimates. Figure \ref{fig:rosnodes} shows this setup.
 
+In order to integrate the three major components of software (roscopter, our
+pose estimator and our landing controller), we made extensive use of the
+publish and subscribe mechanism built into ROS. This allowed us to implement
+landing control in an event driven style - new control messages are generated
+upon receipt by the landing controller of new state information. This may
+include an updated pose estimate, an input from the user's radio control
+transmitter or new sensor data from the autopilot. Since the time taken to
+generate new control messages is considerably less than that to generate pose
+estimates, this allows us to generate control messages as frequently as we get
+new pose estimates. Figure \ref{fig:rosnodes} shows this setup.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
 
 \subsection{Pose Estimation Accuracy}
@@ -318,8 +420,11 @@ impractical to achieve good performance if we rely too much on third-party
 libraries.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Challenges}
-One of the significant impediments to our project was integrating working hardware. In this section, we describe the issues we had and how they might be mitigated in the future.
+One of the significant impediments to our project was integrating working
+hardware. In this section, we describe the issues we had and how they might be
+mitigated in the future.
 
 \subsection{Integration of Hardware}
 
@@ -346,73 +451,108 @@ running experiments. It is doubtlessly much quicker to get started with a
 platform that others have already validated, or to use a software simulation.
 
 \subsection{Image Quality}
-%% NAHUSH
 
-Since the multicopter is not inherently stable, images captured by the camera 
-could be shaky (Figure \ref{fig:badimage}). 
-Corner detection and hence pose estimation might not work on such blurry images. 
-One of the possible ways of dealing with motion blur is using a better camera 
+Since the multicopter is not inherently stable, images captured by the camera
+could be shaky (Figure \ref{fig:badimage}).
+Corner detection and hence pose estimation might not work on such blurry images.
+One of the possible ways of dealing with motion blur is using a better camera
 with more fine grained control.
 
 \subsection{Field of View}
-%% NAHUSH
 
 % TODO: fov is 69 deg by 42 deg
 
-The landing platform must entirely lie in the camera's field of view for the drone 
-to get pose estimates. With our current setup, the drone needs to be at a height of 
-at least 1 meter to be able to see the landing platform completely. 
-Table \ref{tbl:visible-landing-area} shows the visible landing area corresponding to the 
+The landing platform must entirely lie in the camera's field of view for the drone
+to get pose estimates. With our current setup, the drone needs to be at a height of
+at least 1 meter to be able to see the landing platform completely.
+Table \ref{tbl:visible-landing-area} shows the visible landing area corresponding to the
 drone's height from the ground.
 
 \begin {table}[h!]
   \centerline{
   \begin{tabular}{ | c | c | }
   \hline
-  Height & Visible Landing Area \\ 
+  Height & Visible Landing Area \\
   \hline
   1 m & 1.37 m x 0.77 m \\
   2 m & 2.75 m x 1.54 m \\
   4 m & 5.50 m x 3.07 m \\
   8 m & 11.0 m x 6.14 m \\
-  16 m & 22.0 m x 12.3 m \\ 
+  16 m & 22.0 m x 12.3 m \\
   \hline
   \end{tabular}}
    \caption{Visible landing area from different heights}
    \label{tbl:visible-landing-area}
 \end {table}
 
-Since this field of view is measured with the camera centred above the landing pad, at 1 meter, we only generate pose estimates if the UAV is centred. In reality, it is not and so we typically lose pose estimates below approximately 2 meters. To mitigate this issue, we might reduce the size of the landing pad or explore using a concentric series of landing patterns.
+Since this field of view is measured with the camera centred above the landing
+pad, at 1 meter, we only generate pose estimates if the UAV is centred. In
+reality, it is not and so we typically lose pose estimates below approximately
+2 meters. To mitigate this issue, we might reduce the size of the landing pad
+or explore using a concentric series of landing patterns.
 
 \subsection{Weather}
-%% SUNIL
-The weather conditions became more limiting than we had initially imagined - in particular due to the short term nature of this project. 
+The weather conditions became more limiting than we had initially imagined - in
+particular due to the short term nature of this project.
 
 \subsubsection{Temperature}
-As mentioned in the Motivation section, multicopter UAVs have a limited battery life. The underlying battery technology is affected by the cold weather which meant that flight times, even with the largest 5500 mAh batteries on hand, were limited to 5 or 6 minutes. This limited the amount of testing per charge cycle.
+As mentioned in the Motivation section, multicopter UAVs have a limited battery
+life. The underlying battery technology is affected by the cold weather which
+meant that flight times, even with the largest 5500 mAh batteries on hand, were
+limited to 5 or 6 minutes. This limited the amount of testing per charge cycle.
 Besides having a greater stock of batteries, there is little we can do to pre-empt this.
 
 \subsubsection{Wind}
-Our proportional controller struggled when there were large amounts of wind present. This is because it could not operate quickly enough to react to rapid changes in state, relying upon the \textit{loiter} mode of the autopilot to keep the UAV in the same place. The \textit{loiter} mode relies upon GPS to give us an estimate of the UAVs location and when the location deviates by a large amount, it tries to bring it back to the GPS location. As we've established, GPS is relatively inaccurate and so this causes a significant amount of drift.
+Our proportional controller struggled when there were large amounts of wind
+present. This is because it could not operate quickly enough to react to rapid
+changes in state, relying upon the \textit{loiter} mode of the autopilot to
+keep the UAV in the same place. The \textit{loiter} mode relies upon GPS to
+give us an estimate of the UAVs location and when the location deviates by a
+large amount, it tries to bring it back to the GPS location. As we've
+established, GPS is relatively inaccurate and so this causes a significant
+amount of drift.
 
-This could be mitigated through better controller design. 
+This could be mitigated through better controller design.
 
 \paragraph{PID Controller}
-Using a full PID controller will allow us to develop a more aggressive controller that is able to reduce the error (i.e. deviation from the centre of the landing pad) more quickly and in a way that is proportional to external noise (i.e. wind) - and not just the amount of noise.
+Using a full PID controller will allow us to develop a more aggressive
+controller that is able to reduce the error (i.e. deviation from the centre of
+the landing pad) more quickly and in a way that is proportional to external
+noise (i.e. wind) - and not just the amount of noise.
 
 \paragraph{Control Rate}
-At the moment we gain pose-estimates at a slow rate (and provide control updates at the same rate) of approximately 1.6Hz. The GPS sensor used by the autopilot operates at 5Hz and is used to provide control updates at 10Hz. This is enough to control the quadcopter in real-time; increasing the performance of the pose estimator up to between 5 and 10Hz may be enough to better offset windy flying conditions.
+At the moment we gain pose-estimates at a slow rate (and provide control
+updates at the same rate) of approximately 1.6Hz. The GPS sensor used by the
+autopilot operates at 5Hz and is used to provide control updates at 10Hz. This
+is enough to control the quadcopter in real-time; increasing the performance of
+the pose estimator up to between 5 and 10Hz may be enough to better offset
+windy flying conditions.
 
 \subsection{Noisy Sensor Data}
-While the pose estimates provided highly accurate information about the location of the UAV, the field of view limitations meant that once the landing pattern moved out of sight, we were reliant on secondary sensors. In particular, we used barometric pressure to transition between our \textit{LAND\_HIGH} state and successive states. 
+While the pose estimates provided highly accurate information about the
+location of the UAV, the field of view limitations meant that once the landing
+pattern moved out of sight, we were reliant on secondary sensors. In
+particular, we used barometric pressure to transition between our
+\textit{LAND\_HIGH} state and successive states.
 
-Barometric pressure sensors provide reasonably accurate estimates of altitude over a large range but drifts significantly when maintaining a steady altitude. This made transition into our \textit{LAND\_LOW} state unpredictable.
+Barometric pressure sensors provide reasonably accurate estimates of altitude
+over a large range but drifts significantly when maintaining a steady altitude.
+This made transition into our \textit{LAND\_LOW} state unpredictable.
 
-By better designing the landing pad, we can mitigate this by relying purely upon pose estimates for accurate altitude estimates. It may also be possible to use sonar - we were unable to get a new sonar sensor in time to test this out.
+By better designing the landing pad, we can mitigate this by relying purely
+upon pose estimates for accurate altitude estimates. It may also be possible to
+use sonar - we were unable to get a new sonar sensor in time to test this out.
 
 
-\section{Conclusion \& Future Directions}
-Although we were unable to demonstrate an accurate landing using vision, we were able to make significant progress towards this goal. In particular, we implemented and made openly available code which uses a known landing pattern to localise a UAV very accurately. We also integrated this with a simple controller that will work under stable conditions but requires extra work to be robust enough for real-world use.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion and Future Directions}
+
+Although we were unable to demonstrate an accurate landing using vision, we
+were able to make significant progress towards this goal. In particular, we
+implemented and made openly available code which uses a known landing pattern
+to localise a UAV very accurately. We also integrated this with a simple
+controller that will work under stable conditions but requires extra work to be
+robust enough for real-world use.
 
 Further work will involve a redesigned landing pad and a more featured controller.
 
