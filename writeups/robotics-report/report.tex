@@ -383,77 +383,37 @@ amount of time it takes to assemble and validate a new hardware platform for
 running experiments. It is doubtlessly much quicker to get started with a
 platform that others have already validated, or to use a software simulation.
 
-\subsection{Camera Field of View and Image Quality}
+\subsection{Field of View and Sensor Limitations}
 
 We measured our camera's field of view to $69^\circ$ on the long side and
 $42^\circ$ on the short side. This means that at a height of one meter, we see
 an area of 1.37 m by 0.77 m on the ground. Our landing platform is about 0.76 m
 by 0.76 m. This means that at a height of one meter, the UAV has to be exactly
 above the landing pad in order to see all of it. (We get pose estimates only if
-we see all the corners of the landing pad.) We thought that we would guide the
-UAV to this low height using vision, and then land using dead reckoning.
-However, the latter turned out to be difficult, because of airflow effects when
-the UAV is close to the ground. Thus, it is critical that the UAV continue to
-see the landing platform even at low heights, something our current design does
-not permit. Since the UAV is rarely exactly above the landing platform, the
-limited field of view is also a problem at heights above one meter.
+we see all the corners of the landing pad.) Since the UAV is rarely exactly
+above the landing platform, the limited field of view is also a problem at
+heights above one meter.
 
-The motion of the UAV causes some camera shake. This leads to blurry images,
-especially in lower-light conditions such as a cloudy day. Figure
-\ref{fig:badimage} shows an example. We were not able to extract corners from
-such images.
+We thought that we would guide the UAV to a height of one meter using vision,
+and then land using dead reckoning. The latter turned out to be difficult for
+two reasons. First, airflow effects near the ground made the motion of the UAV
+unpredictable. Second, there was a lot of drift in the barometer data, so we
+were unable to get reliable height estimates below one meter, and thus our
+controller could not tell when to \textit{POWER\_OFF}.
+
+When the landing platform was in sight, we still sometimes failed to detect
+corners because of blurry images. These are caused by camera shake, and are
+especially problematic in lower-light conditions such as a cloudy day. Figure
+\ref{fig:badimage} shows an example image.
 
 \subsection{Weather}
-The weather conditions became more limiting than we had initially imagined - in
-particular due to the short term nature of this project.
 
-\subsubsection{Temperature}
-As mentioned in the Motivation section, multicopter UAVs have a limited battery
-life. The underlying battery technology is affected by the cold weather which
-meant that flight times, even with the largest 5500 mAh batteries on hand, were
-limited to 5 or 6 minutes. This limited the amount of testing per charge cycle.
-Besides having a greater stock of batteries, there is little we can do to pre-empt this.
-
-\subsubsection{Wind}
-Our proportional controller struggled when there were large amounts of wind
-present. This is because it could not operate quickly enough to react to rapid
-changes in state, relying upon the \textit{loiter} mode of the autopilot to
-keep the UAV in the same place. The \textit{loiter} mode relies upon GPS to
-give us an estimate of the UAVs location and when the location deviates by a
-large amount, it tries to bring it back to the GPS location. As we've
-established, GPS is relatively inaccurate and so this causes a significant
-amount of drift.
-
-This could be mitigated through better controller design.
-
-\paragraph{PID Controller}
-Using a full PID controller will allow us to develop a more aggressive
-controller that is able to reduce the error (i.e. deviation from the centre of
-the landing pad) more quickly and in a way that is proportional to external
-noise (i.e. wind) - and not just the amount of noise.
-
-\paragraph{Control Rate}
-At the moment we gain pose-estimates at a slow rate (and provide control
-updates at the same rate) of approximately 1.6Hz. The GPS sensor used by the
-autopilot operates at 5Hz and is used to provide control updates at 10Hz. This
-is enough to control the quadcopter in real-time; increasing the performance of
-the pose estimator up to between 5 and 10Hz may be enough to better offset
-windy flying conditions.
-
-\subsection{Noisy Sensor Data}
-While the pose estimates provided highly accurate information about the
-location of the UAV, the field of view limitations meant that once the landing
-pattern moved out of sight, we were reliant on secondary sensors. In
-particular, we used barometric pressure to transition between our
-\textit{LAND\_HIGH} state and successive states.
-
-Barometric pressure sensors provide reasonably accurate estimates of altitude
-over a large range but drifts significantly when maintaining a steady altitude.
-This made transition into our \textit{LAND\_LOW} state unpredictable.
-
-By better designing the landing pad, we can mitigate this by relying purely
-upon pose estimates for accurate altitude estimates. It may also be possible to
-use sonar - we were unable to get a new sonar sensor in time to test this out.
+Two aspects of weather led to difficulties. First, the cold temperature
+affected the batteries, reducing flight time to a meager 5 minutes.  Second,
+our controller struggled with gusts of wind. We relied on the autopilot's
+GPS-based \textit{loiter} mode to keep the UAV in place while the vision system
+sent small adjustments to the controls. In windy conditions, there was
+significant drift in \textit{loiter} mode.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
