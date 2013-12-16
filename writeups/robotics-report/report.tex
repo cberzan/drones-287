@@ -82,13 +82,6 @@ Accurate landing is important for many applications of UAVs where it is necessar
 
 Accurate landing capability will also be an integral part of a larger project to build a multicopter charging station. Multicopters are limited by their battery life and current charging solutions require human intervention - which limits their usefulness as fully autonomous robots.  With an accurate landing, it becomes feasible to build an automatic conductive charger which can recharge a UAV's battery quickly.
 
-\begin{figure*}[h]
-    \centering
-    \includegraphics[width=\textwidth]{images/drone.jpg}
-    \caption{Our test quadcopter in action.}
-    \label{fig:drone}
-\end{figure*}
-
 \subsection{Vision-Based Landing}
 By augmenting our autopilot with an additional computer and webcam, we can use computer vision techniques to gain a highly accurate estimate of the UAVs pose with respect to a landing pad of a known design.
 Our project was thus to:
@@ -440,12 +433,7 @@ with more fine grained control.
 \subsection{Field of View}
 %% NAHUSH
 
-\begin{figure*}[h]
-    \centering
-    \includegraphics{images/fov.png}
-    \caption{Field of view of our webcam.}
-    \label{fig:fov}
-\end{figure*}
+% TODO: fov is 69 deg by 42 deg
 
 The landing platform must entirely lie in the camera's field of view for the drone 
 to get pose estimates. With our current setup, the drone needs to be at a height of 
