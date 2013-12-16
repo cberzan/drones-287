@@ -383,46 +383,25 @@ amount of time it takes to assemble and validate a new hardware platform for
 running experiments. It is doubtlessly much quicker to get started with a
 platform that others have already validated, or to use a software simulation.
 
-\subsection{Image Quality}
+\subsection{Camera Field of View and Image Quality}
 
-Since the multicopter is not inherently stable, images captured by the camera
-could be shaky (Figure \ref{fig:badimage}).
-Corner detection and hence pose estimation might not work on such blurry images.
-One of the possible ways of dealing with motion blur is using a better camera
-with more fine grained control.
+We measured our camera's field of view to $69^\circ$ on the long side and
+$42^\circ$ on the short side. This means that at a height of one meter, we see
+an area of 1.37 m by 0.77 m on the ground. Our landing platform is about 0.76 m
+by 0.76 m. This means that at a height of one meter, the UAV has to be exactly
+above the landing pad in order to see all of it. (We get pose estimates only if
+we see all the corners of the landing pad.) We thought that we would guide the
+UAV to this low height using vision, and then land using dead reckoning.
+However, the latter turned out to be difficult, because of airflow effects when
+the UAV is close to the ground. Thus, it is critical that the UAV continue to
+see the landing platform even at low heights, something our current design does
+not permit. Since the UAV is rarely exactly above the landing platform, the
+limited field of view is also a problem at heights above one meter.
 
-\subsection{Field of View}
-
-% TODO: fov is 69 deg by 42 deg
-
-The landing platform must entirely lie in the camera's field of view for the drone
-to get pose estimates. With our current setup, the drone needs to be at a height of
-at least 1 meter to be able to see the landing platform completely.
-Table \ref{tbl:visible-landing-area} shows the visible landing area corresponding to the
-drone's height from the ground.
-
-\begin {table}[h!]
-  \centerline{
-  \begin{tabular}{ | c | c | }
-  \hline
-  Height & Visible Landing Area \\
-  \hline
-  1 m & 1.37 m x 0.77 m \\
-  2 m & 2.75 m x 1.54 m \\
-  4 m & 5.50 m x 3.07 m \\
-  8 m & 11.0 m x 6.14 m \\
-  16 m & 22.0 m x 12.3 m \\
-  \hline
-  \end{tabular}}
-   \caption{Visible landing area from different heights}
-   \label{tbl:visible-landing-area}
-\end {table}
-
-Since this field of view is measured with the camera centred above the landing
-pad, at 1 meter, we only generate pose estimates if the UAV is centred. In
-reality, it is not and so we typically lose pose estimates below approximately
-2 meters. To mitigate this issue, we might reduce the size of the landing pad
-or explore using a concentric series of landing patterns.
+The motion of the UAV causes some camera shake. This leads to blurry images,
+especially in lower-light conditions such as a cloudy day. Figure
+\ref{fig:badimage} shows an example. We were not able to extract corners from
+such images.
 
 \subsection{Weather}
 The weather conditions became more limiting than we had initially imagined - in
