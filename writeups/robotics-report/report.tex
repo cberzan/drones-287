@@ -359,17 +359,17 @@ One of the significant impediments to our project was integrating working
 hardware. In this section, we describe the issues we had and how they might be
 mitigated in the future.
 
-\subsection{Integration of Hardware}
+\subsection{Platform Integration}
 
-We spent an unexpectedly large amount of time dealing with hardware issues. The
-first two USB hubs we tried did not work reliably with the BeagleBone, failing
-to be recognized if they were plugged in at boot time. The first Wi-Fi adapter
-we tried did not support ad-hoc networking, despite the manufacturer's claims
-to the contrary. In addition, the hastily written documentation for roscopter
-mentioned the {\tt --rate} parameter instead of {\tt --baud-rate}, leading to
-baffling failures to communicate with the APM, until we dug into this
-third-party code and found the problem.\footnote{We have released a corrected
-and somewhat cleaned-up version of roscopter at {\tt
+We spent an unexpectedly large amount of time addressing integration issues.
+The first two USB hubs we tried did not work reliably with the BeagleBone,
+failing to be recognized if they were plugged in at boot time. The first Wi-Fi
+adapter we tried did not support ad-hoc networking, despite the manufacturer's
+claims to the contrary. In addition, the hastily written documentation for
+roscopter mentioned the {\tt --rate} parameter instead of {\tt --baud-rate},
+leading to baffling failures to communicate with the APM, until we dug into
+this third-party code and found the problem.\footnote{We have released a
+corrected and somewhat cleaned-up version of roscopter at {\tt
 https://github.com/cberzan/roscopter}.}
 
 Another issue was that our webcam tried to automatically adjust exposure and
