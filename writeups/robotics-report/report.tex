@@ -307,7 +307,6 @@ Just capturing frames from the camera puts significant strain on the system,
 and we are only able to get 11.2 FPS, even if we perform no processing on the
 frames. Adding the pose estimation code reduces performance to 3.0 FPS, and
 running roscopter at the same time further reduces performance to 1.6 FPS.
-Table \ref{tab:fps} summarizes these results.
 
 These disappointing performance numbers point to a fundamental tradeoff when
 developing a system such as ours: One could use off-the-shelf software packages
@@ -317,21 +316,6 @@ performance. Sharp et al \cite{sharp_et_al_2001} achieved 30 FPS with their
 custom-code approach. Our experience suggests that even a decade later, it is
 impractical to achieve good performance if we rely too much on third-party
 libraries.
-
-\begin{table}[h!]
-    \centering
-    \begin{tabular}{lr}
-        camera upper bound                      &   30 FPS \\
-        just capturing frames                   &   11.2 FPS \\
-        running pose estimation                 &   3.0 FPS \\
-        running pose estimation + roscopter     &   1.6 FPS \\
-    \end{tabular}
-    \caption{
-        Performance of the embedded system, in terms of how many frames per
-        second we can process.
-    }
-    \label{tab:fps}
-\end{table}
 
 
 \subsection{Automated Landing}
