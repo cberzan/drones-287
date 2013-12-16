@@ -26,20 +26,11 @@
 \maketitle
 
 \begin{abstract}
-Multicopter UAVs have become increasingly popular over the last five years and
-are being considered for commercial purposes. However, they are hampered by
-their limited battery life. This class project is part of a larger project to
-build an automatic charging station for multicopters. Currently openly
-available automated landing algorithms rely on GPS to localise the UAV with
-respect to the landing station. We show that this approach is considerably
-inaccurate and implement a vision-based landing system which uses pose
-estimates to more accurately localise the UAV.  In order to land based on this
-data, we build a state machine and controller that interacts with the open
-source ArduCopter autopilot to bring a test quadcopter down to a landing
-pattern. While environmental conditions and hardware issues ultimately
-prevented us from realising a vision-based landing, we are confident that, in
-good conditions and with some slight modification, our system should be able to
-land with much greater accuracy than GPS.
+Current approaches for automated landing of unmanned aerial vehicles (UAVs) are
+based on GPS localization, which we show is quite inaccurate. We aim to improve
+on this by using vision to locate a predefined target, and land on top of it.
+We describe our progress towards this goal, our approach to pose estimation and
+control, and the challenges we encountered.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -73,13 +64,12 @@ delivery) or for landing on a charging station (for farm monitoring).
 {\bf The goal of our project} was to improve the accuracy of automated landing
 by equipping the UAV with a camera, and using computer-vision techniques to
 guide the UAV towards landing on a predefined marker. We made significant
-progress towards this goal, although we were not yet able to demonstrate
-autonomous landing in action. This report documents our progress, the
-challenges we faced, and the next steps we plan to take.
-
-This work is part of an ongoing project to build an automated charging station
-for UAVs. Our code is available online under an open-source
-license.\footnote{{\tt https://github.com/cberzan/drones-287}}
+progress towards this goal, although we were not yet able to demonstrate fully
+autonomous landing. In this document we survey some prior work, present our
+approach to pose estimation and control, show some accuracy and performance
+results, and discuss the challenges we encountered. (This work is part of an
+ongoing project to build an automated charging station for UAVs. Our code is
+available as open source at {\tt https://github.com/cberzan/drones-287}.)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
