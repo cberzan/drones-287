@@ -150,7 +150,9 @@ distribution, obtained from {\tt armhf.com}. We installed pre-built packages
 for ROS groovy from the official ROS repositories. We compiled OpenCV 2.4.7 by
 hand. We also installed roscopter, a third-party piece of software that reads
 the state of the autopilot and makes it available via ROS, and also makes it
-possible to send controls to the autopilot.
+possible to send controls to the autopilot. Our software took the form of
+several ROS nodes passing messages to one another. This is illustrated in
+figure \ref{fig:rosnodes}.
 
 
 \subsection{Vision}
@@ -277,19 +279,6 @@ the ground and then enters into the \textit{POWER\_OFF} state.
 \paragraph{POWER\_OFF}
 \textit{POWER\_OFF} retains control of the UAV but sets throttle to a low value
 to prevent it from flying.
-
-\subsection{Software Integration}
-
-In order to integrate the three major components of software (roscopter, our
-pose estimator and our landing controller), we made extensive use of the
-publish and subscribe mechanism built into ROS. This allowed us to implement
-landing control in an event driven style - new control messages are generated
-upon receipt by the landing controller of new state information. This may
-include an updated pose estimate, an input from the user's radio control
-transmitter or new sensor data from the autopilot. Since the time taken to
-generate new control messages is considerably less than that to generate pose
-estimates, this allows us to generate control messages as frequently as we get
-new pose estimates. Figure \ref{fig:rosnodes} shows this setup.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
